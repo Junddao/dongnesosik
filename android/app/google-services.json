@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "683830123184",
+    "project_id": "dongnesosik",
+    "storage_bucket": "dongnesosik.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:683830123184:android:0f5613cd5267f748fd7975",
+        "android_client_info": {
+          "package_name": "com.jj.dongnesosik"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "683830123184-j9237qo5bg2u1hnb7ru4a9tnqsoja3uo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuuGFepkNdTLU-kbwG7T-UGl9yNI9nKUg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "683830123184-j9237qo5bg2u1hnb7ru4a9tnqsoja3uo.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "683830123184-60i8ultl8ba225aqnptvpompr4qcsfo7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.jj.dongnesosik"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

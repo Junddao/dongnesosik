@@ -1,0 +1,25 @@
+{
+    "api_project_name": "credi",
+    "server_current_type": "dev",
+    "server_info": [
+        {
+            "type": "local",
+            "base_url": "http://192.168.0.53:2101",
+            "websocket_server": "ws://192.168.0.53:2101/socket"
+        },
+        {
+            "type": "dev",
+            "base_url": "https://dev.credi.co.kr",
+            "websocket_server": "wss://dev.credi.co.kr/socket"
+        },
+        {
+            "type": "prod",
+            "base_url": "https://api.credi.co.kr",
+            "websocket_server": "wss://api.credi.co.kr/socket"
+        }
+    ],
+    "terms_url": "http://s3.ap-northeast-2.amazonaws.com/terms.credi.co.kr/terms.html",
+    "privacy_policy_url": "https://s3.ap-northeast-2.amazonaws.com/terms.credi.co.kr/privacy.html",
+    "third_party_policy_url": "https://s3.ap-northeast-2.amazonaws.com/terms.credi.co.kr/thirdpartyaccess.html",
+    "crediId": 1
+}

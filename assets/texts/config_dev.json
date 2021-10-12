@@ -1,0 +1,15 @@
+{
+    "api_project_name": "credi",
+    "server_current_type": "dev",
+    "server_info": [
+        {
+            "type": "dev",
+            "base_url": "https://dev.credi.co.kr",
+            "websocket_server": "wss://dev.credi.co.kr/socket"
+        }
+    ],
+    "terms_url": "http://s3.ap-northeast-2.amazonaws.com/terms.credi.co.kr/terms.html",
+    "privacy_policy_url": "https://s3.ap-northeast-2.amazonaws.com/terms.credi.co.kr/privacy.html",
+    "third_party_policy_url": "https://s3.ap-northeast-2.amazonaws.com/terms.credi.co.kr/thirdpartyaccess.html",
+    "crediId": 1
+}
