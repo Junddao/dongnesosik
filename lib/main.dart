@@ -53,17 +53,18 @@ class _MyAppState extends State<MyApp> {
       ],
       child: MaterialApp(
         theme: ThemeData(
-          textTheme: GoogleFonts.dmSansTextTheme()
-              .apply(displayColor: JColors.black01),
-          primaryColor: JColors.blue5,
-          accentColor: JColors.blue5,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-          appBarTheme: AppBarTheme(
-            color: Colors.white,
-            elevation: 1,
-          ),
-          scaffoldBackgroundColor: Colors.white,
-        ),
+            primaryColor: Colors.white,
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+            accentColor: JColors.tomato,
+            appBarTheme: AppBarTheme(
+              color: JColors.white,
+              foregroundColor: JColors.black,
+              elevation: 0,
+            ),
+            bottomSheetTheme: BottomSheetThemeData(
+              backgroundColor: Colors.white,
+            ),
+            scaffoldBackgroundColor: Colors.white),
         onGenerateRoute: Routers.generateRoute,
         home: SplashScreen(),
       ),

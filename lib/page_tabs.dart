@@ -1,6 +1,6 @@
 import 'package:dongnesosik/global/style/jcolors.dart';
 import 'package:dongnesosik/pages/02_map/page_map.dart';
-import 'package:dongnesosik/pages/03_chat/page_chat.dart';
+import 'package:dongnesosik/pages/03_post/page_post.dart';
 import 'package:dongnesosik/pages/04_user_setting/page_user_setting.dart';
 import 'package:flutter/material.dart';
 
@@ -14,13 +14,14 @@ class _PageTabsState extends State<PageTabs> {
 
   List _pages = [
     PageMap(),
-    PageChat(),
+    PagePost(),
     PageUserSetting(),
   ];
 
   List<BottomNavigationBarItem> _items = [
     BottomNavigationBarItem(icon: Icon(Icons.map_outlined), label: "지도"),
-    BottomNavigationBarItem(icon: Icon(Icons.chat), label: "메세지"),
+    BottomNavigationBarItem(
+        icon: Icon(Icons.sticky_note_2_outlined), label: "동내 게시판"),
     BottomNavigationBarItem(
         icon: Icon(Icons.admin_panel_settings), label: "내정보"),
   ];
@@ -37,32 +38,38 @@ class _PageTabsState extends State<PageTabs> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _body(),
-      bottomNavigationBar: Theme(
-        data: Theme.of(context).copyWith(
-          // sets the background color of the `BottomNavigationBar`
-          canvasColor: Color(0xFF343C46),
-          primaryColor: Colors.red,
-          highlightColor: Colors.transparent,
-          splashColor: Colors.transparent,
+    return WillPopScope(
+      onWillPop: () {
+        setState(() {
+          print("You can not get out of here! kkk");
+        });
+        return Future(() => false);
+      },
+      child: Scaffold(
+        body: _body(),
+        bottomNavigationBar: Theme(
+          data: Theme.of(context).copyWith(
+              canvasColor: Colors.white,
+              primaryColor: JColors.tomato,
+              textTheme: Theme.of(context).textTheme.copyWith(
+                  caption: new TextStyle(color: Colors.grey))), // sets the
+          child: BottomNavigationBar(
+            currentIndex: _selectedIndex,
+            onTap: _onItemTapped,
+            items: _items,
+            selectedFontSize: 10,
+            unselectedFontSize: 10,
+            selectedItemColor: JColors.tomato,
+            unselectedItemColor: JColors.gray3,
+            showUnselectedLabels: true,
+            type: BottomNavigationBarType.fixed,
+            // unselectedLabelColor: CDColors.gray6,
+            // labelColor: CDColors.primary,
+            // indicatorColor: CDColors.primary,
+          ),
         ),
-        child: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-          items: _items,
-          selectedFontSize: 10,
-          unselectedFontSize: 10,
-          selectedItemColor: Colors.white,
-          unselectedItemColor: JColors.gray2,
-          showUnselectedLabels: true,
-          type: BottomNavigationBarType.fixed,
-          // unselectedLabelColor: CDColors.gray6,
-          // labelColor: CDColors.primary,
-          // indicatorColor: CDColors.primary,
-        ),
+        // ),
       ),
-      // ),
     );
   }
 

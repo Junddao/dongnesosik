@@ -59,7 +59,7 @@ class _SplashScreenState extends State<SplashScreen> {
         children: [
           Text(
             '동내소식!',
-            style: JTextStyle.bold32black01,
+            style: JTextStyle.bold26black,
           ),
         ],
       ),

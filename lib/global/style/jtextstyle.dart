@@ -52,235 +52,630 @@ class JTextStyle {
         fontSize: fontSize, fontWeight: FontWeight.bold, color: color);
   }
 
-  static const regular11black01 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 13,
-    fontWeight: FontWeight.w400,
-    color: JColors.black01,
-    fontStyle: FontStyle.normal,
-  );
+  static const mediaum50White = const TextStyle(
+      color: JColors.white,
+      fontWeight: FontWeight.w500,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 50.0);
 
-  static const regular9black03 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 11,
-    fontWeight: FontWeight.w400,
-    color: JColors.black03,
-    fontStyle: FontStyle.normal,
-  );
+  static const bold24Grey06 = const TextStyle(
+      color: JColors.grey_06,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 24.0);
 
-  static const black17white02 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 17,
-    fontWeight: FontWeight.w700,
-    color: JColors.white02,
-    fontStyle: FontStyle.normal,
-  );
+  static const bold24White = const TextStyle(
+      color: const Color(0xffffffff),
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 24.0);
 
-  static const regular18black05 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 18,
-    fontWeight: FontWeight.w400,
-    color: JColors.black05,
-    fontStyle: FontStyle.normal,
-  );
-  static const regular14black05 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 14,
-    fontWeight: FontWeight.w400,
-    color: JColors.black05,
-    fontStyle: FontStyle.normal,
-  );
+  static const bold20Black36 = const TextStyle(
+      color: JColors.black36,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 20.0);
 
-  static const regular18black03 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 18,
-    fontWeight: FontWeight.w400,
-    color: JColors.black03,
-    fontStyle: FontStyle.normal,
-  );
+  static const bold20White = const TextStyle(
+      color: const Color(0xffffffff),
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 20.0);
 
-  static const bold13black03 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 13,
-    fontWeight: FontWeight.w700,
-    color: JColors.black03,
-    fontStyle: FontStyle.normal,
-  );
+  static const bold20Grey06 = const TextStyle(
+      color: JColors.grey_06,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 20.0);
 
-  static const bold16black01 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 16,
-    fontWeight: FontWeight.w700,
-    color: JColors.black01,
-    fontStyle: FontStyle.normal,
-  );
+  static const bold18Grey06 = const TextStyle(
+      color: JColors.grey_06,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 18.0);
 
-  static const bold13white01 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 13,
-    fontWeight: FontWeight.w700,
-    color: JColors.white01,
-    fontStyle: FontStyle.normal,
-  );
+  static const bold18Black = const TextStyle(
+      color: JColors.blackColor,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 18.0);
 
-  static const regular16black01 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 16,
-    fontWeight: FontWeight.w400,
-    color: JColors.black01,
-    fontStyle: FontStyle.normal,
-  );
+  static const bold18White = const TextStyle(
+      color: JColors.white,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 18.0);
 
-  static const regular24black01 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 24,
-    fontWeight: FontWeight.w400,
-    color: JColors.black01,
-    fontStyle: FontStyle.normal,
-  );
+  static const bold16Grey06 = const TextStyle(
+      color: JColors.grey_06,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 16.0);
 
-  static const regular16blue03 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 16,
-    fontWeight: FontWeight.w400,
-    color: JColors.blue03,
-    fontStyle: FontStyle.normal,
-  );
+  static const bold16PinkishGrey = const TextStyle(
+      color: JColors.pinkish_grey,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 16.0);
 
-  static const regular13black03 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 13,
-    fontWeight: FontWeight.w400,
-    color: JColors.black03,
-    fontStyle: FontStyle.normal,
-  );
+  static const bold16White = const TextStyle(
+      color: const Color(0xffffffff),
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 16.0);
 
-  static const regular14black01 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 14,
-    fontWeight: FontWeight.w400,
-    color: JColors.black01,
-    fontStyle: FontStyle.normal,
-  );
+  static const bold16Black = const TextStyle(
+      color: JColors.blackColor,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 16.0);
+  static const bold13Black = const TextStyle(
+      color: JColors.blackColor,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 13.0);
 
-  static const regular14black03 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 14,
-    fontWeight: FontWeight.w400,
-    color: JColors.black03,
-    fontStyle: FontStyle.normal,
-  );
+  static const bold16Tomato = const TextStyle(
+      color: JColors.tomato,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 16.0);
 
-  static const bold14black03underline = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 14,
-    fontWeight: FontWeight.w700,
-    color: JColors.black03,
-    fontStyle: FontStyle.normal,
-    decoration: TextDecoration.underline,
-  );
+  static const bold16Black2 = const TextStyle(
+      color: JColors.blackColor,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 16.0);
 
-  static const regular14black04 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 14,
-    fontWeight: FontWeight.w400,
-    color: JColors.black04,
-    fontStyle: FontStyle.normal,
-  );
+  static const medium16WarmGrey = const TextStyle(
+      color: JColors.warm_grey,
+      fontWeight: FontWeight.w500,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 16.0);
 
-  static const regular13black01 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 13,
-    fontWeight: FontWeight.w400,
-    color: JColors.black01,
-    fontStyle: FontStyle.normal,
-  );
+  static const medium16Grey06 = const TextStyle(
+      color: JColors.grey_06,
+      fontWeight: FontWeight.w500,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 16.0);
 
-  static const regular16black03 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 16,
-    fontWeight: FontWeight.w400,
-    color: JColors.black03,
-    fontStyle: FontStyle.normal,
-  );
+  static const medium16Black = const TextStyle(
+      color: JColors.blackColor,
+      fontWeight: FontWeight.w500,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 16.0);
 
-  static const bold18black01 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 18,
-    fontWeight: FontWeight.w700,
-    color: JColors.black01,
-    fontStyle: FontStyle.normal,
-  );
+  static const bold13Tomato = const TextStyle(
+      color: JColors.tomato,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 13.0);
 
-  static const bold18blue03 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 18,
-    fontWeight: FontWeight.w700,
-    color: JColors.blue03,
-    fontStyle: FontStyle.normal,
-  );
+  static const bold14Tomato = const TextStyle(
+      color: JColors.tomato,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 14.0);
 
-  static const bold20black01 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 20,
-    fontWeight: FontWeight.w700,
-    color: JColors.black01,
-    fontStyle: FontStyle.normal,
-  );
+  static const bold14White = const TextStyle(
+      color: const Color(0xffffffff),
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 14.0);
 
-  static const bold24black01 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 24,
-    fontWeight: FontWeight.w700,
-    color: JColors.black01,
-    fontStyle: FontStyle.normal,
-  );
+  static const bold14Grey06 = const TextStyle(
+      color: JColors.grey_06,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 14.0);
 
-  static const bold24blue04 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 24,
-    fontWeight: FontWeight.w700,
-    color: JColors.blue04,
-    fontStyle: FontStyle.normal,
-  );
+  static const bold14GrapeFruit = const TextStyle(
+      color: JColors.grapefruit,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 14.0);
 
-  static const bold32black01 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 32,
-    fontWeight: FontWeight.w700,
-    color: JColors.black01,
-    fontStyle: FontStyle.normal,
-  );
+  static const bold14BlackColor = const TextStyle(
+      color: JColors.blackColor,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 14.0);
 
-  static const medium10black05 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 10,
+  static const bold14Black = const TextStyle(
+      color: JColors.black,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 14.0);
+
+  static const medium14BlackColor = const TextStyle(
+      color: JColors.blackColor,
+      fontWeight: FontWeight.w500,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 14.0);
+
+  static const medium10Grey06 = const TextStyle(
+      color: JColors.grey_06,
+      fontWeight: FontWeight.w500,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 10.0);
+
+  static const medium14Grey06 = const TextStyle(
+      color: JColors.grey_06,
+      fontWeight: FontWeight.w500,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 14.0);
+
+  static const medium14Tomato = const TextStyle(
+    color: JColors.tomato,
     fontWeight: FontWeight.w500,
-    color: JColors.black05,
+    fontFamily: "NotoSansKR",
     fontStyle: FontStyle.normal,
+    fontSize: 14.0,
   );
 
-  static const bold12white02 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 12,
-    fontWeight: FontWeight.w700,
-    color: JColors.white02,
+  static const medium14White = const TextStyle(
+      color: JColors.white,
+      fontWeight: FontWeight.w500,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 14.0);
+  static const medium14WarmGrey = const TextStyle(
+      color: JColors.warm_grey,
+      fontWeight: FontWeight.w500,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 14.0);
+
+  static const medium14PinkishGrey = const TextStyle(
+      color: JColors.pinkish_grey,
+      fontWeight: FontWeight.w500,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 14.0);
+
+  static const regular14WarmGrey = const TextStyle(
+      color: JColors.warm_grey,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 14.0);
+
+  static const regular14Black = const TextStyle(
+      color: JColors.blackColor,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 14.0);
+
+  static const regular14Tomato = const TextStyle(
+      color: JColors.tomato,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 14.0);
+
+  static const regular14Grey06 = const TextStyle(
+      color: JColors.grey_06,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 14.0);
+
+  static const regular13Grey06 = const TextStyle(
+      color: JColors.grey_06,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 13.0);
+
+  static const cjkRegular14Grey06 = const TextStyle(
+      color: JColors.grey_06,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansCJKkr",
+      fontStyle: FontStyle.normal,
+      fontSize: 14.0);
+
+  static const cjkMedium12PinkishGrey = const TextStyle(
+      color: JColors.pinkish_grey,
+      fontWeight: FontWeight.w500,
+      fontFamily: "NotoSansCJKkr",
+      fontStyle: FontStyle.normal,
+      fontSize: 12.0);
+
+  static const cjkRegular14WarmGrey = const TextStyle(
+      color: JColors.warm_grey,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansCJKkr",
+      fontStyle: FontStyle.normal,
+      fontSize: 14.0);
+
+  static const regular14WhiteTwo = const TextStyle(
+      color: JColors.white_two,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 14.0);
+
+  static const regular14White = const TextStyle(
+      color: JColors.white,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 14.0);
+
+  static const regular14Grey06_ = const TextStyle(
+      color: JColors.grey_06,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 14.0);
+
+  static const regular14PinkishGrey = const TextStyle(
+      color: JColors.pinkish_grey,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 14.0);
+
+  static const regular14Grey05 = const TextStyle(
+      color: JColors.grey_05,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 14.0);
+
+  static const regular14Warmgrey = const TextStyle(
+      color: JColors.warm_grey,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 14.0);
+  static const regular16Warmgrey = const TextStyle(
+      color: JColors.warm_grey,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 16.0);
+  static const regular16Grey06 = const TextStyle(
+      color: JColors.grey_06,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 16.0);
+  static const regular16Tomato = const TextStyle(
+      color: JColors.tomato,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 16.0);
+  static const regular12Tomato = const TextStyle(
+      color: JColors.tomato,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 12.0);
+
+  static const bold12Tomato = const TextStyle(
+      color: JColors.tomato,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 12.0);
+
+  static const bold12White = const TextStyle(
+      color: JColors.white,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 12.0);
+
+  static const bold12WarmGrey = const TextStyle(
+      color: JColors.warm_grey,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 12.0);
+  static const bold12Grey06 = const TextStyle(
+      color: JColors.grey_06,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 12.0);
+
+  static const bold12Black = const TextStyle(
+      color: JColors.blackColor,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 12.0);
+
+  static const medium12PinkishGrey = const TextStyle(
+      color: JColors.pinkish_grey,
+      fontWeight: FontWeight.w500,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 12.0);
+
+  static const medium12BrownishGrey = const TextStyle(
+      color: JColors.brownish_grey,
+      fontWeight: FontWeight.w500,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 12.0);
+
+  static const medium12BrownGrey = const TextStyle(
+      color: JColors.brown_grey,
+      fontWeight: FontWeight.w500,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 12.0);
+
+  static const regular12WarmGrey = const TextStyle(
+      color: JColors.warm_grey,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 12.0);
+
+  static const regular12WarmGrey08 = const TextStyle(
+      color: JColors.warm_grey08,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 12.0);
+
+  static const regular12White = const TextStyle(
+      color: const Color(0xffffffff),
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 12.0);
+
+  static const regular12Grey06 = const TextStyle(
+      color: JColors.grey_06,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 12.0);
+  static const regular8Grey06 = const TextStyle(
+      color: JColors.grey_06,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 8.0);
+
+  static const regular8White = const TextStyle(
+      color: JColors.white,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 8.0);
+  static const regular10Grey06 = const TextStyle(
+      color: JColors.grey_06,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 10.0);
+
+  static const regular12WarmGrey_underline = const TextStyle(
+      color: JColors.warm_grey,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 12.0);
+
+  static const regular12Greyish = const TextStyle(
+      color: JColors.greyish,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 12.0);
+
+  static const regular12PinkishGrey = const TextStyle(
+      color: JColors.pinkish_grey,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 12.0);
+
+  static const regular12Black = const TextStyle(
+      color: JColors.blackColor,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 12.0);
+
+  static const bold10White = const TextStyle(
+      color: const Color(0xffffffff),
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 10.0);
+
+  static const bold10Black = const TextStyle(
+      color: JColors.blackColor,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 10.0);
+
+  static const bold10Tomato = const TextStyle(
+      color: JColors.tomato,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 10.0);
+
+  static const regular10WarmGrey = const TextStyle(
+      color: JColors.warm_grey,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 10.0);
+
+  static const regular10WarmGrey__ = const TextStyle(
+      color: JColors.warm_grey,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 10.0);
+
+  static const regular10WarmGrey_ = const TextStyle(
+      color: JColors.warm_grey,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 10.0);
+
+  static const bold14WarmGrey = const TextStyle(
+      color: JColors.warm_grey,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 14.0);
+
+  static const medium10PinkishGrey = const TextStyle(
+      color: JColors.pinkish_grey,
+      fontWeight: FontWeight.w500,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 10.0);
+
+  static const regular16Pinkish_grey = const TextStyle(
+      color: JColors.pinkish_grey,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 16.0);
+  static const medium16WhiteThree = const TextStyle(
+      color: JColors.white_three,
+      fontWeight: FontWeight.w500,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 16.0);
+  static const medium13Black_three = const TextStyle(
+    color: JColors.black_three,
+    fontFamily: 'NotoSansKR',
+    fontSize: 13,
+    fontWeight: FontWeight.w500,
     fontStyle: FontStyle.normal,
   );
+  static const regular10PinkishGrey = const TextStyle(
+      color: JColors.pinkish_grey,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 10.0);
+  static const bold10PinkishGrey = const TextStyle(
+      color: JColors.pinkish_grey,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 10.0);
 
-  static const bold16blue03 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 16,
+  static const bold12PinkishGrey = const TextStyle(
+      color: JColors.pinkish_grey,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 12.0);
+
+  static const bold14PinkishGrey = const TextStyle(
+      color: JColors.pinkish_grey,
+      fontWeight: FontWeight.w400,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 14.0);
+
+  static const bold20GrapeFruit = const TextStyle(
+      color: JColors.grapefruit,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 20.0);
+
+  static const bold26white = const TextStyle(
+    color: Colors.white,
     fontWeight: FontWeight.w700,
-    color: JColors.blue03,
+    fontFamily: 'NotoSansKR',
+    fontSize: 26.0,
     fontStyle: FontStyle.normal,
+    // height: 1.5,
   );
 
-  static const bold16red01 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 16,
+  static const bold26black = const TextStyle(
+    color: Colors.black,
     fontWeight: FontWeight.w700,
-    color: JColors.red01,
+    fontFamily: 'NotoSansKR',
+    fontSize: 26.0,
     fontStyle: FontStyle.normal,
+    // height: 1.5,
+  );
+
+  static const regular18white = const TextStyle(
+    color: Colors.white,
+    fontWeight: FontWeight.w400,
+    fontFamily: 'NotoSansKR',
+    fontSize: 18.0,
+    fontStyle: FontStyle.normal,
+    // height: 1.2,
+  );
+
+  static const regular18black = const TextStyle(
+    color: Colors.black,
+    fontWeight: FontWeight.w400,
+    fontFamily: 'NotoSansKR',
+    fontSize: 18.0,
+    fontStyle: FontStyle.normal,
+    // height: 1.2,
   );
 }

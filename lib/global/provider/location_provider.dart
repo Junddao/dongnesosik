@@ -20,18 +20,6 @@ class LocationProvider extends ChangeNotifier {
     try {
       placemarks =
           await placemarkFromCoordinates(location.latitude, location.longitude);
-      // String apiKey = '';
-
-      // if (Platform.isAndroid) {
-      //   apiKey = ConfigModel().andGoogleApiKey;
-      // } else {
-      //   apiKey = ConfigModel().iosGoogleApiKey;
-      // }
-
-      // var api = ApiService();
-      // var response = await api.getGoogleGeoApi(
-      //     '${ConfigModel().googleReverseGeocodingRequest}latlng=${location.latitude},${location.longitude}&key=$apiKey');
-      // lastAddress = response['result'][0]['formatted_address'];
 
       notifyListeners();
     } catch (error) {}

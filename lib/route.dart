@@ -1,4 +1,5 @@
 import 'package:dongnesosik/page_tabs.dart';
+import 'package:dongnesosik/pages/03_post/page_post.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,12 @@ class Routers {
       case 'PageIntro':
         return CupertinoPageRoute(
           builder: (_) => PageTabs(),
+          settings: settings,
+        );
+
+      case 'PagePost':
+        return CupertinoPageRoute(
+          builder: (_) => PagePost(),
           settings: settings,
         );
 

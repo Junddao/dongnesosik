@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:dongnesosik/global/provider/location_provider.dart';
+import 'package:dongnesosik/global/style/constants.dart';
 import 'package:dongnesosik/global/style/jcolors.dart';
 import 'package:dongnesosik/global/style/jtextstyle.dart';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
@@ -86,10 +88,12 @@ class _PageMapState extends State<PageMap> {
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
     return Scaffold(
       appBar: _appBar(),
       body: _body(),
       floatingActionButton: FloatingActionButton(
+        child: Text('내위치', style: JTextStyle.bold12Black),
         backgroundColor: JColors.white01,
         onPressed: () async {
           getMyLocation();
@@ -101,11 +105,12 @@ class _PageMapState extends State<PageMap> {
   AppBar _appBar() {
     var provider = context.watch<LocationProvider>();
     return AppBar(
+      automaticallyImplyLeading: false,
       title: Text(
           provider.placemarks.isEmpty
               ? ''
               : provider.placemarks[0].subLocality!,
-          style: JTextStyle.bold18black01),
+          style: JTextStyle.bold18Black),
     );
   }
 
@@ -115,21 +120,31 @@ class _PageMapState extends State<PageMap> {
         return Center(child: CircularProgressIndicator());
       } else {
         LatLng _lastLocation = value.lastLocation!;
-        return GoogleMap(
-            onMapCreated: (controller) async {
-              await _onMapCreated(controller, _lastLocation);
-            },
-            initialCameraPosition: CameraPosition(
-              target: _lastLocation,
-              zoom: 15,
+        return Stack(
+          children: [
+            GoogleMap(
+              onMapCreated: (controller) async {
+                await _onMapCreated(controller, _lastLocation);
+              },
+              initialCameraPosition: CameraPosition(
+                target: _lastLocation,
+                zoom: 15,
+              ),
+              markers: _markers.values.toSet(),
+              myLocationButtonEnabled: false,
+              mapToolbarEnabled: false,
+              zoomControlsEnabled: false,
+              onTap: (point) {
+                _handleTap(point);
+              },
             ),
-            markers: _markers.values.toSet(),
-            myLocationButtonEnabled: false,
-            mapToolbarEnabled: false,
-            zoomControlsEnabled: false,
-            onTap: (point) {
-              _handleTap(point);
-            });
+            Positioned(
+              bottom: 18,
+              left: 24,
+              child: _newsInfoWidget(),
+            ),
+          ],
+        );
       }
     });
   }
@@ -169,5 +184,40 @@ class _PageMapState extends State<PageMap> {
       icon: customIcon!,
     );
     _markers['dongso'] = marker;
+  }
+
+  Widget _newsInfoWidget() {
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).pushNamed('PagePost');
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: JColors.white,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        width: SizeConfig.screenWidth * 0.7,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(text: '게시글', style: JTextStyle.bold14Black),
+                  TextSpan(text: ' (103개)', style: JTextStyle.regular12Black),
+                ],
+              ),
+            ),
+            SizedBox(height: 4),
+            Text(
+              '동내소식 300만 가입자 돌파. 대박 나는 인기속에 CTO 장원님의 인터뷰를 들어보자',
+              style: JTextStyle.regular14Black,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
