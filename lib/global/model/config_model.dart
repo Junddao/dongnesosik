@@ -8,10 +8,7 @@ class ConfigModel {
   String apiProjectName = '';
   String serverCurruntType = '';
   String serverBaseUrl = '';
-  String termUrl = '';
-  String privatePolicyUrl = '';
-  String thirdPartyPrivatePolicyUrl = '';
-  String kakaoSdkApiKey = '';
+
   String webSocketServer = '';
   String googleReverseGeocodingRequest = '';
   String iosGoogleApiKey = '';
@@ -23,15 +20,6 @@ class ConfigModel {
 
     serverCurruntType = json['server_current_type'];
     print('serverCurrentType : $serverCurruntType');
-
-    termUrl = json['terms_url'];
-    print('terms_url : $termUrl');
-
-    privatePolicyUrl = json['privacy_policy_url'];
-    print('privacy_policy_url : $privatePolicyUrl');
-
-    thirdPartyPrivatePolicyUrl = json['third_party_policy_url'];
-    print('third_party_policy_url : $thirdPartyPrivatePolicyUrl');
 
     iosGoogleApiKey = json['ios_google_api_key'];
     print('iosGoogleApiKey : $iosGoogleApiKey');

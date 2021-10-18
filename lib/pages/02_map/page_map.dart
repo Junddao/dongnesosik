@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:dongnesosik/global/provider/location_provider.dart';
+import 'package:dongnesosik/global/provider/maps/location_provider.dart';
 import 'package:dongnesosik/global/style/constants.dart';
 import 'package:dongnesosik/global/style/jcolors.dart';
 import 'package:dongnesosik/global/style/jtextstyle.dart';
@@ -17,7 +17,7 @@ class PageMap extends StatefulWidget {
 }
 
 class _PageMapState extends State<PageMap> {
-  final Map<String, Marker> _markers = {};
+  List<Marker> _markers = [];
   Completer<GoogleMapController> _controller = Completer();
 
   BitmapDescriptor? customIcon;
@@ -73,7 +73,8 @@ class _PageMapState extends State<PageMap> {
         position: latlng,
         icon: customIcon!,
       );
-      _markers['dongso'] = marker;
+      _markers.clear();
+      _markers.add(marker);
 
       // 화면 옮기고
       value.animateCamera(CameraUpdate.newCameraPosition(
@@ -130,10 +131,12 @@ class _PageMapState extends State<PageMap> {
                 target: _lastLocation,
                 zoom: 15,
               ),
-              markers: _markers.values.toSet(),
+              markers: _markers.toSet(),
               myLocationButtonEnabled: false,
               mapToolbarEnabled: false,
               zoomControlsEnabled: false,
+              onCameraMove: _onCameraMove,
+              onCameraIdle: _onCameraIdle,
               onTap: (point) {
                 _handleTap(point);
               },
@@ -149,10 +152,24 @@ class _PageMapState extends State<PageMap> {
     });
   }
 
+  addMyPin() {
+    var provider = context.read<LocationProvider>();
+
+    final marker = Marker(
+      markerId: MarkerId(provider.lastLocation.toString()),
+      position: provider.lastLocation!,
+
+      // TODO : Info Window는 내 주변 일정거리 안에 글의 갯수를 긁어서 보여주게 함.
+
+      icon: customIcon!,
+    );
+    _markers.clear();
+    _markers.add(marker);
+  }
+
   Future<void> _onMapCreated(
       GoogleMapController controller, LatLng location) async {
     var provider = context.read<LocationProvider>();
-    _markers.clear();
 
     print('onMapCreate');
     print(location.toString());
@@ -161,16 +178,42 @@ class _PageMapState extends State<PageMap> {
       position: location,
       icon: customIcon!,
     );
-    _markers['dongso'] = marker;
+    _markers.clear();
+    _markers.add(marker);
     _controller.complete(controller);
-    setState(() {
-      provider.getAddress(location);
+    provider.getAddress(location);
+  }
+
+  void _onCameraIdle() async {
+    _markers.clear();
+    var provider = context.read<LocationProvider>();
+    addMyPin();
+    await provider.getPinInRagne(provider.lastLocation!.latitude,
+        provider.lastLocation!.longitude, 1000);
+
+    // await provider.getPinAll();
+    print("Idle");
+
+    provider.responseGetPinRangeData!.forEach((element) {
+      LatLng latLng = LatLng(element.pin!.lat!, element.pin!.lng!);
+      final marker = Marker(
+        markerId: MarkerId(latLng.toString()),
+        position: latLng,
+        icon: customIcon!,
+      );
+      _markers.add(marker);
     });
+  }
+
+  void _onCameraMove(CameraPosition position) {
+    var provider = context.read<LocationProvider>();
+    provider.setLastLocation(position.target);
+    print("move");
   }
 
   _handleTap(LatLng point) {
     var provider = context.read<LocationProvider>();
-    _markers.clear();
+
     print('handelTap');
     provider.setLastLocation(point);
     provider.getAddress(point);
@@ -183,7 +226,8 @@ class _PageMapState extends State<PageMap> {
 
       icon: customIcon!,
     );
-    _markers['dongso'] = marker;
+    _markers.clear();
+    _markers.add(marker);
   }
 
   Widget _newsInfoWidget() {
