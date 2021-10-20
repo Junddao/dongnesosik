@@ -1,5 +1,7 @@
 import 'package:dongnesosik/page_tabs.dart';
 import 'package:dongnesosik/pages/03_post/page_post.dart';
+import 'package:dongnesosik/pages/03_post/page_post_community.dart';
+import 'package:dongnesosik/pages/03_post/page_post_detail.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +26,18 @@ class Routers {
       case 'PagePost':
         return CupertinoPageRoute(
           builder: (_) => PagePost(),
+          settings: settings,
+        );
+
+      case 'PagePostDetail':
+        return CupertinoPageRoute(
+          builder: (_) => PagePostDetail(),
+          settings: settings,
+        );
+
+      case 'PagePostCommunity':
+        return CupertinoPageRoute(
+          builder: (_) => PagePostCommunity(),
           settings: settings,
         );
 

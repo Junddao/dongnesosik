@@ -10,7 +10,6 @@ class ConfigModel {
   String serverBaseUrl = '';
 
   String webSocketServer = '';
-  String googleReverseGeocodingRequest = '';
   String iosGoogleApiKey = '';
   String andGoogleApiKey = '';
 
@@ -27,9 +26,6 @@ class ConfigModel {
     andGoogleApiKey = json['and_google_api_key'];
     print('andGoogleApiKey : $andGoogleApiKey');
 
-    googleReverseGeocodingRequest = json['google_reverse_geocoding_request'];
-    print('googleReverseGeocodingRequest : $googleReverseGeocodingRequest');
-
     final serverInfoList = List.from(json['server_info']);
     print('serverInfoList : ${serverInfoList}');
 
@@ -41,8 +37,8 @@ class ConfigModel {
         serverBaseUrl = serverInfoList[countIndex]['base_url'];
         print('countIndex : $countIndex');
 
-        webSocketServer = serverInfoList[countIndex]['websocket_server'];
-        print('websocket_server : $webSocketServer');
+        // webSocketServer = serverInfoList[countIndex]['websocket_server'];
+        // print('websocket_server : $webSocketServer');
       }
     }
   }

@@ -1,4 +1,4 @@
-import 'package:dongnesosik/global/style/jcolors.dart';
+import 'package:dongnesosik/global/style/dscolors.dart';
 import 'package:flutter/material.dart';
 
 const String test_image_url =
@@ -6,7 +6,7 @@ const String test_image_url =
 
 const String APP_NAME = "동내소식";
 
-const kPrimaryColor = JColors.tomato;
+const kPrimaryColor = DSColors.tomato;
 const kTextColor = Color(0XFF171717);
 
 const kDefaultPadding = 24.0;

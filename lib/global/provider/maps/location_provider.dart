@@ -11,11 +11,17 @@ import 'package:geocoding/geocoding.dart';
 
 class LocationProvider extends ParentProvider {
   LatLng? lastLocation;
+  LatLng? myLocation;
   String? lastAddress = '';
   List<Placemark> placemarks = [];
 
-  List<ResponseGetPinData>? responseGetPinRangeData = [];
-  List<ResponseGetPinData>? responseGetPinAllData = [];
+  List<ResponseGetPinData>? responseGetPinData = [];
+  ResponseGetPinData? selectedPinData;
+
+  setMyLocation(LatLng location) {
+    myLocation = location;
+    notifyListeners();
+  }
 
   setLastLocation(LatLng location) {
     lastLocation = location;
@@ -38,7 +44,7 @@ class LocationProvider extends ParentProvider {
       var api = ApiService();
       var response =
           await api.post('/pin/get/range', requestPinGetRange.toMap());
-      responseGetPinRangeData = ResponseGetPin.fromMap(response).data;
+      responseGetPinData = ResponseGetPin.fromMap(response).data;
 
       notifyListeners();
     } catch (error) {
@@ -50,7 +56,7 @@ class LocationProvider extends ParentProvider {
     try {
       var api = ApiService();
       var response = await api.get('/pin/all');
-      responseGetPinAllData = ResponseGetPin.fromMap(response).data;
+      responseGetPinData = ResponseGetPin.fromMap(response).data;
 
       notifyListeners();
     } catch (error) {

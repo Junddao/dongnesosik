@@ -1,4 +1,4 @@
-import 'package:dongnesosik/global/style/jtextstyle.dart';
+import 'package:dongnesosik/global/style/dstextstyle.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -59,7 +59,7 @@ class _SplashScreenState extends State<SplashScreen> {
         children: [
           Text(
             '동내소식!',
-            style: JTextStyle.bold26black,
+            style: DSTextStyle.bold26black,
           ),
         ],
       ),

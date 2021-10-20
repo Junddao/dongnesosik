@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class JColors {
+class DSColors {
   static const blue0 = Color(0xFFEBF2FF);
   static const blue1 = Color(0xFFC2D9FF);
   static const blue2 = Color(0xFF99C0FF);

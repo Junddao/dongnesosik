@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'package:dongnesosik/global/model/pin/response_get_pin.dart';
 import 'package:dongnesosik/global/provider/maps/location_provider.dart';
 import 'package:dongnesosik/global/style/constants.dart';
-import 'package:dongnesosik/global/style/jcolors.dart';
-import 'package:dongnesosik/global/style/jtextstyle.dart';
+import 'package:dongnesosik/global/style/dscolors.dart';
+import 'package:dongnesosik/global/style/dstextstyle.dart';
+import 'package:dongnesosik/pages/components/ds_button.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -19,27 +22,29 @@ class PageMap extends StatefulWidget {
 class _PageMapState extends State<PageMap> {
   List<Marker> _markers = [];
   Completer<GoogleMapController> _controller = Completer();
+  Location location = Location();
 
   BitmapDescriptor? customIcon;
 
   @override
   void initState() {
     super.initState();
-    setCustomMarker();
-    // Future.microtask(() {
-    //   context.read<LocationProvider>().;
-    // });
     getMyLocation();
   }
 
   void setCustomMarker() async {
     customIcon = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(devicePixelRatio: 2.5), 'assets/images/marker.png');
+      ImageConfiguration(devicePixelRatio: 2.5),
+      'assets/images/marker.png',
+    );
   }
 
   void getMyLocation() async {
     // final GoogleMapController controller = await _controller.future;
-    Location location = new Location();
+    if (context.read<LocationProvider>().myLocation != null) {
+      moveCameraToMyLocation();
+      return;
+    }
 
     bool _serviceEnabled;
     PermissionStatus _permissionGranted;
@@ -65,22 +70,19 @@ class _PageMapState extends State<PageMap> {
     print(locationData.longitude!);
     LatLng latlng = LatLng(locationData.latitude!, locationData.longitude!);
 
+    context.read<LocationProvider>().setMyLocation(latlng);
     context.read<LocationProvider>().setLastLocation(latlng);
-    _controller.future.then((value) {
-      // marker 옮기고
-      final marker = Marker(
-        markerId: MarkerId(latlng.toString()),
-        position: latlng,
-        icon: customIcon!,
-      );
-      _markers.clear();
-      _markers.add(marker);
+    moveCameraToMyLocation();
+  }
 
-      // 화면 옮기고
+  void moveCameraToMyLocation() {
+    var provider = context.read<LocationProvider>();
+    _controller.future.then((value) {
       value.animateCamera(CameraUpdate.newCameraPosition(
         CameraPosition(
           bearing: 0,
-          target: LatLng(latlng.latitude, latlng.longitude),
+          target: LatLng(
+              provider.myLocation!.latitude, provider.myLocation!.longitude),
           zoom: 15,
         ),
       ));
@@ -94,8 +96,8 @@ class _PageMapState extends State<PageMap> {
       appBar: _appBar(),
       body: _body(),
       floatingActionButton: FloatingActionButton(
-        child: Text('내위치', style: JTextStyle.bold12Black),
-        backgroundColor: JColors.white01,
+        child: Text('내위치', style: DSTextStyle.bold12Black),
+        backgroundColor: DSColors.white01,
         onPressed: () async {
           getMyLocation();
         },
@@ -111,13 +113,13 @@ class _PageMapState extends State<PageMap> {
           provider.placemarks.isEmpty
               ? ''
               : provider.placemarks[0].subLocality!,
-          style: JTextStyle.bold18Black),
+          style: DSTextStyle.bold18Black),
     );
   }
 
   Widget _body() {
     return Consumer(builder: (_, LocationProvider value, child) {
-      if (value.lastLocation == null) {
+      if (value.lastLocation == null || value.responseGetPinData == null) {
         return Center(child: CircularProgressIndicator());
       } else {
         LatLng _lastLocation = value.lastLocation!;
@@ -137,14 +139,18 @@ class _PageMapState extends State<PageMap> {
               zoomControlsEnabled: false,
               onCameraMove: _onCameraMove,
               onCameraIdle: _onCameraIdle,
-              onTap: (point) {
-                _handleTap(point);
-              },
+              // onTap: (point) {
+              //   _handleTap(point);
+              // },
             ),
             Positioned(
               bottom: 18,
               left: 24,
-              child: _newsInfoWidget(),
+              child: InkWell(
+                  onTap: () {
+                    Navigator.of(context).pushNamed('PagePost');
+                  },
+                  child: _newsInfoWidget()),
             ),
           ],
         );
@@ -154,32 +160,19 @@ class _PageMapState extends State<PageMap> {
 
   addMyPin() {
     var provider = context.read<LocationProvider>();
-
-    final marker = Marker(
-      markerId: MarkerId(provider.lastLocation.toString()),
-      position: provider.lastLocation!,
-
-      // TODO : Info Window는 내 주변 일정거리 안에 글의 갯수를 긁어서 보여주게 함.
-
-      icon: customIcon!,
-    );
     _markers.clear();
-    _markers.add(marker);
+    addMarker(0, provider.lastLocation!);
   }
 
   Future<void> _onMapCreated(
       GoogleMapController controller, LatLng location) async {
+    _markers.clear();
     var provider = context.read<LocationProvider>();
 
     print('onMapCreate');
     print(location.toString());
-    final marker = Marker(
-      markerId: MarkerId(location.toString()),
-      position: location,
-      icon: customIcon!,
-    );
-    _markers.clear();
-    _markers.add(marker);
+    addMarker(0, location);
+
     _controller.complete(controller);
     provider.getAddress(location);
   }
@@ -187,22 +180,16 @@ class _PageMapState extends State<PageMap> {
   void _onCameraIdle() async {
     _markers.clear();
     var provider = context.read<LocationProvider>();
-    addMyPin();
+
+    // addMyPin();
     await provider.getPinInRagne(provider.lastLocation!.latitude,
         provider.lastLocation!.longitude, 1000);
+    provider.responseGetPinData!.forEach((element) {
+      addMarker(element.id!, LatLng(element.pin!.lat!, element.pin!.lng!));
+    });
 
     // await provider.getPinAll();
     print("Idle");
-
-    provider.responseGetPinRangeData!.forEach((element) {
-      LatLng latLng = LatLng(element.pin!.lat!, element.pin!.lng!);
-      final marker = Marker(
-        markerId: MarkerId(latLng.toString()),
-        position: latLng,
-        icon: customIcon!,
-      );
-      _markers.add(marker);
-    });
   }
 
   void _onCameraMove(CameraPosition position) {
@@ -211,57 +198,156 @@ class _PageMapState extends State<PageMap> {
     print("move");
   }
 
-  _handleTap(LatLng point) {
-    var provider = context.read<LocationProvider>();
-
-    print('handelTap');
-    provider.setLastLocation(point);
-    provider.getAddress(point);
-
+  void addMarker(int id, LatLng latLng) {
     final marker = Marker(
-      markerId: MarkerId(provider.lastLocation.toString()),
-      position: provider.lastLocation!,
+        markerId: MarkerId(id.toString()),
+        position: latLng,
+        // icon: customIcon!,
 
-      // TODO : Info Window는 내 주변 일정거리 안에 글의 갯수를 긁어서 보여주게 함.
+        onTap: () async {
+          print('marker onTap()');
 
-      icon: customIcon!,
-    );
-    _markers.clear();
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            builder: (context) {
+              return buildBottomSheet(context, id);
+            },
+          );
+        });
     _markers.add(marker);
   }
 
+//   _handleTap(LatLng point) {
+
+//     var provider = context.read<LocationProvider>();
+
+//     print('handelTap');
+//     provider.setLastLocation(point);
+//     provider.getAddress(point);
+
+// _markers.clear();
+// addMarker(id, latLng)
+//     final marker = Marker(
+//       markerId: MarkerId(provider.lastLocation.toString()),
+//       position: provider.lastLocation!,
+
+//       // TODO : Info Window는 내 주변 일정거리 안에 글의 갯수를 긁어서 보여주게 함.
+
+//       // icon: customIcon!,
+//     );
+
+//     _markers.add(marker);
+//   }
+
   Widget _newsInfoWidget() {
-    return InkWell(
-      onTap: () {
-        Navigator.of(context).pushNamed('PagePost');
-      },
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: JColors.white,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        width: SizeConfig.screenWidth * 0.7,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            RichText(
-              text: TextSpan(
+    var provider = context.read<LocationProvider>();
+    return provider.responseGetPinData!.length == 0
+        ? SizedBox.shrink()
+        : InkWell(
+            onTap: () {
+              Navigator.of(context).pushNamed('PagePost');
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: DSColors.white,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              width: SizeConfig.screenWidth * 0.7,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextSpan(text: '게시글', style: JTextStyle.bold14Black),
-                  TextSpan(text: ' (103개)', style: JTextStyle.regular12Black),
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(text: '게시글', style: DSTextStyle.bold14Black),
+                        TextSpan(
+                            text: ' (${provider.responseGetPinData!.length}개)',
+                            style: DSTextStyle.regular12Black),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    provider.responseGetPinData!.first.pin!.title!,
+                    style: DSTextStyle.regular14Black,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ],
               ),
             ),
-            SizedBox(height: 4),
-            Text(
-              '동내소식 300만 가입자 돌파. 대박 나는 인기속에 CTO 장원님의 인터뷰를 들어보자',
-              style: JTextStyle.regular14Black,
-              overflow: TextOverflow.ellipsis,
+          );
+  }
+
+  Widget buildBottomSheet(BuildContext context, int id) {
+    var responseGetPinDatas =
+        context.read<LocationProvider>().responseGetPinData!.where((element) {
+      return element.id == id;
+    }).toList();
+    context.read<LocationProvider>().selectedPinData =
+        responseGetPinDatas.first;
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+          color: DSColors.white),
+      child: Padding(
+        padding: const EdgeInsets.all(30.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            InkWell(
+              onTap: () {
+                goDetailPage();
+              },
+              child: Container(
+                width: double.infinity,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(responseGetPinDatas.first.pin!.title!,
+                        style: DSTextStyle.bold16Black),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Text(
+                      responseGetPinDatas.first.pin!.body!,
+                      style: DSTextStyle.regular12Black,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            DSButton(
+              text: '대화방 보기',
+              width: SizeConfig.screenWidth,
+              press: () {
+                goCommunityPage();
+              },
             ),
           ],
         ),
       ),
     );
+  }
+
+  void goDetailPage() async {
+    Navigator.of(context).pushNamed('PagePostDetail');
+  }
+
+  void goCommunityPage() async {
+    Navigator.of(context).pushNamed('PagePostCommunity');
+  }
+
+  void onClosePress() async {
+    Navigator.of(context).pop();
   }
 }

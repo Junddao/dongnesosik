@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:dongnesosik/global/model/config_model.dart';
 import 'package:dongnesosik/global/provider/maps/location_provider.dart';
-import 'package:dongnesosik/global/style/jcolors.dart';
+import 'package:dongnesosik/global/style/dscolors.dart';
 import 'package:dongnesosik/page_tabs.dart';
 import 'package:dongnesosik/pages/01_Intro/page_splash.dart';
 
@@ -55,10 +55,10 @@ class _MyAppState extends State<MyApp> {
         theme: ThemeData(
             primaryColor: Colors.white,
             visualDensity: VisualDensity.adaptivePlatformDensity,
-            accentColor: JColors.tomato,
+            accentColor: DSColors.tomato,
             appBarTheme: AppBarTheme(
-              color: JColors.white,
-              foregroundColor: JColors.black,
+              color: DSColors.white,
+              foregroundColor: DSColors.black,
               elevation: 0,
             ),
             bottomSheetTheme: BottomSheetThemeData(

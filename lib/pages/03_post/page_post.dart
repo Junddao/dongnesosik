@@ -1,5 +1,8 @@
 import 'package:dongnesosik/global/dummy_data.dart';
+import 'package:dongnesosik/global/model/pin/response_get_pin.dart';
+import 'package:dongnesosik/global/provider/maps/location_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class PagePost extends StatefulWidget {
   const PagePost({Key? key}) : super(key: key);
@@ -20,25 +23,31 @@ class _PagePostState extends State<PagePost> {
   }
 
   _body() {
-    return Container(
-      child: SingleChildScrollView(
-        child: ListView.separated(
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              return _listItem(index);
-            },
-            separatorBuilder: (context, index) {
-              return Divider();
-            },
-            itemCount: DummyData().responsePostModel.data!.length),
-      ),
+    var responseGetPinData =
+        context.watch<LocationProvider>().responseGetPinData;
+    return SingleChildScrollView(
+      child: ListView.separated(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemBuilder: (context, index) {
+            return _listItem(index, responseGetPinData!);
+          },
+          separatorBuilder: (context, index) {
+            return Divider();
+          },
+          itemCount: responseGetPinData!.length),
     );
   }
 
-  Widget _listItem(int index) {
+  Widget _listItem(int index, List<ResponseGetPinData> responseGetPinData) {
     return ListTile(
-      title: Text(DummyData().responsePostModel.data![index].title!),
-      subtitle: Text(DummyData().responsePostModel.data![index].contents!),
+      title: Text(responseGetPinData[index].pin!.title!),
+      subtitle: Text(responseGetPinData[index].pin!.body!),
+      onTap: () {
+        context.read<LocationProvider>().selectedPinData =
+            responseGetPinData[index];
+        Navigator.of(context).pushNamed('PagePostDetail');
+      },
     );
   }
 }

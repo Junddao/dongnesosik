@@ -9,7 +9,6 @@
     }
   ],
 
-  "google_reverse_geocoding_request": "https://maps.googleapis.com/maps/api/geocode/json?",
   "ios_google_api_key": "AIzaSyCnsRjQqhxEZ0WaQ6b8EoxsJanWK9kDdSk",
   "and_google_api_key": "AIzaSyAoeKpyN_EODABnnIV_Wdx7Tu8Y1QECowY"
 }
