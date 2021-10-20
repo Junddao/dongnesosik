@@ -14,14 +14,14 @@ class _PageTabsState extends State<PageTabs> {
 
   List _pages = [
     PageMap(),
-    PagePost(),
+    // PagePost(),
     PageUserSetting(),
   ];
 
   List<BottomNavigationBarItem> _items = [
     BottomNavigationBarItem(icon: Icon(Icons.map_outlined), label: "지도"),
-    BottomNavigationBarItem(
-        icon: Icon(Icons.sticky_note_2_outlined), label: "동내 게시판"),
+    // BottomNavigationBarItem(
+    //     icon: Icon(Icons.sticky_note_2_outlined), label: "동내 게시판"),
     BottomNavigationBarItem(
         icon: Icon(Icons.admin_panel_settings), label: "내정보"),
   ];

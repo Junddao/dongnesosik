@@ -1,3 +1,4 @@
+import 'package:dongnesosik/global/style/constants.dart';
 import 'package:flutter/material.dart';
 
 class PageUserSetting extends StatefulWidget {
@@ -10,6 +11,30 @@ class PageUserSetting extends StatefulWidget {
 class _PageUserSettingState extends State<PageUserSetting> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      appBar: _appBar(),
+      body: _body(),
+    );
+  }
+
+  AppBar _appBar() {
+    return AppBar(
+      title: Text('내정보'),
+    );
+  }
+
+  Widget _body() {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+            horizontal: kDefaultHorizontalPadding,
+            vertical: kDefaultVerticalPadding),
+        child: Column(
+          children: [
+            Text('user Setting'),
+          ],
+        ),
+      ),
+    );
   }
 }

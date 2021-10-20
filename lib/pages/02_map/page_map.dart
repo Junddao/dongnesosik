@@ -20,6 +20,7 @@ class PageMap extends StatefulWidget {
 }
 
 class _PageMapState extends State<PageMap> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Marker> _markers = [];
   Completer<GoogleMapController> _controller = Completer();
   Location location = Location();
@@ -92,15 +93,27 @@ class _PageMapState extends State<PageMap> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    return Scaffold(
-      appBar: _appBar(),
-      body: _body(),
-      floatingActionButton: FloatingActionButton(
-        child: Text('내위치', style: DSTextStyle.bold12Black),
-        backgroundColor: DSColors.white01,
-        onPressed: () async {
-          getMyLocation();
-        },
+    return WillPopScope(
+      onWillPop: () {
+        return Future(() => false);
+      },
+      child: Scaffold(
+        key: _scaffoldKey,
+        appBar: _appBar(),
+        body: _body(),
+        drawer: _drawer(),
+        extendBodyBehindAppBar: true,
+        drawerEnableOpenDragGesture: true,
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add, color: DSColors.white),
+
+          // child: Text('글쓰기', style: DSTextStyle.bold12Black),
+          backgroundColor: DSColors.tomato,
+          onPressed: () async {
+            Navigator.of(context).pushNamed('PagePostCreate');
+          },
+        ),
+        // floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       ),
     );
   }
@@ -108,13 +121,68 @@ class _PageMapState extends State<PageMap> {
   AppBar _appBar() {
     var provider = context.watch<LocationProvider>();
     return AppBar(
+      elevation: 0,
       automaticallyImplyLeading: false,
+      leading: IconButton(
+        icon: Icon(Icons.menu),
+        onPressed: () {
+          _scaffoldKey.currentState!.openDrawer();
+        },
+      ),
       title: Text(
           provider.placemarks.isEmpty
               ? ''
               : provider.placemarks[0].subLocality!,
           style: DSTextStyle.bold18Black),
+      // actions: [
+      //   IconButton(
+      //     onPressed: () {
+      //       Navigator.of(context).pushNamed('PageUserSetting');
+      //     },
+      //     icon: Icon(
+      //       Icons.person,
+      //     ),
+      //   ),
+      // ],
     );
+  }
+
+  Widget _drawer() {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.only(left: 10),
+        children: <Widget>[
+          // drawer header
+          _drawerHeader(),
+
+          // my history
+
+          ListTile(
+            leading:
+                Image.asset('assets/images/marker1.png', fit: BoxFit.cover),
+            title: Text(
+              'aaa',
+              style: DSTextStyle.bold18Grey06,
+            ),
+            onTap: () {
+              Navigator.of(context).pop(); // drawer 닫기
+            },
+          ),
+          ListTile(
+            leading:
+                Image.asset('assets/images/marker1.png', fit: BoxFit.cover),
+            title: Text(
+              'bbb',
+              style: DSTextStyle.bold18Grey06,
+            ),
+            onTap: () {
+              Navigator.of(context).pop(); // drawer 닫기
+            },
+          ),
+        ],
+      ),
+    );
+    // Disable opening the drawer with a swipe gesture.
   }
 
   Widget _body() {
@@ -144,7 +212,7 @@ class _PageMapState extends State<PageMap> {
               // },
             ),
             Positioned(
-              bottom: 18,
+              bottom: 30,
               left: 24,
               child: InkWell(
                   onTap: () {
@@ -152,10 +220,49 @@ class _PageMapState extends State<PageMap> {
                   },
                   child: _newsInfoWidget()),
             ),
+            Positioned(
+              top: AppBar().preferredSize.height +
+                  MediaQuery.of(context).padding.top +
+                  30,
+              right: 12,
+              child: InkWell(
+                onTap: () async {
+                  getMyLocation();
+                },
+                child: CircleAvatar(
+                  backgroundColor: DSColors.white,
+                  foregroundColor: DSColors.black,
+                  child: Icon(Icons.my_location),
+                ),
+              ),
+            ),
           ],
         );
       }
     });
+  }
+
+  Container _drawerHeader() {
+    return Container(
+      // height: 300,
+      child: DrawerHeader(
+        margin: EdgeInsets.zero,
+        padding: EdgeInsets.only(left: 16, top: 16, bottom: 8),
+        child: Column(
+          children: [
+            ListTile(
+              title: Text('memil님', style: DSTextStyle.bold16Black),
+              subtitle: Text('반갑습니다.', style: DSTextStyle.regular12WarmGrey),
+              trailing: Icon(Icons.arrow_forward_ios),
+              onTap: () {
+                Navigator.of(context).pushNamed('PageUserSetting');
+              },
+            ),
+            // Divider(),
+          ],
+        ),
+      ),
+    );
   }
 
   addMyPin() {
@@ -254,7 +361,7 @@ class _PageMapState extends State<PageMap> {
                 color: DSColors.white,
                 borderRadius: BorderRadius.circular(8),
               ),
-              width: SizeConfig.screenWidth * 0.7,
+              // width: SizeConfig.screenWidth * 0.7,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -270,7 +377,8 @@ class _PageMapState extends State<PageMap> {
                   ),
                   SizedBox(height: 4),
                   Text(
-                    provider.responseGetPinData!.first.pin!.title!,
+                    // provider.responseGetPinData!.first.pin!.title!,
+                    '목록 보기',
                     style: DSTextStyle.regular14Black,
                     overflow: TextOverflow.ellipsis,
                   ),

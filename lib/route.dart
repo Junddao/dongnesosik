@@ -1,7 +1,10 @@
 import 'package:dongnesosik/page_tabs.dart';
+import 'package:dongnesosik/pages/02_map/page_map.dart';
 import 'package:dongnesosik/pages/03_post/page_post.dart';
 import 'package:dongnesosik/pages/03_post/page_post_community.dart';
 import 'package:dongnesosik/pages/03_post/page_post_detail.dart';
+import 'package:dongnesosik/pages/03_post/page_post_create.dart';
+import 'package:dongnesosik/pages/04_user_setting/page_user_setting.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -23,9 +26,20 @@ class Routers {
           settings: settings,
         );
 
+      case 'PageMap':
+        return CupertinoPageRoute(
+          builder: (_) => PageMap(),
+          settings: settings,
+        );
+
       case 'PagePost':
         return CupertinoPageRoute(
           builder: (_) => PagePost(),
+          settings: settings,
+        );
+      case 'PagePostCreate':
+        return CupertinoPageRoute(
+          builder: (_) => PagePostCreate(),
           settings: settings,
         );
 
@@ -38,6 +52,12 @@ class Routers {
       case 'PagePostCommunity':
         return CupertinoPageRoute(
           builder: (_) => PagePostCommunity(),
+          settings: settings,
+        );
+
+      case 'PageUserSetting':
+        return CupertinoPageRoute(
+          builder: (_) => PageUserSetting(),
           settings: settings,
         );
 

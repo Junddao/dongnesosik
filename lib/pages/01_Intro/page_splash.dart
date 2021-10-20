@@ -40,7 +40,7 @@ class _SplashScreenState extends State<SplashScreen> {
     //   '',
     // );
 
-    Navigator.of(context).pushNamed('PageTabs');
+    Navigator.of(context).pushNamed('PageMap');
     // Navigator.of(context).pushNamed('OnBoardingScreenPage');
   }
 
