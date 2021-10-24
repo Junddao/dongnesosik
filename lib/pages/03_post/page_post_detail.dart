@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dongnesosik/global/model/pin/response_get_pin.dart';
-import 'package:dongnesosik/global/provider/maps/location_provider.dart';
+import 'package:dongnesosik/global/provider/location_provider.dart';
 import 'package:dongnesosik/global/style/constants.dart';
-import 'package:dongnesosik/global/style/dstextstyle.dart';
+import 'package:dongnesosik/global/style/dstextstyles.dart';
 import 'package:dongnesosik/pages/components/ds_button.dart';
 import 'package:dongnesosik/pages/components/ds_carousel.dart';
 import 'package:dongnesosik/pages/components/ds_photo_view.dart';
@@ -63,7 +63,7 @@ class _PagePostDetailState extends State<PagePostDetail> {
               children: [
                 SizedBox(height: 20),
                 Text(selectedGetPinData.pin!.title!,
-                    style: DSTextStyle.bold18Black),
+                    style: DSTextStyles.bold18Black),
                 SizedBox(height: 20),
                 Text(selectedGetPinData.pin!.body!),
               ],

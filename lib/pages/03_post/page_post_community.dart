@@ -1,8 +1,8 @@
 import 'package:dongnesosik/global/model/pin/response_get_pin.dart';
-import 'package:dongnesosik/global/provider/maps/location_provider.dart';
+import 'package:dongnesosik/global/provider/location_provider.dart';
 import 'package:dongnesosik/global/style/constants.dart';
 import 'package:dongnesosik/global/style/dscolors.dart';
-import 'package:dongnesosik/global/style/dstextstyle.dart';
+import 'package:dongnesosik/global/style/dstextstyles.dart';
 import 'package:dongnesosik/pages/03_post/components/cell_post_header.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -36,7 +36,7 @@ class _PagePostCommunityState extends State<PagePostCommunity> {
           Navigator.of(context).pop(true);
         },
       ),
-      title: Text('대화방', style: DSTextStyle.bold18Black),
+      title: Text('대화방', style: DSTextStyles.bold18Black),
     );
   }
 

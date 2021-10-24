@@ -1,7 +1,7 @@
 import 'package:dongnesosik/global/model/pin/response_get_pin.dart';
-import 'package:dongnesosik/global/provider/maps/location_provider.dart';
+import 'package:dongnesosik/global/provider/location_provider.dart';
 import 'package:dongnesosik/global/style/dscolors.dart';
-import 'package:dongnesosik/global/style/dstextstyle.dart';
+import 'package:dongnesosik/global/style/dstextstyles.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -36,14 +36,14 @@ class CellPostHeader extends StatelessWidget {
             children: <Widget>[
               Text(
                 selectedGetPinData.pin!.title ?? "",
-                style: DSTextStyle.bold16Black,
+                style: DSTextStyles.bold16Black,
               ),
               SizedBox(
                 height: 8,
               ),
               Text(
                 selectedGetPinData.pin!.body ?? "",
-                style: DSTextStyle.regular12Black,
+                style: DSTextStyles.regular12Black,
               ),
 
               // ),

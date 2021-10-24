@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:dongnesosik/global/model/config_model.dart';
-import 'package:dongnesosik/global/provider/maps/location_provider.dart';
+import 'package:dongnesosik/global/provider/location_provider.dart';
 import 'package:dongnesosik/global/style/dscolors.dart';
 import 'package:dongnesosik/page_tabs.dart';
 import 'package:dongnesosik/pages/01_Intro/page_splash.dart';

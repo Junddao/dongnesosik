@@ -1,5 +1,5 @@
 import 'package:dongnesosik/global/style/dscolors.dart';
-import 'package:dongnesosik/global/style/dstextstyle.dart';
+import 'package:dongnesosik/global/style/dstextstyles.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -14,7 +14,8 @@ class ButtonType {
   static const warning = ButtonType._('warning');
   static const disabled = ButtonType._('disabled');
   static const transparent = ButtonType._('transparent');
-  static const normal_black = ButtonType._('default_black');
+  static const normal_black = ButtonType._('normal_black');
+  static const normal_tomato = ButtonType._('normal_tomato');
   static const decline = ButtonType._('decline');
 
   @override
@@ -27,6 +28,7 @@ class ButtonType {
       'warning': 'ButtonType.warning',
       'disabled': 'ButtonType.disabled',
       'normal_black': 'ButtonType.normal_black',
+      'normal_tomato': 'ButtonType.normal_tomato',
       'decline': 'ButtonType.decline'
     }[type]!;
   }
@@ -39,7 +41,8 @@ class ButtonType {
       'success': DSColors.tomato,
       'warning': DSColors.red01,
       'disabled': DSColors.tomato_10,
-      'normal_black': DSColors.black,
+      'normal_black': Colors.transparent,
+      'normal_tomato': Colors.transparent,
       'decline': DSColors.decline,
     }[type];
   }
@@ -52,7 +55,8 @@ class ButtonType {
       'success': DSColors.gray3,
       'warning': Colors.white,
       'disabled': DSColors.gray3,
-      'normal_black': DSColors.gray3,
+      'normal_black': DSColors.black,
+      'normal_tomato': DSColors.tomato,
       'decline': Colors.white,
     }[type];
   }
@@ -79,7 +83,7 @@ class DSButton extends StatelessWidget {
     this.type = ButtonType.normal,
   }) : super(key: key);
 
-  Color? color = DSColors.blue03;
+  Color? color = DSColors.tomato;
   Color? textColor = Colors.white;
   @override
   Widget build(BuildContext context) {
@@ -98,7 +102,8 @@ class DSButton extends StatelessWidget {
             onPressed: press as void Function()?,
             child: Text(
               text,
-              style: DSTextStyle.button.copyWith(color: textColor),
+              style:
+                  DSTextStyles.button.copyWith(color: textColor, fontSize: 14),
             )),
       ),
     );

@@ -1,9 +1,10 @@
 import 'dart:async';
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:dongnesosik/global/model/pin/response_get_pin.dart';
-import 'package:dongnesosik/global/provider/maps/location_provider.dart';
+import 'package:dongnesosik/global/provider/location_provider.dart';
 import 'package:dongnesosik/global/style/constants.dart';
 import 'package:dongnesosik/global/style/dscolors.dart';
-import 'package:dongnesosik/global/style/dstextstyle.dart';
+import 'package:dongnesosik/global/style/dstextstyles.dart';
 import 'package:dongnesosik/pages/components/ds_button.dart';
 import 'package:flutter/foundation.dart';
 
@@ -26,11 +27,29 @@ class _PageMapState extends State<PageMap> {
   Location location = Location();
 
   BitmapDescriptor? customIcon;
+  Timer? _timer;
+  var _time = 0;
+  var _isRunning = false;
 
   @override
   void initState() {
     super.initState();
+    // _start();
     getMyLocation();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _start() {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        _time++;
+      });
+    });
   }
 
   void setCustomMarker() async {
@@ -104,15 +123,15 @@ class _PageMapState extends State<PageMap> {
         drawer: _drawer(),
         extendBodyBehindAppBar: true,
         drawerEnableOpenDragGesture: true,
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add, color: DSColors.white),
+        // floatingActionButton: FloatingActionButton(
+        //   child: Icon(Icons.add, color: DSColors.white),
 
-          // child: Text('글쓰기', style: DSTextStyle.bold12Black),
-          backgroundColor: DSColors.tomato,
-          onPressed: () async {
-            Navigator.of(context).pushNamed('PagePostCreate');
-          },
-        ),
+        //   // child: Text('글쓰기', style: DSTextStyle.bold12Black),
+        //   backgroundColor: DSColors.tomato,
+        //   onPressed: () async {
+        //     Navigator.of(context).pushNamed('PagePostCreate');
+        //   },
+        // ),
         // floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       ),
     );
@@ -133,17 +152,15 @@ class _PageMapState extends State<PageMap> {
           provider.placemarks.isEmpty
               ? ''
               : provider.placemarks[0].subLocality!,
-          style: DSTextStyle.bold18Black),
-      // actions: [
-      //   IconButton(
-      //     onPressed: () {
-      //       Navigator.of(context).pushNamed('PageUserSetting');
-      //     },
-      //     icon: Icon(
-      //       Icons.person,
-      //     ),
-      //   ),
-      // ],
+          style: DSTextStyles.bold18Black),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pushNamed('PagePostCreate');
+          },
+          child: Text('새글쓰기', style: DSTextStyles.bold14Tomato),
+        ),
+      ],
     );
   }
 
@@ -162,7 +179,7 @@ class _PageMapState extends State<PageMap> {
                 Image.asset('assets/images/marker1.png', fit: BoxFit.cover),
             title: Text(
               'aaa',
-              style: DSTextStyle.bold18Grey06,
+              style: DSTextStyles.bold18Grey06,
             ),
             onTap: () {
               Navigator.of(context).pop(); // drawer 닫기
@@ -173,7 +190,7 @@ class _PageMapState extends State<PageMap> {
                 Image.asset('assets/images/marker1.png', fit: BoxFit.cover),
             title: Text(
               'bbb',
-              style: DSTextStyle.bold18Grey06,
+              style: DSTextStyles.bold18Grey06,
             ),
             onTap: () {
               Navigator.of(context).pop(); // drawer 닫기
@@ -202,7 +219,9 @@ class _PageMapState extends State<PageMap> {
                 zoom: 15,
               ),
               markers: _markers.toSet(),
-              myLocationButtonEnabled: false,
+              myLocationEnabled: true,
+              myLocationButtonEnabled: true,
+              // padding: EdgeInsets.only(bottom: 60, right: 8),
               mapToolbarEnabled: false,
               zoomControlsEnabled: false,
               onCameraMove: _onCameraMove,
@@ -220,22 +239,22 @@ class _PageMapState extends State<PageMap> {
                   },
                   child: _newsInfoWidget()),
             ),
-            Positioned(
-              top: AppBar().preferredSize.height +
-                  MediaQuery.of(context).padding.top +
-                  30,
-              right: 12,
-              child: InkWell(
-                onTap: () async {
-                  getMyLocation();
-                },
-                child: CircleAvatar(
-                  backgroundColor: DSColors.white,
-                  foregroundColor: DSColors.black,
-                  child: Icon(Icons.my_location),
-                ),
-              ),
-            ),
+            // Positioned(
+            //   top: AppBar().preferredSize.height +
+            //       MediaQuery.of(context).padding.top +
+            //       30,
+            //   right: 12,
+            //   child: InkWell(
+            //     onTap: () async {
+            //       getMyLocation();
+            //     },
+            //     child: CircleAvatar(
+            //       backgroundColor: DSColors.white,
+            //       foregroundColor: DSColors.black,
+            //       child: Icon(Icons.my_location),
+            //     ),
+            //   ),
+            // ),
           ],
         );
       }
@@ -251,8 +270,8 @@ class _PageMapState extends State<PageMap> {
         child: Column(
           children: [
             ListTile(
-              title: Text('memil님', style: DSTextStyle.bold16Black),
-              subtitle: Text('반갑습니다.', style: DSTextStyle.regular12WarmGrey),
+              title: Text('memil님', style: DSTextStyles.bold16Black),
+              subtitle: Text('반갑습니다.', style: DSTextStyles.regular12WarmGrey),
               trailing: Icon(Icons.arrow_forward_ios),
               onTap: () {
                 Navigator.of(context).pushNamed('PageUserSetting');
@@ -349,6 +368,7 @@ class _PageMapState extends State<PageMap> {
 
   Widget _newsInfoWidget() {
     var provider = context.read<LocationProvider>();
+
     return provider.responseGetPinData!.length == 0
         ? SizedBox.shrink()
         : InkWell(
@@ -361,27 +381,24 @@ class _PageMapState extends State<PageMap> {
                 color: DSColors.white,
                 borderRadius: BorderRadius.circular(8),
               ),
-              // width: SizeConfig.screenWidth * 0.7,
+              width: SizeConfig.screenWidth * 0.7,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   RichText(
                     text: TextSpan(
                       children: [
-                        TextSpan(text: '게시글', style: DSTextStyle.bold14Black),
                         TextSpan(
-                            text: ' (${provider.responseGetPinData!.length}개)',
-                            style: DSTextStyle.regular12Black),
+                            text: ' ${provider.responseGetPinData!.length}개',
+                            style: DSTextStyles.bold14Black),
+                        TextSpan(
+                            text: '의 글이 검색되었어요.',
+                            style: DSTextStyles.regular12WarmGrey),
                       ],
                     ),
                   ),
                   SizedBox(height: 4),
-                  Text(
-                    // provider.responseGetPinData!.first.pin!.title!,
-                    '목록 보기',
-                    style: DSTextStyle.regular14Black,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  getAnimatedTitle(provider),
                 ],
               ),
             ),
@@ -417,13 +434,13 @@ class _PageMapState extends State<PageMap> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(responseGetPinDatas.first.pin!.title!,
-                        style: DSTextStyle.bold16Black),
+                        style: DSTextStyles.bold16Black),
                     SizedBox(
                       height: 8,
                     ),
                     Text(
                       responseGetPinDatas.first.pin!.body!,
-                      style: DSTextStyle.regular12Black,
+                      style: DSTextStyles.regular12Black,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 2,
                     ),
@@ -457,5 +474,29 @@ class _PageMapState extends State<PageMap> {
 
   void onClosePress() async {
     Navigator.of(context).pop();
+  }
+
+  getAnimatedTitle(LocationProvider provider) {
+    return Row(
+      children: [
+        const SizedBox(width: 0.0, height: 50.0),
+        DefaultTextStyle(
+          style: DSTextStyles.regular12Black,
+          overflow: TextOverflow.ellipsis,
+          child: AnimatedTextKit(
+            repeatForever: true,
+            isRepeatingAnimation: true,
+            animatedTexts: [
+              for (ResponseGetPinData data in provider.responseGetPinData!)
+                buildText(data),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  buildText(ResponseGetPinData data) {
+    return RotateAnimatedText(data.pin!.title!);
   }
 }

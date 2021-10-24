@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dongnesosik/global/model/config_model.dart';
+import 'package:dongnesosik/global/model/pin/request_create_pin.dart';
 import 'package:dongnesosik/global/model/pin/request_get_pin_range.dart';
 import 'package:dongnesosik/global/model/pin/response_get_pin.dart';
 import 'package:dongnesosik/global/provider/parent_provider.dart';
@@ -35,6 +36,18 @@ class LocationProvider extends ParentProvider {
 
       notifyListeners();
     } catch (error) {}
+  }
+
+  Future<void> createPin(RequestCreatePin requestCreatePin) async {
+    try {
+      var api = ApiService();
+      var response = await api.post('/pin/create', requestCreatePin.toMap());
+      // responseGetPinData = ResponseGetPin.fromMap(response).data;
+
+      notifyListeners();
+    } catch (error) {
+      setStateError();
+    }
   }
 
   Future<void> getPinInRagne(double? lat, double? lng, int? range) async {

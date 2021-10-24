@@ -47,19 +47,29 @@ class _PageTabsState extends State<PageTabs> {
       },
       child: Scaffold(
         body: _body(),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-          items: _items,
-          selectedFontSize: 10,
-          unselectedFontSize: 10,
-          selectedItemColor: DSColors.tomato,
-          unselectedItemColor: DSColors.gray3,
-          showUnselectedLabels: true,
-          // type: BottomNavigationBarType.fixed,
-          // unselectedLabelColor: CDColors.gray6,
-          // labelColor: CDColors.primary,
-          // indicatorColor: CDColors.primary,
+        bottomNavigationBar: new Theme(
+          data: Theme.of(context).copyWith(
+              canvasColor: Colors.white,
+              primaryColor: Colors.red,
+              textTheme: Theme.of(context).textTheme.copyWith(
+                  caption: new TextStyle(
+                      color: Colors
+                          .grey))), // sets the inactive color of the `BottomNavigationBar`
+
+          child: BottomNavigationBar(
+            currentIndex: _selectedIndex,
+            onTap: _onItemTapped,
+            items: _items,
+            selectedFontSize: 10,
+            unselectedFontSize: 10,
+            selectedItemColor: DSColors.tomato,
+            unselectedItemColor: DSColors.gray3,
+            showUnselectedLabels: true,
+            // type: BottomNavigationBarType.fixed,
+            // unselectedLabelColor: CDColors.gray6,
+            // labelColor: CDColors.primary,
+            // indicatorColor: CDColors.primary,
+          ),
         ),
         // Theme(
         //   data: Theme.of(context).copyWith(

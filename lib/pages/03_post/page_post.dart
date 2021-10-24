@@ -1,6 +1,6 @@
 import 'package:dongnesosik/global/dummy_data.dart';
 import 'package:dongnesosik/global/model/pin/response_get_pin.dart';
-import 'package:dongnesosik/global/provider/maps/location_provider.dart';
+import 'package:dongnesosik/global/provider/location_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

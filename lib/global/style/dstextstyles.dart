@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dscolors.dart';
 
-class DSTextStyle {
+class DSTextStyles {
   static const nav = TextStyle(
       fontFamily: 'Roboto',
       fontSize: 17,

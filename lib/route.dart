@@ -4,6 +4,7 @@ import 'package:dongnesosik/pages/03_post/page_post.dart';
 import 'package:dongnesosik/pages/03_post/page_post_community.dart';
 import 'package:dongnesosik/pages/03_post/page_post_detail.dart';
 import 'package:dongnesosik/pages/03_post/page_post_create.dart';
+import 'package:dongnesosik/pages/03_post/page_select_location.dart';
 import 'package:dongnesosik/pages/04_user_setting/page_user_setting.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -40,6 +41,12 @@ class Routers {
       case 'PagePostCreate':
         return CupertinoPageRoute(
           builder: (_) => PagePostCreate(),
+          settings: settings,
+        );
+
+      case 'PageSelectLocation':
+        return CupertinoPageRoute(
+          builder: (_) => PageSelectLocation(),
           settings: settings,
         );
 
