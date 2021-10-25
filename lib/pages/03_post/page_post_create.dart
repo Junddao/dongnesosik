@@ -183,11 +183,33 @@ class _PagePostCreateState extends State<PagePostCreate> {
   }
 
   postLocation() {
+    var provider = context.watch<LocationProvider>();
+    String? address = provider.placemarks[0].locality! +
+        " " +
+        provider.placemarks[0].subLocality! +
+        " " +
+        provider.placemarks[0].thoroughfare! +
+        " " +
+        provider.placemarks[0].subThoroughfare!;
     return Column(children: [
       Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Text('장소', style: DSTextStyles.bold16Black),
+          SizedBox(width: 8),
+          InkWell(
+            onTap: () {
+              getMyLocation();
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                border: Border.all(color: DSColors.greyish),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text('현재 위치로 선택', style: DSTextStyles.regular12Greyish),
+            ),
+          ),
         ],
       ),
       SizedBox(height: 10),
@@ -199,12 +221,20 @@ class _PagePostCreateState extends State<PagePostCreate> {
           children: [
             Icon(Icons.location_pin, color: DSColors.pinkish_grey),
             SizedBox(width: 10),
-            Text('위치 추가', style: DSTextStyles.regular14PinkishGrey),
+            provider.myPostLocation == null
+                ? Text('위치 선택', style: DSTextStyles.regular14PinkishGrey)
+                : Text(address, style: DSTextStyles.regular12Black),
           ],
         ),
       ),
       SizedBox(height: 10),
     ]);
+  }
+
+  getMyLocation() {
+    var provider = context.read<LocationProvider>();
+    location = provider.setMyPostLocation(provider.myLocation!);
+    provider.getAddress(provider.myLocation!);
   }
 
   postImages() {
@@ -332,15 +362,6 @@ class _PagePostCreateState extends State<PagePostCreate> {
     );
   }
 
-  getMyLocation() {
-    location = context.read<LocationProvider>().myLocation;
-    context.read<LocationProvider>().getAddress(location!);
-  }
-
-  getLocationOnMap() {
-    // 지도 선택 페이지로 이동
-  }
-
   Widget getAddPhotoBtn() {
     return InkWell(
       onTap: () async {
@@ -401,6 +422,8 @@ class _PagePostCreateState extends State<PagePostCreate> {
 
       return;
     }
+
+    location = context.read<LocationProvider>().myPostLocation;
 
     RequestCreatePin requestCreatePin = RequestCreatePin(
       lat: location!.latitude,

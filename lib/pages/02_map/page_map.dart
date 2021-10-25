@@ -6,6 +6,7 @@ import 'package:dongnesosik/global/style/constants.dart';
 import 'package:dongnesosik/global/style/dscolors.dart';
 import 'package:dongnesosik/global/style/dstextstyles.dart';
 import 'package:dongnesosik/pages/components/ds_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
@@ -189,11 +190,13 @@ class _PageMapState extends State<PageMap> {
             leading:
                 Image.asset('assets/images/marker1.png', fit: BoxFit.cover),
             title: Text(
-              'bbb',
+              '로그아웃',
               style: DSTextStyles.bold18Grey06,
             ),
             onTap: () {
-              Navigator.of(context).pop(); // drawer 닫기
+              FirebaseAuth.instance.signOut();
+              // Navigator.of(context)
+              //     .pushNamedAndRemoveUntil('PageRoot', (route) => false);
             },
           ),
         ],

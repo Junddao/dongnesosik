@@ -27,13 +27,16 @@ dependencies:
   change_app_package_name: ^1.0.0
   dio: ^4.0.0
   dots_indicator: ^2.0.0
-  firebase_core: ^1.6.0
+  firebase_auth: ^3.1.4
+  firebase_core: ^1.8.0
   flutter:
     sdk: flutter
   flutter_native_image: ^0.0.6+1
+  flutter_signin_button: ^2.0.0
   geocoding: ^2.0.1
   google_fonts: ^2.1.0
   google_maps_flutter: ^2.0.11
+  google_sign_in: ^5.2.0
   heic_to_jpg: ^0.2.0
   location: ^4.3.0
   modal_bottom_sheet: ^2.0.0

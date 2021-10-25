@@ -32,7 +32,14 @@ class _PageSelectLocationState extends State<PageSelectLocation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: _appBar(),
       body: _body(),
+    );
+  }
+
+  AppBar _appBar() {
+    return AppBar(
+      title: Text('위치 선택'),
     );
   }
 
@@ -51,7 +58,6 @@ class _PageSelectLocationState extends State<PageSelectLocation> {
           markers: _markers.toSet(),
           myLocationEnabled: true,
           myLocationButtonEnabled: true,
-          // padding: EdgeInsets.only(bottom: 60, right: 8),
           mapToolbarEnabled: false,
           zoomControlsEnabled: false,
           onTap: _handleTap,
@@ -103,7 +109,8 @@ class _PageSelectLocationState extends State<PageSelectLocation> {
 
     print('onMapCreate');
     print(provider.lastLocation.toString());
-    addMarker(0, provider.lastLocation!);
+
+    // addMarker(0, provider.myLocation!);
 
     _controller.complete(controller);
   }
@@ -121,7 +128,7 @@ class _PageSelectLocationState extends State<PageSelectLocation> {
     var provider = context.read<LocationProvider>();
 
     print('handelTap');
-    provider.setLastLocation(point);
+    provider.setMyPostLocation(point);
     provider.getAddress(point);
 
     _markers.clear();
@@ -137,7 +144,7 @@ class _PageSelectLocationState extends State<PageSelectLocation> {
   }
 
   Widget buildBottomSheet(BuildContext context) {
-    var provider = context.read<LocationProvider>();
+    var provider = context.watch<LocationProvider>();
     String? address = provider.placemarks[0].locality! +
         " " +
         provider.placemarks[0].subLocality! +
@@ -156,7 +163,11 @@ class _PageSelectLocationState extends State<PageSelectLocation> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(address),
+            Text(address, style: DSTextStyles.bold14Black),
+            SizedBox(
+              height: 10,
+            ),
+            Divider(),
             DSButton(
               text: '네, 이 위치로 선택할래요!',
               width: SizeConfig.screenWidth,

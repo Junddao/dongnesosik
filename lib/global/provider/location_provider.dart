@@ -13,6 +13,7 @@ import 'package:geocoding/geocoding.dart';
 class LocationProvider extends ParentProvider {
   LatLng? lastLocation;
   LatLng? myLocation;
+  LatLng? myPostLocation;
   String? lastAddress = '';
   List<Placemark> placemarks = [];
 
@@ -26,6 +27,11 @@ class LocationProvider extends ParentProvider {
 
   setLastLocation(LatLng location) {
     lastLocation = location;
+    notifyListeners();
+  }
+
+  setMyPostLocation(LatLng location) {
+    myPostLocation = location;
     notifyListeners();
   }
 

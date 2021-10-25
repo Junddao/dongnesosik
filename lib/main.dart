@@ -3,15 +3,13 @@ import 'dart:convert';
 import 'package:dongnesosik/global/model/config_model.dart';
 import 'package:dongnesosik/global/provider/location_provider.dart';
 import 'package:dongnesosik/global/style/dscolors.dart';
-import 'package:dongnesosik/page_tabs.dart';
-import 'package:dongnesosik/pages/01_Intro/page_splash.dart';
+import 'package:dongnesosik/pages/00_Intro/page_splash.dart';
 
 import 'package:dongnesosik/route.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -47,27 +45,39 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => LocationProvider()),
-      ],
-      child: MaterialApp(
-        theme: ThemeData(
-            primaryColor: Colors.white,
-            visualDensity: VisualDensity.adaptivePlatformDensity,
-            accentColor: DSColors.tomato,
-            appBarTheme: AppBarTheme(
-              color: DSColors.white,
-              foregroundColor: DSColors.black,
-              elevation: 0,
+    return FutureBuilder(
+        future: Firebase.initializeApp(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Text("firebase load fail"),
+            );
+          }
+          if (snapshot.connectionState != ConnectionState.done) {
+            return CircularProgressIndicator();
+          }
+          return MultiProvider(
+            providers: [
+              ChangeNotifierProvider(create: (_) => LocationProvider()),
+            ],
+            child: MaterialApp(
+              theme: ThemeData(
+                  primaryColor: Colors.white,
+                  visualDensity: VisualDensity.adaptivePlatformDensity,
+                  accentColor: DSColors.tomato,
+                  appBarTheme: AppBarTheme(
+                    color: DSColors.white,
+                    foregroundColor: DSColors.black,
+                    elevation: 0,
+                  ),
+                  bottomSheetTheme: BottomSheetThemeData(
+                    backgroundColor: Colors.white,
+                  ),
+                  scaffoldBackgroundColor: Colors.white),
+              onGenerateRoute: Routers.generateRoute,
+              home: SplashScreen(),
             ),
-            bottomSheetTheme: BottomSheetThemeData(
-              backgroundColor: Colors.white,
-            ),
-            scaffoldBackgroundColor: Colors.white),
-        onGenerateRoute: Routers.generateRoute,
-        home: SplashScreen(),
-      ),
-    );
+          );
+        });
   }
 }

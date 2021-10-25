@@ -10,7 +10,6 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   Future<bool> _mockCheckForSession() async {
-    bool result = false;
     // FirebaseAuth.instance.signOut();
     await Future.delayed(Duration(milliseconds: 2000), () {});
 
@@ -22,15 +21,11 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
 
     _mockCheckForSession().then((value) async {
-      if (value == true)
-        _navigatorToHome();
-      else {
-        _navigatorToLogin();
-      }
+      if (value == true) _navigatorToRoot();
     });
   }
 
-  void _navigatorToHome() {
+  void _navigatorToRoot() {
     // UserProfileData userProfileData = new UserProfileData(
     //   _user.displayName,
     //   _user.photoURL,
@@ -40,12 +35,8 @@ class _SplashScreenState extends State<SplashScreen> {
     //   '',
     // );
 
-    Navigator.of(context).pushNamed('PageMap');
+    Navigator.of(context).pushNamed('PageRoot');
     // Navigator.of(context).pushNamed('OnBoardingScreenPage');
-  }
-
-  void _navigatorToLogin() {
-    Navigator.of(context).pushNamed('LoginPage');
   }
 
   @override
