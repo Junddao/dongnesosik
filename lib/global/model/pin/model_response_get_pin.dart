@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-class ResponseGetPin {
+class ModelResponseGetPin {
   String? result;
   String? message;
   List<ResponseGetPinData>? data;
-  ResponseGetPin({
+  ModelResponseGetPin({
     this.result,
     this.message,
     this.data,
@@ -18,8 +18,8 @@ class ResponseGetPin {
     };
   }
 
-  factory ResponseGetPin.fromMap(Map<String, dynamic> map) {
-    return ResponseGetPin(
+  factory ModelResponseGetPin.fromMap(Map<String, dynamic> map) {
+    return ModelResponseGetPin(
       result: map['result'],
       message: map['message'],
       data: List<ResponseGetPinData>.from(
@@ -29,8 +29,8 @@ class ResponseGetPin {
 
   String toJson() => json.encode(toMap());
 
-  factory ResponseGetPin.fromJson(String source) =>
-      ResponseGetPin.fromMap(json.decode(source));
+  factory ModelResponseGetPin.fromJson(String source) =>
+      ModelResponseGetPin.fromMap(json.decode(source));
 }
 
 class ResponseGetPinData {

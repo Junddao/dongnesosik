@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-class ResponsePostModel {
+class ModelResponsePost {
   String? result;
   String? message;
-  List<ResponsePostDataModel>? data;
-  ResponsePostModel({
+  List<ModelResponsePostData>? data;
+  ModelResponsePost({
     this.result,
     this.message,
     this.data,
@@ -18,29 +18,29 @@ class ResponsePostModel {
     };
   }
 
-  factory ResponsePostModel.fromMap(Map<String, dynamic> map) {
-    return ResponsePostModel(
+  factory ModelResponsePost.fromMap(Map<String, dynamic> map) {
+    return ModelResponsePost(
       result: map['result'],
       message: map['message'],
-      data: List<ResponsePostDataModel>.from(
-          map['data']?.map((x) => ResponsePostDataModel.fromMap(x))),
+      data: List<ModelResponsePostData>.from(
+          map['data']?.map((x) => ModelResponsePostData.fromMap(x))),
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory ResponsePostModel.fromJson(String source) =>
-      ResponsePostModel.fromMap(json.decode(source));
+  factory ModelResponsePost.fromJson(String source) =>
+      ModelResponsePost.fromMap(json.decode(source));
 }
 
-class ResponsePostDataModel {
+class ModelResponsePostData {
   int? id;
   String? userName;
   String? title;
   String? contents;
   List<String>? imageUrls;
   String? createDate;
-  ResponsePostDataModel({
+  ModelResponsePostData({
     this.id,
     this.userName,
     this.title,
@@ -60,8 +60,8 @@ class ResponsePostDataModel {
     };
   }
 
-  factory ResponsePostDataModel.fromMap(Map<String, dynamic> map) {
-    return ResponsePostDataModel(
+  factory ModelResponsePostData.fromMap(Map<String, dynamic> map) {
+    return ModelResponsePostData(
       userName: map['userName'],
       title: map['title'],
       contents: map['contents'],
@@ -72,6 +72,6 @@ class ResponsePostDataModel {
 
   String toJson() => json.encode(toMap());
 
-  factory ResponsePostDataModel.fromJson(String source) =>
-      ResponsePostDataModel.fromMap(json.decode(source));
+  factory ModelResponsePostData.fromJson(String source) =>
+      ModelResponsePostData.fromMap(json.decode(source));
 }

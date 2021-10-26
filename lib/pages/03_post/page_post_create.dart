@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dongnesosik/global/model/pin/request_create_pin.dart';
+import 'package:dongnesosik/global/model/pin/model_request_create_pin.dart';
 import 'package:dongnesosik/global/provider/file_provider.dart';
 import 'package:dongnesosik/global/provider/location_provider.dart';
 import 'package:dongnesosik/global/style/constants.dart';
@@ -425,7 +425,7 @@ class _PagePostCreateState extends State<PagePostCreate> {
 
     location = context.read<LocationProvider>().myPostLocation;
 
-    RequestCreatePin requestCreatePin = RequestCreatePin(
+    ModelRequestCreatePin requestCreatePin = ModelRequestCreatePin(
       lat: location!.latitude,
       lng: location!.longitude,
       title: _titleController.text,

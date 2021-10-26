@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:dongnesosik/global/model/config_model.dart';
+import 'package:dongnesosik/global/model/model_config.dart';
 import 'package:dongnesosik/global/provider/location_provider.dart';
 import 'package:dongnesosik/global/style/dscolors.dart';
 import 'package:dongnesosik/pages/00_Intro/page_splash.dart';
@@ -34,7 +34,7 @@ Future<void> readConfigFile() async {
 
   print(configJson);
   final configObject = jsonDecode(configJson);
-  ConfigModel().fromJson(configObject);
+  ModelConfig().fromJson(configObject);
 }
 
 class MyApp extends StatefulWidget {

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:dongnesosik/global/model/config_model.dart';
+import 'package:dongnesosik/global/model/model_config.dart';
 
 class ApiService {
   static String deviceIdentifier = 'unknown';
@@ -23,9 +23,9 @@ class ApiService {
       // final token = await _getAuthorizationToken();
       // print(token);
       // _headers['Credi-Token'] = '$token';
-      print('${ConfigModel().serverBaseUrl}');
+      print('${ModelConfig().serverBaseUrl}');
       response = await Dio()
-          .get('${ConfigModel().serverBaseUrl}$_path',
+          .get('${ModelConfig().serverBaseUrl}$_path',
               options: Options(
                 headers: _headers,
               ))
@@ -51,10 +51,10 @@ class ApiService {
 
       var _data = jsonEncode(map);
 
-      print('${ConfigModel().serverBaseUrl}');
+      print('${ModelConfig().serverBaseUrl}');
       response = await Dio()
           .post(
-            '${ConfigModel().serverBaseUrl}$_path',
+            '${ModelConfig().serverBaseUrl}$_path',
             data: _data,
             options: Options(
               headers: _headers,
@@ -94,10 +94,10 @@ class ApiService {
         );
       }
 
-      print('path = ${ConfigModel().serverBaseUrl}$_path');
+      print('path = ${ModelConfig().serverBaseUrl}$_path');
 
       response = await Dio()
-          .post('${ConfigModel().serverBaseUrl}$_path',
+          .post('${ModelConfig().serverBaseUrl}$_path',
               data: _formData,
               options: Options(
                 headers: _multiPartHeaders,

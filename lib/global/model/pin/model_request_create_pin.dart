@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-class RequestCreatePin {
+class ModelRequestCreatePin {
   double? lat;
   double? lng;
   String? title;
   String? body;
-  RequestCreatePin({
+  ModelRequestCreatePin({
     this.lat,
     this.lng,
     this.title,
@@ -21,8 +21,8 @@ class RequestCreatePin {
     };
   }
 
-  factory RequestCreatePin.fromMap(Map<String, dynamic> map) {
-    return RequestCreatePin(
+  factory ModelRequestCreatePin.fromMap(Map<String, dynamic> map) {
+    return ModelRequestCreatePin(
       lat: map['lat'] != null ? map['lat'] : null,
       lng: map['lng'] != null ? map['lng'] : null,
       title: map['title'] != null ? map['title'] : null,
@@ -32,6 +32,6 @@ class RequestCreatePin {
 
   String toJson() => json.encode(toMap());
 
-  factory RequestCreatePin.fromJson(String source) =>
-      RequestCreatePin.fromMap(json.decode(source));
+  factory ModelRequestCreatePin.fromJson(String source) =>
+      ModelRequestCreatePin.fromMap(json.decode(source));
 }

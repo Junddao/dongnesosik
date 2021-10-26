@@ -1,4 +1,4 @@
-import 'package:dongnesosik/global/model/pin/response_get_pin.dart';
+import 'package:dongnesosik/global/model/pin/model_response_get_pin.dart';
 import 'package:dongnesosik/global/provider/location_provider.dart';
 import 'package:dongnesosik/global/style/constants.dart';
 import 'package:dongnesosik/global/style/dscolors.dart';

@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:dongnesosik/global/model/config_model.dart';
-import 'package:dongnesosik/global/model/pin/request_create_pin.dart';
-import 'package:dongnesosik/global/model/pin/request_get_pin_range.dart';
-import 'package:dongnesosik/global/model/pin/response_get_pin.dart';
+import 'package:dongnesosik/global/model/model_config.dart';
+import 'package:dongnesosik/global/model/pin/model_request_create_pin.dart';
+import 'package:dongnesosik/global/model/pin/model_request_get_pin_range.dart';
+import 'package:dongnesosik/global/model/pin/model_response_get_pin.dart';
 import 'package:dongnesosik/global/provider/parent_provider.dart';
 import 'package:dongnesosik/global/service/api_service.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +44,7 @@ class LocationProvider extends ParentProvider {
     } catch (error) {}
   }
 
-  Future<void> createPin(RequestCreatePin requestCreatePin) async {
+  Future<void> createPin(ModelRequestCreatePin requestCreatePin) async {
     try {
       var api = ApiService();
       var response = await api.post('/pin/create', requestCreatePin.toMap());
@@ -58,12 +58,12 @@ class LocationProvider extends ParentProvider {
 
   Future<void> getPinInRagne(double? lat, double? lng, int? range) async {
     try {
-      RequestGetPinRange requestPinGetRange =
-          RequestGetPinRange(lat: lat, lng: lng, range: range);
+      ModelRequestGetPinRange requestPinGetRange =
+          ModelRequestGetPinRange(lat: lat, lng: lng, range: range);
       var api = ApiService();
       var response =
           await api.post('/pin/get/range', requestPinGetRange.toMap());
-      responseGetPinData = ResponseGetPin.fromMap(response).data;
+      responseGetPinData = ModelResponseGetPin.fromMap(response).data;
 
       notifyListeners();
     } catch (error) {
@@ -75,7 +75,7 @@ class LocationProvider extends ParentProvider {
     try {
       var api = ApiService();
       var response = await api.get('/pin/all');
-      responseGetPinData = ResponseGetPin.fromMap(response).data;
+      responseGetPinData = ModelResponseGetPin.fromMap(response).data;
 
       notifyListeners();
     } catch (error) {

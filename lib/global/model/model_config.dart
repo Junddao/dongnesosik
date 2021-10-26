@@ -1,9 +1,9 @@
-class ConfigModel {
-  static final ConfigModel _manager = ConfigModel._internal();
-  factory ConfigModel() {
+class ModelConfig {
+  static final ModelConfig _manager = ModelConfig._internal();
+  factory ModelConfig() {
     return _manager;
   }
-  ConfigModel._internal();
+  ModelConfig._internal();
 
   String apiProjectName = '';
   String serverCurruntType = '';

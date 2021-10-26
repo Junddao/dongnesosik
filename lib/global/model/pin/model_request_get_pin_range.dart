@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-class RequestGetPinRange {
+class ModelRequestGetPinRange {
   double? lat;
   double? lng;
   int? range;
-  RequestGetPinRange({
+  ModelRequestGetPinRange({
     this.lat,
     this.lng,
     this.range,
@@ -18,8 +18,8 @@ class RequestGetPinRange {
     };
   }
 
-  factory RequestGetPinRange.fromMap(Map<String, dynamic> map) {
-    return RequestGetPinRange(
+  factory ModelRequestGetPinRange.fromMap(Map<String, dynamic> map) {
+    return ModelRequestGetPinRange(
       lat: map['lat'],
       lng: map['lng'],
       range: map['range'],
@@ -28,6 +28,6 @@ class RequestGetPinRange {
 
   String toJson() => json.encode(toMap());
 
-  factory RequestGetPinRange.fromJson(String source) =>
-      RequestGetPinRange.fromMap(json.decode(source));
+  factory ModelRequestGetPinRange.fromJson(String source) =>
+      ModelRequestGetPinRange.fromMap(json.decode(source));
 }

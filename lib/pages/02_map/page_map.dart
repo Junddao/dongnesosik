@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:dongnesosik/global/model/pin/response_get_pin.dart';
+import 'package:dongnesosik/global/model/pin/model_response_get_pin.dart';
 import 'package:dongnesosik/global/provider/location_provider.dart';
 import 'package:dongnesosik/global/style/constants.dart';
 import 'package:dongnesosik/global/style/dscolors.dart';
@@ -11,6 +11,7 @@ import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 
@@ -176,22 +177,30 @@ class _PageMapState extends State<PageMap> {
           // my history
 
           ListTile(
-            leading:
-                Image.asset('assets/images/marker1.png', fit: BoxFit.cover),
+            leading: Icon(Ionicons.document_text_outline),
             title: Text(
-              'aaa',
-              style: DSTextStyles.bold18Grey06,
+              '내글보기',
+              style: DSTextStyles.bold14Black,
             ),
             onTap: () {
               Navigator.of(context).pop(); // drawer 닫기
             },
           ),
           ListTile(
-            leading:
-                Image.asset('assets/images/marker1.png', fit: BoxFit.cover),
+            leading: Icon(Ionicons.documents_outline),
+            title: Text(
+              '인기글보기',
+              style: DSTextStyles.bold14Black,
+            ),
+            onTap: () {
+              Navigator.of(context).pop(); // drawer 닫기
+            },
+          ),
+          ListTile(
+            leading: Icon(Ionicons.log_out_outline),
             title: Text(
               '로그아웃',
-              style: DSTextStyles.bold18Grey06,
+              style: DSTextStyles.bold14Black,
             ),
             onTap: () {
               FirebaseAuth.instance.signOut();

@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-class FileResponse {
+class ModelFileResponse {
   String? result;
   String? message;
   FileModel? data;
-  FileResponse({
+  ModelFileResponse({
     this.result,
     this.message,
     this.data,
@@ -18,8 +18,8 @@ class FileResponse {
     };
   }
 
-  factory FileResponse.fromMap(Map<String, dynamic> map) {
-    return FileResponse(
+  factory ModelFileResponse.fromMap(Map<String, dynamic> map) {
+    return ModelFileResponse(
       result: map['result'],
       message: map['message'],
       data: FileModel.fromMap(map['data']),
@@ -28,8 +28,8 @@ class FileResponse {
 
   String toJson() => json.encode(toMap());
 
-  factory FileResponse.fromJson(String source) =>
-      FileResponse.fromMap(json.decode(source));
+  factory ModelFileResponse.fromJson(String source) =>
+      ModelFileResponse.fromMap(json.decode(source));
 }
 
 class FileModel {
