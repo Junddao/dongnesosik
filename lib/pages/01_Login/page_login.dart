@@ -113,6 +113,28 @@ class _PageLoginState extends State<PageLogin> {
                         ),
                       )
                     : SizedBox.shrink(),
+                SizedBox(height: 20.0),
+                InkWell(
+                  onTap: () async {
+                    Navigator.of(context)
+                        .pushNamedAndRemoveUntil('PageMap', (route) => false);
+                  },
+                  child: Stack(
+                    children: [
+                      Container(
+                        height: 48,
+                        width: SizeConfig.screenWidth * 0.8,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30.0),
+                            color: Colors.transparent),
+                        child: Center(
+                            child: Text('Guest로 계속 사용하기',
+                                style:
+                                    DSTextStyles.regular12WarmGrey_underline)),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),

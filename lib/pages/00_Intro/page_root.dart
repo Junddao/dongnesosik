@@ -13,7 +13,8 @@ class PageRoot extends StatelessWidget {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.data == null) {
-            return PageLogin();
+            // return PageLogin();
+            return PageMap();
           } else {
             return PageMap();
           }

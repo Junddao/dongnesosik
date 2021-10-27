@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:dongnesosik/global/model/pin/model_response_get_pin.dart';
 import 'package:dongnesosik/global/provider/location_provider.dart';
+import 'package:dongnesosik/global/provider/post_provider.dart';
 import 'package:dongnesosik/global/style/constants.dart';
 import 'package:dongnesosik/global/style/dscolors.dart';
 import 'package:dongnesosik/global/style/dstextstyles.dart';
@@ -11,6 +12,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:location/location.dart';
@@ -128,6 +130,7 @@ class _PageMapState extends State<PageMap> {
         drawer: _drawer(),
         extendBodyBehindAppBar: true,
         drawerEnableOpenDragGesture: true,
+        // resizeToAvoidBottomInset: true,
         // floatingActionButton: FloatingActionButton(
         //   child: Icon(Icons.add, color: DSColors.white),
 
@@ -199,6 +202,20 @@ class _PageMapState extends State<PageMap> {
               Navigator.of(context).pop(); // drawer 닫기
             },
           ),
+          ListTile(
+            leading: Icon(Ionicons.share_social_outline),
+            title: Text(
+              '계정 연결',
+              style: DSTextStyles.bold14Black,
+            ),
+            onTap: () {
+              Navigator.of(context)
+                  .pushNamedAndRemoveUntil('PageLogin', (route) => false);
+              // Navigator.of(context)
+              //     .pushNamedAndRemoveUntil('PageRoot', (route) => false);
+            },
+          ),
+
           ListTile(
             leading: Icon(Ionicons.log_out_outline),
             title: Text(
@@ -276,13 +293,14 @@ class _PageMapState extends State<PageMap> {
     });
   }
 
-  Container _drawerHeader() {
+  Widget _drawerHeader() {
     return Container(
-      // height: 300,
+      height: 200,
       child: DrawerHeader(
         margin: EdgeInsets.zero,
         padding: EdgeInsets.only(left: 16, top: 16, bottom: 8),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ListTile(
               title: Text('memil님', style: DSTextStyles.bold16Black),
@@ -292,7 +310,6 @@ class _PageMapState extends State<PageMap> {
                 Navigator.of(context).pushNamed('PageUserSetting');
               },
             ),
-            // Divider(),
           ],
         ),
       ),
@@ -352,7 +369,11 @@ class _PageMapState extends State<PageMap> {
             context: context,
             isScrollControlled: true,
             builder: (context) {
-              return buildBottomSheet(context, id);
+              return Padding(
+                padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom),
+                child: buildBottomSheet(context, id),
+              );
             },
           );
         });
@@ -442,6 +463,7 @@ class _PageMapState extends State<PageMap> {
               child: Center(child: Icon(Ionicons.chevron_down_outline))),
           Expanded(
             child: SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -459,18 +481,11 @@ class _PageMapState extends State<PageMap> {
                             style: DSTextStyles.bold18Black),
                         SizedBox(height: 20),
                         Text(responseGetPinDatas.first.pin!.body!),
+                        SizedBox(height: 20),
                         Divider(),
                         // TODO 댓글 리스트
 
-                        ListView.builder(
-                            physics: NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            reverse: true,
-                            padding: EdgeInsets.only(top: 15.0),
-                            itemCount: 20,
-                            itemBuilder: (context, index) {
-                              return Text('aaa');
-                            }),
+                        _buildReviewList(),
                       ],
                       //iimage - size는 작게
                       //body
@@ -481,10 +496,7 @@ class _PageMapState extends State<PageMap> {
               ),
             ),
           ),
-          Positioned(
-            bottom: 10,
-            child: _buildMessageComposer(),
-          )
+          _buildMessageComposer(),
         ],
       ),
     );
@@ -526,59 +538,100 @@ class _PageMapState extends State<PageMap> {
     return RotateAnimatedText(data.pin!.title!);
   }
 
-  _buildMessageComposer() {
+  Widget _buildMessageComposer() {
     return SafeArea(
-      child: Container(
-        // height: 50,
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 12),
-        child: Row(
-          children: [
-            InkWell(
-              onTap: () {},
-              child: Icon(Icons.add_a_photo),
-            ),
-            SizedBox(width: 10),
-            Expanded(
-              child: Container(
-                height: 42,
-                margin: EdgeInsets.all(0),
-                padding: EdgeInsets.all(0),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Color(0xFFEFEFEF)),
-                  borderRadius: BorderRadius.circular(21),
-                  color: Color(0xFFF8F8F8),
-                ),
-                child: Row(
-                  children: <Widget>[
-                    const SizedBox(
-                      width: 8,
+      child: Consumer<PostProvider>(
+        builder: ((_, data, __) {
+          return Column(
+            children: [
+              data.reviewTarget == ''
+                  ? SizedBox.shrink()
+                  : Container(
+                      decoration: BoxDecoration(
+                        color: DSColors.warm_grey08,
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 12),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                    text: data.reviewTarget,
+                                    style: DSTextStyles.bold12Black),
+                                TextSpan(
+                                    text: '글에 댓글',
+                                    style: DSTextStyles.regular10Grey06),
+                              ],
+                            ),
+                          ),
+                          InkWell(
+                              onTap: () {
+                                context
+                                    .read<PostProvider>()
+                                    .setReviewTarget('');
+                              },
+                              child: Icon(Icons.close)),
+                        ],
+                      ),
                     ),
+              Container(
+                // height: 50,
+                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+                child: Row(
+                  children: [
+                    InkWell(
+                      onTap: () {},
+                      child: Icon(Icons.add_a_photo),
+                    ),
+                    SizedBox(width: 10),
                     Expanded(
-                      child: TextField(
-                        controller: tecMessage,
-                        onChanged: (value) {},
-                        keyboardType: TextInputType.multiline,
-                        maxLines: null,
-                        decoration: InputDecoration.collapsed(
-                          hintText: '메세지를 입력하세요',
+                      child: Container(
+                        height: 42,
+                        margin: EdgeInsets.all(0),
+                        padding: EdgeInsets.all(0),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Color(0xFFEFEFEF)),
+                          borderRadius: BorderRadius.circular(21),
+                          color: Color(0xFFF8F8F8),
+                        ),
+                        child: Row(
+                          children: <Widget>[
+                            const SizedBox(
+                              width: 8,
+                            ),
+                            Expanded(
+                              child: TextField(
+                                controller: tecMessage,
+                                onChanged: (value) {},
+                                keyboardType: TextInputType.multiline,
+                                maxLines: null,
+                                decoration: InputDecoration.collapsed(
+                                  hintText: '메세지를 입력하세요',
+                                ),
+                              ),
+                            ),
+                            InkWell(
+                              child: Container(
+                                child: Icon(Icons.send),
+                                padding: EdgeInsets.all(4),
+                              ),
+                              onTap: () {
+                                sendMessage();
+                              },
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                    InkWell(
-                      child: Container(
-                        child: Icon(Icons.send),
-                        padding: EdgeInsets.all(4),
-                      ),
-                      onTap: () {
-                        sendMessage();
-                      },
                     ),
                   ],
                 ),
               ),
-            ),
-          ],
-        ),
+            ],
+          );
+        }),
       ),
     );
   }
@@ -597,5 +650,56 @@ class _PageMapState extends State<PageMap> {
     // );
     tecMessage.text = '';
     // _sendMessageToServer(chatMessage);
+  }
+
+  Widget _buildReviewList() {
+    return
+        // ratings!.length == 0
+        //     ? emptyReview()
+        //     :
+        ListView.separated(
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              String reviewTarget = '종팔이';
+              return InkWell(
+                onTap: () {
+                  context.read<PostProvider>().setReviewTarget(reviewTarget);
+                },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(reviewTarget, style: DSTextStyles.bold12Black),
+                        SizedBox(width: 8),
+                        Text('2021-10-24 10:24',
+                            style: DSTextStyles.regular10WarmGrey),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      '내가 일빠임.',
+                      style: DSTextStyles.regular12Black,
+                    ),
+                    SizedBox(height: 8),
+                  ],
+                ),
+              );
+            },
+            separatorBuilder: (context, index) => Divider(),
+            itemCount: 3);
+  }
+
+  Widget emptyReview() {
+    return Container(
+      width: double.infinity,
+      child: Column(
+        children: [
+          Text('리뷰 없음'),
+        ],
+      ),
+    );
   }
 }

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dongnesosik/global/model/model_config.dart';
 import 'package:dongnesosik/global/provider/location_provider.dart';
+import 'package:dongnesosik/global/provider/post_provider.dart';
 import 'package:dongnesosik/global/style/dscolors.dart';
 import 'package:dongnesosik/pages/00_Intro/page_splash.dart';
 
@@ -59,6 +60,7 @@ class _MyAppState extends State<MyApp> {
           return MultiProvider(
             providers: [
               ChangeNotifierProvider(create: (_) => LocationProvider()),
+              ChangeNotifierProvider(create: (_) => PostProvider()),
             ],
             child: MaterialApp(
               theme: ThemeData(

@@ -510,6 +510,7 @@ class DSTextStyles {
       color: DSColors.warm_grey,
       fontWeight: FontWeight.w400,
       fontFamily: "NotoSansKR",
+      decoration: TextDecoration.underline,
       fontStyle: FontStyle.normal,
       fontSize: 12.0);
 
