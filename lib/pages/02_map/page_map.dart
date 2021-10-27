@@ -6,6 +6,7 @@ import 'package:dongnesosik/global/style/constants.dart';
 import 'package:dongnesosik/global/style/dscolors.dart';
 import 'package:dongnesosik/global/style/dstextstyles.dart';
 import 'package:dongnesosik/pages/components/ds_button.dart';
+import 'package:dongnesosik/pages/components/ds_photo_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
@@ -32,6 +33,8 @@ class _PageMapState extends State<PageMap> {
   Timer? _timer;
   var _time = 0;
   var _isRunning = false;
+  List<String> imageUrls = [test_image_url, test_image_url, test_image_url];
+  TextEditingController tecMessage = TextEditingController();
 
   @override
   void initState() {
@@ -424,54 +427,65 @@ class _PageMapState extends State<PageMap> {
     }).toList();
     context.read<LocationProvider>().selectedPinData =
         responseGetPinDatas.first;
-    return Container(
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-          color: DSColors.white),
-      child: Padding(
-        padding: const EdgeInsets.all(30.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            InkWell(
-              onTap: () {
-                goDetailPage();
-              },
-              child: Container(
-                width: double.infinity,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(responseGetPinDatas.first.pin!.title!,
-                        style: DSTextStyles.bold16Black),
-                    SizedBox(
-                      height: 8,
+    return viewPostContents(responseGetPinDatas);
+  }
+
+  Widget viewPostContents(List<ResponseGetPinData> responseGetPinDatas) {
+    return SizedBox(
+      height: SizeConfig.screenHeight * 0.7,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          SizedBox(
+              height: 30,
+              width: double.infinity,
+              child: Center(child: Icon(Ionicons.chevron_down_outline))),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  DSPhotoView(iamgeUrls: imageUrls),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: kDefaultHorizontalPadding),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 20),
+                        Text(responseGetPinDatas.first.pin!.title!,
+                            style: DSTextStyles.bold18Black),
+                        SizedBox(height: 20),
+                        Text(responseGetPinDatas.first.pin!.body!),
+                        Divider(),
+                        // TODO 댓글 리스트
+
+                        ListView.builder(
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            reverse: true,
+                            padding: EdgeInsets.only(top: 15.0),
+                            itemCount: 20,
+                            itemBuilder: (context, index) {
+                              return Text('aaa');
+                            }),
+                      ],
+                      //iimage - size는 작게
+                      //body
                     ),
-                    Text(
-                      responseGetPinDatas.first.pin!.body!,
-                      style: DSTextStyles.regular12Black,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                  ],
-                ),
+                  ),
+                  // const SizedBox(height: 90),
+                ],
               ),
             ),
-            DSButton(
-              text: '대화방 보기',
-              width: SizeConfig.screenWidth,
-              press: () {
-                goCommunityPage();
-              },
-            ),
-          ],
-        ),
+          ),
+          Positioned(
+            bottom: 10,
+            child: _buildMessageComposer(),
+          )
+        ],
       ),
     );
   }
@@ -510,5 +524,78 @@ class _PageMapState extends State<PageMap> {
 
   buildText(ResponseGetPinData data) {
     return RotateAnimatedText(data.pin!.title!);
+  }
+
+  _buildMessageComposer() {
+    return SafeArea(
+      child: Container(
+        // height: 50,
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+        child: Row(
+          children: [
+            InkWell(
+              onTap: () {},
+              child: Icon(Icons.add_a_photo),
+            ),
+            SizedBox(width: 10),
+            Expanded(
+              child: Container(
+                height: 42,
+                margin: EdgeInsets.all(0),
+                padding: EdgeInsets.all(0),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Color(0xFFEFEFEF)),
+                  borderRadius: BorderRadius.circular(21),
+                  color: Color(0xFFF8F8F8),
+                ),
+                child: Row(
+                  children: <Widget>[
+                    const SizedBox(
+                      width: 8,
+                    ),
+                    Expanded(
+                      child: TextField(
+                        controller: tecMessage,
+                        onChanged: (value) {},
+                        keyboardType: TextInputType.multiline,
+                        maxLines: null,
+                        decoration: InputDecoration.collapsed(
+                          hintText: '메세지를 입력하세요',
+                        ),
+                      ),
+                    ),
+                    InkWell(
+                      child: Container(
+                        child: Icon(Icons.send),
+                        padding: EdgeInsets.all(4),
+                      ),
+                      onTap: () {
+                        sendMessage();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void sendMessage() {
+    if (tecMessage.text.isEmpty) {
+      return;
+    }
+
+    // ChatMessage chatMessage = ChatMessage(
+    //   sendUserId: Singleton.shared.userData!.userId,
+    //   sendUserName: Singleton.shared.userData!.user!.name,
+    //   message: tecMessage.text,
+    //   type: MessageType.text,
+    //   chatRoomId: _chatRoomId,
+    // );
+    tecMessage.text = '';
+    // _sendMessageToServer(chatMessage);
   }
 }
