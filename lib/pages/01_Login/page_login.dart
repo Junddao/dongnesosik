@@ -1,7 +1,11 @@
 import 'dart:io';
 
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:dongnesosik/global/model/user/model_request_user_connect.dart';
+import 'package:dongnesosik/global/model/user/model_request_user_set.dart';
 import 'package:dongnesosik/global/provider/auth_provider.dart';
+import 'package:dongnesosik/global/provider/user_provider.dart';
+import 'package:dongnesosik/global/service/api_service.dart';
 import 'package:dongnesosik/global/style/constants.dart';
 import 'package:dongnesosik/global/style/dscolors.dart';
 import 'package:dongnesosik/global/style/dstextstyles.dart';
@@ -10,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:provider/provider.dart';
 
 class PageLogin extends StatefulWidget {
   const PageLogin({Key? key}) : super(key: key);
@@ -23,7 +28,7 @@ class _PageLoginState extends State<PageLogin> {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return Scaffold(
-      // backgroundColor: DSColors.tomato,
+      backgroundColor: DSColors.white,
       body: _body(),
     );
   }
@@ -37,15 +42,25 @@ class _PageLoginState extends State<PageLogin> {
           Expanded(
             flex: 5,
             child: Center(
-              child: SizedBox(
-                width: 200.0,
-                child: TextLiquidFill(
-                  text: '동내소식',
-                  waveColor: DSColors.black,
-                  boxBackgroundColor: DSColors.white,
-                  textStyle: DSTextStyles.bold40white,
-                  boxHeight: 300.0,
-                ),
+              // child: DefaultTextStyle(
+              //   style: DSTextStyles.bold40black,
+              //   child: AnimatedTextKit(
+
+              //     animatedTexts: [
+              //       WavyAnimatedText('DongNe'),
+              //       WavyAnimatedText('SoSik'),
+              //       WavyAnimatedText('동내소식'),
+              //     ],
+              //     isRepeatingAnimation: true,
+              //   ),
+              // ),
+
+              child: TextLiquidFill(
+                text: '동내소식',
+                waveColor: DSColors.black,
+                boxBackgroundColor: DSColors.white,
+                textStyle: DSTextStyles.bold40white,
+                // boxHeight: 300.0,
               ),
             ),
           ),
@@ -56,7 +71,34 @@ class _PageLoginState extends State<PageLogin> {
               children: [
                 InkWell(
                   onTap: () async {
-                    AuthProvider().signInWithGoogle();
+                    User? user = await AuthProvider().signInWithGoogle();
+                    String firebaseIdToken = await user!.getIdToken();
+                    ModelReqeustUserConnect modelReqeustUserConnect =
+                        ModelReqeustUserConnect(
+                      firebaseIdToken: firebaseIdToken,
+                      deviceModel: ApiService.deviceModel,
+                      osType: ApiService.osType,
+                      osVersion: ApiService.osVersion,
+                      uid: ApiService.deviceIdentifier,
+                    );
+                    await context
+                        .read<UserProvider>()
+                        .userConnect(modelReqeustUserConnect);
+
+                    ModelRequestUserSet modelRequestUserSet =
+                        ModelRequestUserSet(
+                      email: user.email ?? '',
+                      name: user.displayName ?? '',
+                      phoneNumber: user.phoneNumber ?? '',
+                      profileImage: user.photoURL ?? '',
+                    );
+
+                    await context
+                        .read<UserProvider>()
+                        .setUser(modelRequestUserSet);
+
+                    Navigator.of(context)
+                        .pushNamedAndRemoveUntil('PageMap', (route) => false);
                   },
                   child: Stack(
                     children: [
@@ -86,7 +128,34 @@ class _PageLoginState extends State<PageLogin> {
                 Platform.isIOS
                     ? InkWell(
                         onTap: () async {
-                          AuthProvider().signInWithApple();
+                          User? user = await AuthProvider().signInWithApple();
+                          String firebaseIdToken = await user!.getIdToken();
+                          ModelReqeustUserConnect modelReqeustUserConnect =
+                              ModelReqeustUserConnect(
+                            firebaseIdToken: firebaseIdToken,
+                            deviceModel: ApiService.deviceModel,
+                            osType: ApiService.osType,
+                            osVersion: ApiService.osVersion,
+                            uid: ApiService.deviceIdentifier,
+                          );
+                          await context
+                              .read<UserProvider>()
+                              .userConnect(modelReqeustUserConnect);
+
+                          ModelRequestUserSet modelRequestUserSet =
+                              ModelRequestUserSet(
+                            email: user.email ?? '',
+                            name: user.displayName ?? '이름없음',
+                            phoneNumber: user.phoneNumber ?? '',
+                            profileImage: user.photoURL ?? '',
+                          );
+
+                          await context
+                              .read<UserProvider>()
+                              .setUser(modelRequestUserSet);
+
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                              'PageMap', (route) => false);
                         },
                         child: Stack(
                           children: [

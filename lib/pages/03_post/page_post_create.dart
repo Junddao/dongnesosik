@@ -7,8 +7,8 @@ import 'package:dongnesosik/global/provider/location_provider.dart';
 import 'package:dongnesosik/global/style/constants.dart';
 import 'package:dongnesosik/global/style/dscolors.dart';
 import 'package:dongnesosik/global/style/dstextstyles.dart';
-import 'package:dongnesosik/pages/components/cd_image_picker.dart';
-import 'package:dongnesosik/pages/components/cd_two_button_dialog.dart';
+import 'package:dongnesosik/pages/components/ds_image_picker.dart';
+import 'package:dongnesosik/pages/components/ds_two_button_dialog.dart';
 import 'package:dongnesosik/pages/components/ds_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
@@ -56,7 +56,7 @@ class _PagePostCreateState extends State<PagePostCreate> {
       title: Text('글쓰기'),
       leading: TextButton(
         onPressed: () {
-          CDTwoButtonDialog.showCancelDialog(context: context).then((value) {
+          DSTwoButtonDialog.showCancelDialog(context: context).then((value) {
             setState(() {
               if (value == true) Navigator.of(context).pop();
             });
@@ -365,7 +365,7 @@ class _PagePostCreateState extends State<PagePostCreate> {
   Widget getAddPhotoBtn() {
     return InkWell(
       onTap: () async {
-        _selectedAssetList = (await CDImagePicker().cameraAndStay(
+        _selectedAssetList = (await DSImagePicker().cameraAndStay(
             context: context, assets: _selectedAssetList, maxAssetsCount: 5))!;
         await getFileList();
         setState(() {});

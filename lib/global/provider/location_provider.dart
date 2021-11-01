@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:dongnesosik/global/model/model_config.dart';
 import 'package:dongnesosik/global/model/pin/model_request_create_pin.dart';
+import 'package:dongnesosik/global/model/pin/model_request_create_pin_reply.dart';
 import 'package:dongnesosik/global/model/pin/model_request_get_pin_range.dart';
 import 'package:dongnesosik/global/model/pin/model_response_get_pin.dart';
+import 'package:dongnesosik/global/model/pin/model_response_get_pin_reply.dart';
 import 'package:dongnesosik/global/provider/parent_provider.dart';
 import 'package:dongnesosik/global/service/api_service.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +21,15 @@ class LocationProvider extends ParentProvider {
 
   List<ResponseGetPinData>? responseGetPinData = [];
   ResponseGetPinData? selectedPinData;
+
+  List<ModelResponseGetPinReplyData>? responseGetPinReplyData = [];
+
+  String replyTarget = '';
+
+  void setReplyTarget(String _replyTarget) {
+    replyTarget = _replyTarget;
+    notifyListeners();
+  }
 
   setMyLocation(LatLng location) {
     myLocation = location;
@@ -76,6 +87,32 @@ class LocationProvider extends ParentProvider {
       var api = ApiService();
       var response = await api.get('/pin/all');
       responseGetPinData = ModelResponseGetPin.fromMap(response).data;
+
+      notifyListeners();
+    } catch (error) {
+      setStateError();
+    }
+  }
+
+  Future<void> createReply(
+      ModelRequestCreatePinReply modelRequestCreatePinReply) async {
+    try {
+      var api = ApiService();
+      var response = await api.post(
+          '/pin/create/reply', modelRequestCreatePinReply.toMap());
+      // responseGetPinData = ResponseGetPin.fromMap(response).data;
+
+      notifyListeners();
+    } catch (error) {
+      setStateError();
+    }
+  }
+
+  Future<void> getPinReply(int id) async {
+    try {
+      var api = ApiService();
+      var response = await api.get('/pin/get/reply/$id');
+      responseGetPinReplyData = ModelResponseGetPinReply.fromMap(response).data;
 
       notifyListeners();
     } catch (error) {

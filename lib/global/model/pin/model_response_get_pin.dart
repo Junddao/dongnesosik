@@ -34,24 +34,24 @@ class ModelResponseGetPin {
 }
 
 class ResponseGetPinData {
-  int? id;
   ResponsePin? pin;
+  String? name;
   ResponseGetPinData({
-    this.id,
     this.pin,
+    this.name,
   });
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
       'pin': pin?.toMap(),
+      'name': name,
     };
   }
 
   factory ResponseGetPinData.fromMap(Map<String, dynamic> map) {
     return ResponseGetPinData(
-      id: map['id'],
-      pin: ResponsePin.fromMap(map['pin']),
+      pin: map['pin'] != null ? ResponsePin.fromMap(map['pin']) : null,
+      name: map['name'] != null ? map['name'] : null,
     );
   }
 
@@ -62,32 +62,40 @@ class ResponseGetPinData {
 }
 
 class ResponsePin {
+  int? id;
   double? lat;
   double? lng;
   String? title;
   String? body;
+  List<String>? images;
   ResponsePin({
+    this.id,
     this.lat,
     this.lng,
     this.title,
     this.body,
+    this.images,
   });
 
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'lat': lat,
       'lng': lng,
       'title': title,
       'body': body,
+      'Images': images,
     };
   }
 
   factory ResponsePin.fromMap(Map<String, dynamic> map) {
     return ResponsePin(
-      lat: map['lat'],
-      lng: map['lng'],
-      title: map['title'],
-      body: map['body'],
+      id: map['id'] != null ? map['id'] : null,
+      lat: map['lat'] != null ? map['lat'] : null,
+      lng: map['lng'] != null ? map['lng'] : null,
+      title: map['title'] != null ? map['title'] : null,
+      body: map['body'] != null ? map['body'] : null,
+      images: map['images'] != null ? List<String>.from(map['images']) : null,
     );
   }
 

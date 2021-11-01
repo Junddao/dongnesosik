@@ -1,4 +1,3 @@
-import 'package:dongnesosik/global/dummy_data.dart';
 import 'package:dongnesosik/global/model/pin/model_response_get_pin.dart';
 import 'package:dongnesosik/global/provider/location_provider.dart';
 import 'package:flutter/material.dart';
@@ -41,6 +40,7 @@ class _PagePostState extends State<PagePost> {
 
   Widget _listItem(int index, List<ResponseGetPinData> responseGetPinData) {
     return ListTile(
+      leading: Icon(Icons.person),
       title: Text(responseGetPinData[index].pin!.title!),
       subtitle: Text(responseGetPinData[index].pin!.body!),
       onTap: () {

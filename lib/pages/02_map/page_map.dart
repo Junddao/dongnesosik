@@ -1,18 +1,18 @@
 import 'dart:async';
+
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:dongnesosik/global/enums/view_state.dart';
+import 'package:dongnesosik/global/model/pin/model_request_create_pin_reply.dart';
 import 'package:dongnesosik/global/model/pin/model_response_get_pin.dart';
+import 'package:dongnesosik/global/model/singleton_user.dart';
 import 'package:dongnesosik/global/provider/location_provider.dart';
-import 'package:dongnesosik/global/provider/post_provider.dart';
 import 'package:dongnesosik/global/style/constants.dart';
 import 'package:dongnesosik/global/style/dscolors.dart';
 import 'package:dongnesosik/global/style/dstextstyles.dart';
-import 'package:dongnesosik/pages/components/ds_button.dart';
 import 'package:dongnesosik/pages/components/ds_photo_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:location/location.dart';
@@ -33,30 +33,22 @@ class _PageMapState extends State<PageMap> {
 
   BitmapDescriptor? customIcon;
   Timer? _timer;
-  var _time = 0;
-  var _isRunning = false;
+
   List<String> imageUrls = [test_image_url, test_image_url, test_image_url];
   TextEditingController tecMessage = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    // _start();
-    getMyLocation();
+    Future.microtask(() async {
+      await getMyLocation();
+    });
   }
 
   @override
   void dispose() {
     _timer?.cancel();
     super.dispose();
-  }
-
-  void _start() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        _time++;
-      });
-    });
   }
 
   void setCustomMarker() async {
@@ -66,7 +58,7 @@ class _PageMapState extends State<PageMap> {
     );
   }
 
-  void getMyLocation() async {
+  Future<void> getMyLocation() async {
     // final GoogleMapController controller = await _controller.future;
     if (context.read<LocationProvider>().myLocation != null) {
       moveCameraToMyLocation();
@@ -303,7 +295,8 @@ class _PageMapState extends State<PageMap> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ListTile(
-              title: Text('memil님', style: DSTextStyles.bold16Black),
+              title: Text(SingletonUser.singletonUser.userData.name!,
+                  style: DSTextStyles.bold16Black),
               subtitle: Text('반갑습니다.', style: DSTextStyles.regular12WarmGrey),
               trailing: Icon(Icons.arrow_forward_ios),
               onTap: () {
@@ -343,7 +336,7 @@ class _PageMapState extends State<PageMap> {
     await provider.getPinInRagne(provider.lastLocation!.latitude,
         provider.lastLocation!.longitude, 1000);
     provider.responseGetPinData!.forEach((element) {
-      addMarker(element.id!, LatLng(element.pin!.lat!, element.pin!.lng!));
+      addMarker(element.pin!.id!, LatLng(element.pin!.lat!, element.pin!.lng!));
     });
 
     // await provider.getPinAll();
@@ -364,7 +357,7 @@ class _PageMapState extends State<PageMap> {
 
         onTap: () async {
           print('marker onTap()');
-
+          context.read<LocationProvider>().getPinReply(id);
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
@@ -444,7 +437,7 @@ class _PageMapState extends State<PageMap> {
   Widget buildBottomSheet(BuildContext context, int id) {
     var responseGetPinDatas =
         context.read<LocationProvider>().responseGetPinData!.where((element) {
-      return element.id == id;
+      return element.pin!.id == id;
     }).toList();
     context.read<LocationProvider>().selectedPinData =
         responseGetPinDatas.first;
@@ -452,54 +445,59 @@ class _PageMapState extends State<PageMap> {
   }
 
   Widget viewPostContents(List<ResponseGetPinData> responseGetPinDatas) {
-    return SizedBox(
-      height: SizeConfig.screenHeight * 0.7,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          SizedBox(
-              height: 30,
-              width: double.infinity,
-              child: Center(child: Icon(Ionicons.chevron_down_outline))),
-          Expanded(
-            child: SingleChildScrollView(
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  DSPhotoView(iamgeUrls: imageUrls),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: kDefaultHorizontalPadding),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 20),
-                        Text(responseGetPinDatas.first.pin!.title!,
-                            style: DSTextStyles.bold18Black),
-                        SizedBox(height: 20),
-                        Text(responseGetPinDatas.first.pin!.body!),
-                        SizedBox(height: 20),
-                        Divider(),
-                        // TODO 댓글 리스트
-
-                        _buildReviewList(),
-                      ],
-                      //iimage - size는 작게
-                      //body
+    return Consumer<LocationProvider>(builder: (_, data, __) {
+      if (data.state == ViewState.Busy) {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+      return SizedBox(
+        height: SizeConfig.screenHeight * 0.8,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            SizedBox(
+                height: 30,
+                width: double.infinity,
+                child: Center(child: Icon(Ionicons.chevron_down_outline))),
+            Expanded(
+              child: SingleChildScrollView(
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    DSPhotoView(iamgeUrls: imageUrls),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: kDefaultHorizontalPadding),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 20),
+                          Text(data.selectedPinData!.pin!.title!,
+                              style: DSTextStyles.bold18Black),
+                          SizedBox(height: 20),
+                          Text(data.selectedPinData!.pin!.body!),
+                          SizedBox(height: 30),
+                          Divider(),
+                          _buildReviewList(data),
+                        ],
+                      ),
                     ),
-                  ),
-                  // const SizedBox(height: 90),
-                ],
+
+                    // const SizedBox(height: 90),
+                  ],
+                ),
               ),
             ),
-          ),
-          _buildMessageComposer(),
-        ],
-      ),
-    );
+            _buildMessageComposer(data),
+          ],
+        ),
+      );
+    });
   }
 
   void goDetailPage() async {
@@ -538,133 +536,135 @@ class _PageMapState extends State<PageMap> {
     return RotateAnimatedText(data.pin!.title!);
   }
 
-  Widget _buildMessageComposer() {
+  Widget _buildMessageComposer(LocationProvider data) {
     return SafeArea(
-      child: Consumer<PostProvider>(
-        builder: ((_, data, __) {
-          return Column(
-            children: [
-              data.reviewTarget == ''
-                  ? SizedBox.shrink()
-                  : Container(
-                      decoration: BoxDecoration(
-                        color: DSColors.warm_grey08,
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 15, vertical: 12),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          RichText(
-                            text: TextSpan(
-                              children: [
-                                TextSpan(
-                                    text: data.reviewTarget,
-                                    style: DSTextStyles.bold12Black),
-                                TextSpan(
-                                    text: '글에 댓글',
-                                    style: DSTextStyles.regular10Grey06),
-                              ],
-                            ),
-                          ),
-                          InkWell(
-                              onTap: () {
-                                context
-                                    .read<PostProvider>()
-                                    .setReviewTarget('');
-                              },
-                              child: Icon(Icons.close)),
-                        ],
-                      ),
-                    ),
-              Container(
-                // height: 50,
-                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 12),
-                child: Row(
-                  children: [
-                    InkWell(
-                      onTap: () {},
-                      child: Icon(Icons.add_a_photo),
-                    ),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: Container(
-                        height: 42,
-                        margin: EdgeInsets.all(0),
-                        padding: EdgeInsets.all(0),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Color(0xFFEFEFEF)),
-                          borderRadius: BorderRadius.circular(21),
-                          color: Color(0xFFF8F8F8),
-                        ),
-                        child: Row(
-                          children: <Widget>[
-                            const SizedBox(
-                              width: 8,
-                            ),
-                            Expanded(
-                              child: TextField(
-                                controller: tecMessage,
-                                onChanged: (value) {},
-                                keyboardType: TextInputType.multiline,
-                                maxLines: null,
-                                decoration: InputDecoration.collapsed(
-                                  hintText: '메세지를 입력하세요',
-                                ),
-                              ),
-                            ),
-                            InkWell(
-                              child: Container(
-                                child: Icon(Icons.send),
-                                padding: EdgeInsets.all(4),
-                              ),
-                              onTap: () {
-                                sendMessage();
-                              },
-                            ),
+      child: Column(
+        children: [
+          data.selectedReplyData == null
+              ? SizedBox.shrink()
+              : Container(
+                  decoration: BoxDecoration(
+                    color: DSColors.warm_grey08,
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                                text: data.selectedReplyData!.name,
+                                style: DSTextStyles.bold12Black),
+                            TextSpan(
+                                text: '글에 댓글',
+                                style: DSTextStyles.regular10Grey06),
                           ],
                         ),
                       ),
-                    ),
-                  ],
+                      InkWell(
+                          onTap: () {
+                            context
+                                .read<LocationProvider>()
+                                .setReplyTarget(null);
+                          },
+                          child: Icon(Icons.close)),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          );
-        }),
+          Container(
+            // height: 50,
+            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+            child: Row(
+              children: [
+                InkWell(
+                  onTap: () {},
+                  child: Icon(Icons.add_a_photo),
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Container(
+                    height: 42,
+                    margin: EdgeInsets.all(0),
+                    padding: EdgeInsets.all(0),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Color(0xFFEFEFEF)),
+                      borderRadius: BorderRadius.circular(21),
+                      color: Color(0xFFF8F8F8),
+                    ),
+                    child: Row(
+                      children: <Widget>[
+                        const SizedBox(
+                          width: 8,
+                        ),
+                        Expanded(
+                          child: TextField(
+                            controller: tecMessage,
+                            onChanged: (value) {},
+                            keyboardType: TextInputType.multiline,
+                            maxLines: null,
+                            decoration: InputDecoration.collapsed(
+                              hintText: '메세지를 입력하세요',
+                            ),
+                          ),
+                        ),
+                        InkWell(
+                          child: Container(
+                            child: Icon(Icons.send),
+                            padding: EdgeInsets.all(4),
+                          ),
+                          onTap: () {
+                            createReply();
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  void sendMessage() {
+  void createReply() {
+    var provider = context.read<LocationProvider>();
     if (tecMessage.text.isEmpty) {
       return;
     }
 
-    // ChatMessage chatMessage = ChatMessage(
-    //   sendUserId: Singleton.shared.userData!.userId,
-    //   sendUserName: Singleton.shared.userData!.user!.name,
-    //   message: tecMessage.text,
-    //   type: MessageType.text,
-    //   chatRoomId: _chatRoomId,
-    // );
+    if (provider.selectedReplyData != null) {}
+
+    ModelRequestCreatePinReply modelRequestCreatePinReply =
+        ModelRequestCreatePinReply(
+      pinId: provider.selectedPinData!.pin!.id,
+      body: tecMessage.text,
+      password: '0000',
+    );
     tecMessage.text = '';
-    // _sendMessageToServer(chatMessage);
+    provider.createReply(modelRequestCreatePinReply).then((value) {
+      context
+          .read<LocationProvider>()
+          .getPinReply(provider.selectedPinData!.pin!.id!);
+    });
   }
 
-  Widget _buildReviewList() {
-    return
-        // ratings!.length == 0
-        //     ? emptyReview()
-        //     :
-        ListView.separated(
+  Widget _buildReviewList(LocationProvider provider) {
+    return provider.responseGetPinReplyData!.length == 0
+        ? emptyReview()
+        : ListView.separated(
             physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
+            itemCount: provider.responseGetPinReplyData!.length,
             itemBuilder: (context, index) {
-              String reviewTarget = '종팔이';
+              var data = provider.responseGetPinReplyData![index];
+
               return InkWell(
                 onTap: () {
-                  context.read<PostProvider>().setReviewTarget(reviewTarget);
+                  context.read<LocationProvider>().setReplyTarget(data);
                 },
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -672,15 +672,15 @@ class _PageMapState extends State<PageMap> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Text(reviewTarget, style: DSTextStyles.bold12Black),
-                        SizedBox(width: 8),
-                        Text('2021-10-24 10:24',
+                        Text(data.name!, style: DSTextStyles.bold12Black),
+                        SizedBox(width: 16),
+                        Text(data.createAt ?? '20000',
                             style: DSTextStyles.regular10WarmGrey),
                       ],
                     ),
                     SizedBox(height: 8),
                     Text(
-                      '내가 일빠임.',
+                      data.reply!.body!,
                       style: DSTextStyles.regular12Black,
                     ),
                     SizedBox(height: 8),
@@ -689,13 +689,14 @@ class _PageMapState extends State<PageMap> {
               );
             },
             separatorBuilder: (context, index) => Divider(),
-            itemCount: 3);
+          );
   }
 
   Widget emptyReview() {
     return Container(
       width: double.infinity,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('리뷰 없음'),
         ],

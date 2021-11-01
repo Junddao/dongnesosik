@@ -1,7 +1,7 @@
 import 'package:dongnesosik/global/style/dstextstyles.dart';
 import 'package:flutter/material.dart';
 
-class CDTwoButtonDialog {
+class DSTwoButtonDialog {
   static Future<bool> showCancelDialog({
     required BuildContext context,
     String? title,

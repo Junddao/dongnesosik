@@ -2,15 +2,23 @@
     package="com.jj.dongnesosik">
 
    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+   <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
    <uses-permission android:name="android.permission.INTERNET"/>
    <uses-permission android:name="android.permission.CAMERA"/>
    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+ 
+ 
+ 
    <application
         android:label="dongnesosik"
         android:icon="@mipmap/ic_launcher">
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyAoeKpyN_EODABnnIV_Wdx7Tu8Y1QECowY"/>
+        
+          <!-- android:value="AIzaSyCuuGFepkNdTLU-kbwG7T-UGl9yNI9nKUg"/> -->
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -48,9 +56,5 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-
-        <meta-data android:name="com.google.android.geo.API_KEY"
-          android:value="AIzaSyAoeKpyN_EODABnnIV_Wdx7Tu8Y1QECowY"/>
-          <!-- android:value="AIzaSyCuuGFepkNdTLU-kbwG7T-UGl9yNI9nKUg"/> -->
     </application>
 </manifest>

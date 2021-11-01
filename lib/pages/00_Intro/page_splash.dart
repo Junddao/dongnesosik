@@ -1,3 +1,7 @@
+import 'package:dongnesosik/global/model/model_shared_preferences.dart';
+import 'package:dongnesosik/global/model/user/model_request_guest_info.dart';
+import 'package:dongnesosik/global/provider/user_provider.dart';
+import 'package:dongnesosik/global/service/api_service.dart';
 import 'package:dongnesosik/global/style/dstextstyles.dart';
 import 'package:flutter/material.dart';
 
@@ -9,9 +13,32 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  Future<bool> _mockCheckForSession() async {
+  Future<bool> _isLogin() async {
     // FirebaseAuth.instance.signOut();
-    await Future.delayed(Duration(milliseconds: 2000), () {});
+    await Future.delayed(Duration(milliseconds: 2000));
+
+    String? myToken = await ModelSharedPreferences.readToken();
+    ModelRequestGuestInfo modelRequestUserGuestInfo = ModelRequestGuestInfo(
+      uid: ApiService.deviceIdentifier,
+      osType: ApiService.osType,
+      osVersion: ApiService.osVersion,
+      deviceModel: ApiService.deviceModel,
+    );
+
+    if (myToken == '') {
+      await getTokenAndUserInfo(modelRequestUserGuestInfo);
+      Navigator.of(context)
+          .pushNamedAndRemoveUntil('PageLogin', (route) => false);
+    } else {
+      await context.read<UserProvider>().getUser().catchError((onError) async {
+        await getTokenAndUserInfo(modelRequestUserGuestInfo);
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('PageLogin', (route) => false);
+      });
+      Navigator.of(context)
+          .pushNamedAndRemoveUntil('PageMap', (route) => false);
+      // shared에 있는걸로 가져다 쓰기
+    }
 
     return true;
   }
@@ -19,24 +46,9 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-
-    _mockCheckForSession().then((value) async {
-      if (value == true) _navigatorToRoot();
+    Future.microtask(() {
+      _isLogin();
     });
-  }
-
-  void _navigatorToRoot() {
-    // UserProfileData userProfileData = new UserProfileData(
-    //   _user.displayName,
-    //   _user.photoURL,
-    //   _user.email,
-    //   _user.email, // id
-    //   '',
-    //   '',
-    // );
-
-    Navigator.of(context).pushNamed('PageRoot');
-    // Navigator.of(context).pushNamed('OnBoardingScreenPage');
   }
 
   @override
@@ -55,5 +67,11 @@ class _SplashScreenState extends State<SplashScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> getTokenAndUserInfo(
+      ModelRequestGuestInfo modelRequestUserGuestInfo) async {
+    await context.read<UserProvider>().createGuest(modelRequestUserGuestInfo);
+    await context.read<UserProvider>().getUser();
   }
 }

@@ -1,13 +1,11 @@
 import 'dart:convert';
 
-class ModelUserInfo {
-  int? id;
+class ModelRequestUserSet {
   String? name;
   String? phoneNumber;
   String? email;
   String? profileImage;
-  ModelUserInfo({
-    this.id,
+  ModelRequestUserSet({
     this.name,
     this.phoneNumber,
     this.email,
@@ -16,7 +14,6 @@ class ModelUserInfo {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
       'name': name,
       'phoneNumber': phoneNumber,
       'email': email,
@@ -24,9 +21,8 @@ class ModelUserInfo {
     };
   }
 
-  factory ModelUserInfo.fromMap(Map<String, dynamic> map) {
-    return ModelUserInfo(
-      id: map['id'] != null ? map['id'] : null,
+  factory ModelRequestUserSet.fromMap(Map<String, dynamic> map) {
+    return ModelRequestUserSet(
       name: map['name'] != null ? map['name'] : null,
       phoneNumber: map['phoneNumber'] != null ? map['phoneNumber'] : null,
       email: map['email'] != null ? map['email'] : null,
@@ -36,18 +32,16 @@ class ModelUserInfo {
 
   String toJson() => json.encode(toMap());
 
-  factory ModelUserInfo.fromJson(String source) =>
-      ModelUserInfo.fromMap(json.decode(source));
+  factory ModelRequestUserSet.fromJson(String source) =>
+      ModelRequestUserSet.fromMap(json.decode(source));
 
-  ModelUserInfo copyWith({
-    int? id,
+  ModelRequestUserSet copyWith({
     String? name,
     String? phoneNumber,
     String? email,
     String? profileImage,
   }) {
-    return ModelUserInfo(
-      id: id ?? this.id,
+    return ModelRequestUserSet(
       name: name ?? this.name,
       phoneNumber: phoneNumber ?? this.phoneNumber,
       email: email ?? this.email,
