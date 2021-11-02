@@ -9,6 +9,7 @@ import 'package:dongnesosik/global/provider/location_provider.dart';
 import 'package:dongnesosik/global/style/constants.dart';
 import 'package:dongnesosik/global/style/dscolors.dart';
 import 'package:dongnesosik/global/style/dstextstyles.dart';
+import 'package:dongnesosik/pages/components/ds_button.dart';
 import 'package:dongnesosik/pages/components/ds_photo_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -19,8 +20,9 @@ import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 
 class PageMap extends StatefulWidget {
-  const PageMap({Key? key}) : super(key: key);
+  const PageMap({Key? key, this.pinId}) : super(key: key);
 
+  final int? pinId;
   @override
   _PageMapState createState() => _PageMapState();
 }
@@ -28,6 +30,7 @@ class PageMap extends StatefulWidget {
 class _PageMapState extends State<PageMap> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Marker> _markers = [];
+  List<Marker> _temporaryMaker = [];
   Completer<GoogleMapController> _controller = Completer();
   Location location = Location();
 
@@ -35,13 +38,28 @@ class _PageMapState extends State<PageMap> {
   Timer? _timer;
 
   List<String> imageUrls = [test_image_url, test_image_url, test_image_url];
-  TextEditingController tecMessage = TextEditingController();
+  TextEditingController _tecMessage = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     Future.microtask(() async {
-      await getMyLocation();
+      await getLocation();
+      Future.delayed(Duration(milliseconds: 500), () {
+        if (widget.pinId != null) {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            builder: (context) {
+              return Padding(
+                padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom),
+                child: buildBottomSheet(context, widget.pinId!),
+              );
+            },
+          );
+        }
+      });
     });
   }
 
@@ -58,8 +76,11 @@ class _PageMapState extends State<PageMap> {
     );
   }
 
-  Future<void> getMyLocation() async {
-    // final GoogleMapController controller = await _controller.future;
+  Future<void> getLocation() async {
+    if (context.read<LocationProvider>().lastLocation != null) {
+      moveCameraToLastLocation();
+      return;
+    }
     if (context.read<LocationProvider>().myLocation != null) {
       moveCameraToMyLocation();
       return;
@@ -102,6 +123,20 @@ class _PageMapState extends State<PageMap> {
           bearing: 0,
           target: LatLng(
               provider.myLocation!.latitude, provider.myLocation!.longitude),
+          zoom: 15,
+        ),
+      ));
+    });
+  }
+
+  void moveCameraToLastLocation() {
+    var provider = context.read<LocationProvider>();
+    _controller.future.then((value) {
+      value.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(
+          bearing: 0,
+          target: LatLng(provider.lastLocation!.latitude,
+              provider.lastLocation!.longitude),
           zoom: 15,
         ),
       ));
@@ -156,6 +191,7 @@ class _PageMapState extends State<PageMap> {
       actions: [
         TextButton(
           onPressed: () {
+            context.read<LocationProvider>().setMyPostLocation(null);
             Navigator.of(context).pushNamed('PagePostCreate');
           },
           child: Text('새글쓰기', style: DSTextStyles.bold14Tomato),
@@ -181,7 +217,7 @@ class _PageMapState extends State<PageMap> {
               style: DSTextStyles.bold14Black,
             ),
             onTap: () {
-              Navigator.of(context).pop(); // drawer 닫기
+              Navigator.of(context).pushNamed('PageMyPost');
             },
           ),
           ListTile(
@@ -194,32 +230,35 @@ class _PageMapState extends State<PageMap> {
               Navigator.of(context).pop(); // drawer 닫기
             },
           ),
-          ListTile(
-            leading: Icon(Ionicons.share_social_outline),
-            title: Text(
-              '계정 연결',
-              style: DSTextStyles.bold14Black,
-            ),
-            onTap: () {
-              Navigator.of(context)
-                  .pushNamedAndRemoveUntil('PageLogin', (route) => false);
-              // Navigator.of(context)
-              //     .pushNamedAndRemoveUntil('PageRoot', (route) => false);
-            },
-          ),
+          SingletonUser.singletonUser.userData.email == null ||
+                  SingletonUser.singletonUser.userData.email!.isEmpty
+              ? ListTile(
+                  leading: Icon(Ionicons.share_social_outline),
+                  title: Text(
+                    '계정 연결',
+                    style: DSTextStyles.bold14Black,
+                  ),
+                  onTap: () {
+                    Navigator.of(context)
+                        .pushNamedAndRemoveUntil('PageLogin', (route) => false);
+                    // Navigator.of(context)
+                    //     .pushNamedAndRemoveUntil('PageRoot', (route) => false);
+                  },
+                )
+              : SizedBox.shrink(),
 
-          ListTile(
-            leading: Icon(Ionicons.log_out_outline),
-            title: Text(
-              '로그아웃',
-              style: DSTextStyles.bold14Black,
-            ),
-            onTap: () {
-              FirebaseAuth.instance.signOut();
-              // Navigator.of(context)
-              //     .pushNamedAndRemoveUntil('PageRoot', (route) => false);
-            },
-          ),
+          // ListTile(
+          //   leading: Icon(Ionicons.log_out_outline),
+          //   title: Text(
+          //     '로그아웃',
+          //     style: DSTextStyles.bold14Black,
+          //   ),
+          //   onTap: () {
+          //     FirebaseAuth.instance.signOut();
+          //     Navigator.of(context)
+          //         .pushNamedAndRemoveUntil('PageRoot', (route) => false);
+          //   },
+          // ),
         ],
       ),
     );
@@ -242,7 +281,8 @@ class _PageMapState extends State<PageMap> {
                 target: _lastLocation,
                 zoom: 15,
               ),
-              markers: _markers.toSet(),
+              markers: [..._markers, ..._temporaryMaker].toSet(),
+              rotateGesturesEnabled: false,
               myLocationEnabled: true,
               myLocationButtonEnabled: true,
               // padding: EdgeInsets.only(bottom: 60, right: 8),
@@ -250,16 +290,18 @@ class _PageMapState extends State<PageMap> {
               zoomControlsEnabled: false,
               onCameraMove: _onCameraMove,
               onCameraIdle: _onCameraIdle,
-              // onTap: (point) {
-              //   _handleTap(point);
-              // },
+              onTap: (point) {
+                _handleTap(point);
+              },
             ),
             Positioned(
               bottom: 30,
               left: 24,
               child: InkWell(
                   onTap: () {
-                    Navigator.of(context).pushNamed('PagePost');
+                    Navigator.of(context).pushNamed('PagePost').then((value) {
+                      setState(() {});
+                    });
                   },
                   child: _newsInfoWidget()),
             ),
@@ -373,27 +415,88 @@ class _PageMapState extends State<PageMap> {
     _markers.add(marker);
   }
 
-//   _handleTap(LatLng point) {
+  _handleTap(LatLng point) {
+    var provider = context.read<LocationProvider>();
 
-//     var provider = context.read<LocationProvider>();
+    print('handelTap');
+    provider.setMyPostLocation(point);
+    provider.getAddress(point);
 
-//     print('handelTap');
-//     provider.setLastLocation(point);
-//     provider.getAddress(point);
+    _temporaryMaker.clear();
+    addTemporaryMarker(0, point);
 
-// _markers.clear();
-// addMarker(id, latLng)
-//     final marker = Marker(
-//       markerId: MarkerId(provider.lastLocation.toString()),
-//       position: provider.lastLocation!,
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return buildSelectLocationBottomSheet(context);
+      },
+    ).then((value) {
+      if (value != true) {
+        // 취소하면 postLocation 초기화 필요.
+        context.read<LocationProvider>().setMyPostLocation(null);
+      }
+      _temporaryMaker.clear();
+    });
+  }
 
-//       // TODO : Info Window는 내 주변 일정거리 안에 글의 갯수를 긁어서 보여주게 함.
+  Widget buildSelectLocationBottomSheet(BuildContext context) {
+    var provider = context.watch<LocationProvider>();
+    String? address = provider.placemarks[0].name!;
+    // String? address = provider.placemarks[0].locality! +
+    //     " " +
+    //     provider.placemarks[0].subLocality! +
+    //     " " +
+    //     provider.placemarks[0].thoroughfare! +
+    //     " " +
+    //     provider.placemarks[0].subThoroughfare!;
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+          color: DSColors.white),
+      child: Padding(
+        padding: const EdgeInsets.all(30.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(address, style: DSTextStyles.bold14Black),
+            SizedBox(
+              height: 10,
+            ),
+            Divider(),
+            DSButton(
+              text: '여기에 새글을 쓰겠어요!',
+              width: SizeConfig.screenWidth,
+              press: () {
+                Navigator.of(context)
+                    .popAndPushNamed('PagePostCreate', result: true);
+              },
+            ),
+            DSButton(
+              text: '다음에 쓸께요.',
+              width: SizeConfig.screenWidth,
+              type: ButtonType.transparent,
+              press: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-//       // icon: customIcon!,
-//     );
-
-//     _markers.add(marker);
-//   }
+  void addTemporaryMarker(int id, LatLng latLng) {
+    final marker = Marker(
+      markerId: MarkerId(id.toString()),
+      position: latLng,
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+      // icon: customIcon!,
+    );
+    _temporaryMaker.add(marker);
+  }
 
   Widget _newsInfoWidget() {
     var provider = context.read<LocationProvider>();
@@ -469,7 +572,8 @@ class _PageMapState extends State<PageMap> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   mainAxisSize: MainAxisSize.max,
                   children: [
-                    DSPhotoView(iamgeUrls: imageUrls),
+                    DSPhotoView(
+                        iamgeUrls: data.selectedPinData!.pin!.images ?? []),
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: kDefaultHorizontalPadding),
@@ -540,39 +644,6 @@ class _PageMapState extends State<PageMap> {
     return SafeArea(
       child: Column(
         children: [
-          data.selectedReplyData == null
-              ? SizedBox.shrink()
-              : Container(
-                  decoration: BoxDecoration(
-                    color: DSColors.warm_grey08,
-                  ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                                text: data.selectedReplyData!.name,
-                                style: DSTextStyles.bold12Black),
-                            TextSpan(
-                                text: '글에 댓글',
-                                style: DSTextStyles.regular10Grey06),
-                          ],
-                        ),
-                      ),
-                      InkWell(
-                          onTap: () {
-                            context
-                                .read<LocationProvider>()
-                                .setReplyTarget(null);
-                          },
-                          child: Icon(Icons.close)),
-                    ],
-                  ),
-                ),
           Container(
             // height: 50,
             padding: EdgeInsets.symmetric(horizontal: 15, vertical: 12),
@@ -600,7 +671,7 @@ class _PageMapState extends State<PageMap> {
                         ),
                         Expanded(
                           child: TextField(
-                            controller: tecMessage,
+                            controller: _tecMessage,
                             onChanged: (value) {},
                             keyboardType: TextInputType.multiline,
                             maxLines: null,
@@ -632,19 +703,20 @@ class _PageMapState extends State<PageMap> {
 
   void createReply() {
     var provider = context.read<LocationProvider>();
-    if (tecMessage.text.isEmpty) {
+    if (_tecMessage.text.isEmpty) {
       return;
     }
 
+    // 대댓글 처리용
     if (provider.selectedReplyData != null) {}
 
     ModelRequestCreatePinReply modelRequestCreatePinReply =
         ModelRequestCreatePinReply(
       pinId: provider.selectedPinData!.pin!.id,
-      body: tecMessage.text,
+      body: _tecMessage.text,
       password: '0000',
     );
-    tecMessage.text = '';
+    _tecMessage.text = '';
     provider.createReply(modelRequestCreatePinReply).then((value) {
       context
           .read<LocationProvider>()
@@ -665,6 +737,7 @@ class _PageMapState extends State<PageMap> {
               return InkWell(
                 onTap: () {
                   context.read<LocationProvider>().setReplyTarget(data);
+                  _tecMessage.text = '@${data.name} ';
                 },
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dongnesosik/global/model/model_config.dart';
+import 'package:dongnesosik/global/provider/file_provider.dart';
 import 'package:dongnesosik/global/provider/location_provider.dart';
 
 import 'package:dongnesosik/global/provider/user_provider.dart';
@@ -64,6 +65,7 @@ class _MyAppState extends State<MyApp> {
             providers: [
               ChangeNotifierProvider(create: (_) => LocationProvider()),
               ChangeNotifierProvider(create: (_) => UserProvider()),
+              ChangeNotifierProvider(create: (_) => FileProvider()),
             ],
             child: MaterialApp(
               theme: ThemeData(

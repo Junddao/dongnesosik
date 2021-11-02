@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dongnesosik/global/style/dscolors.dart';
+import 'package:dongnesosik/global/style/dstextstyles.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 
@@ -24,7 +25,15 @@ class _DSPhotoViewState extends State<DSPhotoView> {
   @override
   Widget build(BuildContext context) {
     return widget.iamgeUrls.length == 0
-        ? SizedBox.shrink()
+        ? Container(
+            width: double.infinity,
+            height: widget.screenHeight,
+            decoration: BoxDecoration(
+              color: DSColors.greyish,
+            ),
+            child: Center(
+                child: Text('No Image', style: DSTextStyles.bold14White)),
+          )
         : Container(
             width: double.infinity,
             height: widget.screenHeight,

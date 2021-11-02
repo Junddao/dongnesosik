@@ -24,10 +24,10 @@ class LocationProvider extends ParentProvider {
 
   List<ModelResponseGetPinReplyData>? responseGetPinReplyData = [];
 
-  String replyTarget = '';
+  ModelResponseGetPinReplyData? selectedReplyData;
 
-  void setReplyTarget(String _replyTarget) {
-    replyTarget = _replyTarget;
+  void setReplyTarget(ModelResponseGetPinReplyData? _selectedReplyData) {
+    selectedReplyData = _selectedReplyData;
     notifyListeners();
   }
 
@@ -41,7 +41,7 @@ class LocationProvider extends ParentProvider {
     notifyListeners();
   }
 
-  setMyPostLocation(LatLng location) {
+  setMyPostLocation(LatLng? location) {
     myPostLocation = location;
     notifyListeners();
   }

@@ -2,22 +2,21 @@ import 'package:dongnesosik/global/model/pin/model_response_get_pin.dart';
 import 'package:dongnesosik/global/provider/location_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
 
-class PagePost extends StatefulWidget {
-  const PagePost({Key? key}) : super(key: key);
+class PageMyPost extends StatefulWidget {
+  const PageMyPost({Key? key}) : super(key: key);
 
   @override
-  _PagePostState createState() => _PagePostState();
+  _PageMyPostState createState() => _PageMyPostState();
 }
 
-class _PagePostState extends State<PagePost> {
+class _PageMyPostState extends State<PageMyPost> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('동내 게시글'),
+        title: Text('내글'),
       ),
       body: _body(),
     );

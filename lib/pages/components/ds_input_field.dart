@@ -48,8 +48,8 @@ class DSInputField extends StatelessWidget {
         ),
         labelText: title,
         hintText: hintText,
-        labelStyle: DSTextStyles.regular18black,
-        hintStyle: DSTextStyles.regular18black,
+        labelStyle: DSTextStyles.regular16Pinkish_grey,
+        hintStyle: DSTextStyles.regular16Pinkish_grey,
       ),
       validator: warningMessage == null || validator != null
           ? validator

@@ -73,12 +73,13 @@ class _PageUserSettingState extends State<PageUserSetting> {
                   ],
                 ),
               ),
+              Text('이메일 ${SingletonUser.singletonUser.userData.email!}'),
               SizedBox(height: 20),
               DSInputField(
                 controller: _tecName,
-                title: "이름:",
-                hintText: "이름을 입력해주세요",
-                warningMessage: "이름을 입력해주세요",
+                title: "성명",
+                hintText: "성명을 입력해주세요",
+                warningMessage: "성명을 입력해주세요",
                 onEditingComplete: () => node.nextFocus(),
               ),
               // DSInputField(

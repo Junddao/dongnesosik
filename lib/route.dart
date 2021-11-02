@@ -2,6 +2,7 @@ import 'package:dongnesosik/page_tabs.dart';
 import 'package:dongnesosik/pages/00_Intro/page_root.dart';
 import 'package:dongnesosik/pages/01_Login/page_login.dart';
 import 'package:dongnesosik/pages/02_map/page_map.dart';
+import 'package:dongnesosik/pages/03_post/page_my_post.dart';
 import 'package:dongnesosik/pages/03_post/page_post.dart';
 import 'package:dongnesosik/pages/03_post/page_post_community.dart';
 import 'package:dongnesosik/pages/03_post/page_post_detail.dart';
@@ -37,7 +38,9 @@ class Routers {
 
       case 'PageMap':
         return CupertinoPageRoute(
-          builder: (_) => PageMap(),
+          builder: (_) => PageMap(
+            pinId: arguments,
+          ),
           settings: settings,
         );
 
@@ -46,6 +49,13 @@ class Routers {
           builder: (_) => PagePost(),
           settings: settings,
         );
+
+      case 'PageMyPost':
+        return CupertinoPageRoute(
+          builder: (_) => PageMyPost(),
+          settings: settings,
+        );
+
       case 'PagePostCreate':
         return CupertinoPageRoute(
           builder: (_) => PagePostCreate(),

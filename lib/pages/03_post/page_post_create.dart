@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as map;
 import 'package:heic_to_jpg/heic_to_jpg.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
 
@@ -30,10 +31,12 @@ class _PagePostCreateState extends State<PagePostCreate> {
   final _formKey = GlobalKey<FormState>();
 
   List<File> _images = [];
-  List<String> imageUrls = [];
+  // List<String> imageUrls = [];
   List<AssetEntity> _selectedAssetList = [];
   map.LatLng? location;
   String? address;
+
+  LatLng? myPostLocation;
 
   @override
   void dispose() {
@@ -58,7 +61,10 @@ class _PagePostCreateState extends State<PagePostCreate> {
         onPressed: () {
           DSTwoButtonDialog.showCancelDialog(context: context).then((value) {
             setState(() {
-              if (value == true) Navigator.of(context).pop();
+              if (value == true) {
+                context.read<LocationProvider>().setMyPostLocation(null);
+                Navigator.of(context).pop();
+              }
             });
           });
         },
@@ -184,13 +190,14 @@ class _PagePostCreateState extends State<PagePostCreate> {
 
   postLocation() {
     var provider = context.watch<LocationProvider>();
-    String? address = provider.placemarks[0].locality! +
-        " " +
-        provider.placemarks[0].subLocality! +
-        " " +
-        provider.placemarks[0].thoroughfare! +
-        " " +
-        provider.placemarks[0].subThoroughfare!;
+    String? address = provider.placemarks[0].name!;
+    // String? address = provider.placemarks[0].locality! +
+    //     " " +
+    //     provider.placemarks[0].subLocality! +
+    //     " " +
+    //     provider.placemarks[0].thoroughfare! +
+    //     " " +
+    //     provider.placemarks[0].subThoroughfare!;
     return Column(children: [
       Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -273,7 +280,7 @@ class _PagePostCreateState extends State<PagePostCreate> {
         // 클릭했을때 list 에 추가하고, 순서하고
 
         _selectedAssetList.removeAt(index);
-        imageUrls.removeAt(index);
+
         _images.removeAt(index);
         setState(() {});
       },
@@ -369,8 +376,6 @@ class _PagePostCreateState extends State<PagePostCreate> {
             context: context, assets: _selectedAssetList, maxAssetsCount: 5))!;
         await getFileList();
         setState(() {});
-        // TODO 서버 연결시 추가
-        // await updateImageToServer();
       },
       child: Padding(
         padding: const EdgeInsets.only(top: 10.0, right: 10),
@@ -385,7 +390,7 @@ class _PagePostCreateState extends State<PagePostCreate> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.camera_alt_outlined,
+                Ionicons.images_outline,
                 color: DSColors.black05,
               ),
               SizedBox(height: 4),
@@ -406,7 +411,7 @@ class _PagePostCreateState extends State<PagePostCreate> {
           .read<FileProvider>()
           .uploadImages(_images)
           .then((value) async {
-        imageUrls = value!.images!;
+        // imageUrls = value!.images!;
       });
     }
   }
@@ -431,6 +436,16 @@ class _PagePostCreateState extends State<PagePostCreate> {
       title: _titleController.text,
       body: _bodyController.text,
     );
+
+    // 이미지 보내기
+    await updateImageToServer().catchError((onError) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('이미지 업로드에 실패했습니다. 이미지를 다시 선택 후 시도해 주세요.'),
+        ),
+      );
+      return;
+    });
 
     await context
         .read<LocationProvider>()
