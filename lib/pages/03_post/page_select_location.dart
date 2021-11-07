@@ -145,14 +145,14 @@ class _PageSelectLocationState extends State<PageSelectLocation> {
 
   Widget buildBottomSheet(BuildContext context) {
     var provider = context.watch<LocationProvider>();
-    String? address = provider.placemarks[0].name!;
-    // String? address = provider.placemarks[0].locality! +
-    //     " " +
-    //     provider.placemarks[0].subLocality! +
-    //     " " +
-    //     provider.placemarks[0].thoroughfare! +
-    //     " " +
-    //     provider.placemarks[0].subThoroughfare!;
+    // String? address = provider.placemarks[0].name!;
+    String? address = provider.placemarks[0].locality! +
+        " " +
+        provider.placemarks[0].subLocality! +
+        " " +
+        provider.placemarks[0].thoroughfare! +
+        " " +
+        provider.placemarks[0].subThoroughfare!;
     return Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.only(

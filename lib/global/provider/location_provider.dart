@@ -16,11 +16,13 @@ class LocationProvider extends ParentProvider {
   LatLng? lastLocation;
   LatLng? myLocation;
   LatLng? myPostLocation;
+
   String? lastAddress = '';
   List<Placemark> placemarks = [];
 
-  List<ResponseGetPinData>? responseGetPinData = [];
+  List<ResponseGetPinData>? responseGetPinDatas = [];
   ResponseGetPinData? selectedPinData;
+  int? selectedId;
 
   List<ModelResponseGetPinReplyData>? responseGetPinReplyData = [];
 
@@ -37,6 +39,16 @@ class LocationProvider extends ParentProvider {
   }
 
   setLastLocation(LatLng location) {
+    lastLocation = location;
+    notifyListeners();
+  }
+
+  setSelectedId(int? id) {
+    selectedId = id;
+    notifyListeners();
+  }
+
+  setSelectLocation(LatLng location) {
     lastLocation = location;
     notifyListeners();
   }
@@ -67,16 +79,18 @@ class LocationProvider extends ParentProvider {
     }
   }
 
-  Future<void> getPinInRagne(double? lat, double? lng, int? range) async {
+  Future<List<ResponseGetPinData>?> getPinInRagne(
+      double? lat, double? lng, int? range) async {
     try {
       ModelRequestGetPinRange requestPinGetRange =
           ModelRequestGetPinRange(lat: lat, lng: lng, range: range);
       var api = ApiService();
       var response =
           await api.post('/pin/get/range', requestPinGetRange.toMap());
-      responseGetPinData = ModelResponseGetPin.fromMap(response).data;
+      responseGetPinDatas = ModelResponseGetPin.fromMap(response).data;
 
       notifyListeners();
+      return responseGetPinDatas;
     } catch (error) {
       setStateError();
     }
@@ -86,7 +100,7 @@ class LocationProvider extends ParentProvider {
     try {
       var api = ApiService();
       var response = await api.get('/pin/all');
-      responseGetPinData = ModelResponseGetPin.fromMap(response).data;
+      responseGetPinDatas = ModelResponseGetPin.fromMap(response).data;
 
       notifyListeners();
     } catch (error) {

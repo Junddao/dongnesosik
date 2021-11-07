@@ -108,6 +108,13 @@ class DSTextStyles {
       fontStyle: FontStyle.normal,
       fontSize: 18.0);
 
+  static const bold18Tomato = const TextStyle(
+      color: DSColors.tomato,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 18.0);
+
   static const bold18FacebookBlue = const TextStyle(
       color: DSColors.facebook_blue,
       fontWeight: FontWeight.w700,
@@ -704,4 +711,11 @@ class DSTextStyles {
     fontStyle: FontStyle.normal,
     // height: 1.2,
   );
+
+  static const bold50Black = const TextStyle(
+      color: DSColors.blackColor,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 50.0);
 }

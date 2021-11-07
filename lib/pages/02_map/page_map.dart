@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dongnesosik/global/enums/view_state.dart';
 import 'package:dongnesosik/global/model/pin/model_request_create_pin_reply.dart';
 import 'package:dongnesosik/global/model/pin/model_response_get_pin.dart';
@@ -9,15 +12,18 @@ import 'package:dongnesosik/global/provider/location_provider.dart';
 import 'package:dongnesosik/global/style/constants.dart';
 import 'package:dongnesosik/global/style/dscolors.dart';
 import 'package:dongnesosik/global/style/dstextstyles.dart';
+import 'package:dongnesosik/pages/03_post/page_post.dart';
 import 'package:dongnesosik/pages/components/ds_button.dart';
 import 'package:dongnesosik/pages/components/ds_photo_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class PageMap extends StatefulWidget {
   const PageMap({Key? key, this.pinId}) : super(key: key);
@@ -39,25 +45,29 @@ class _PageMapState extends State<PageMap> {
 
   List<String> imageUrls = [test_image_url, test_image_url, test_image_url];
   TextEditingController _tecMessage = TextEditingController();
+  final PanelController panelController = new PanelController();
 
   @override
   void initState() {
     super.initState();
+
+    // panelController.hide(); //초기에 slideUpPanel 숨기고 시작
+    // setCustomMarker();
     Future.microtask(() async {
       await getLocation();
       Future.delayed(Duration(milliseconds: 500), () {
         if (widget.pinId != null) {
-          showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            builder: (context) {
-              return Padding(
-                padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context).viewInsets.bottom),
-                child: buildBottomSheet(context, widget.pinId!),
-              );
-            },
-          );
+          // showModalBottomSheet(
+          //   context: context,
+          //   isScrollControlled: true,
+          //   builder: (context) {
+          //     return Padding(
+          //       padding: EdgeInsets.only(
+          //           bottom: MediaQuery.of(context).viewInsets.bottom),
+          //       child: buildBottomSheet(context, widget.pinId!),
+          //     );
+          //   },
+          // );
         }
       });
     });
@@ -70,10 +80,43 @@ class _PageMapState extends State<PageMap> {
   }
 
   void setCustomMarker() async {
-    customIcon = await BitmapDescriptor.fromAssetImage(
-      ImageConfiguration(devicePixelRatio: 2.5),
-      'assets/images/marker.png',
+    // id에 맞게 설정해줘야함...
+    customIcon = await createCustomMarkerBitmap('aaaaaaaaaa'.substring(0, 5));
+  }
+
+  Future<BitmapDescriptor> createCustomMarkerBitmap(String title) async {
+    TextSpan span = new TextSpan(
+      style: DSTextStyles.bold16Black,
+      text: title,
     );
+
+    TextPainter tp = new TextPainter(
+      text: span,
+      textAlign: TextAlign.center,
+      textDirection: TextDirection.ltr,
+    );
+    tp.text = TextSpan(text: title, style: DSTextStyles.bold40black);
+
+    var myPaint = Paint();
+    myPaint.color = DSColors.white;
+    PictureRecorder recorder = new PictureRecorder();
+    Canvas c = new Canvas(recorder);
+
+    c.drawRRect(RRect.fromRectAndRadius(Rect.largest, Radius.zero), myPaint);
+
+    tp.layout();
+    tp.paint(c, new Offset(20.0, 10.0));
+
+    /* Do your painting of the custom icon here, including drawing text, shapes, etc. */
+
+    Picture p = recorder.endRecording();
+    ByteData? pngBytes =
+        await (await p.toImage(tp.width.toInt() + 40, tp.height.toInt() + 20))
+            .toByteData(format: ImageByteFormat.png);
+
+    Uint8List data = Uint8List.view(pngBytes!.buffer);
+
+    return BitmapDescriptor.fromBytes(data);
   }
 
   Future<void> getLocation() async {
@@ -157,7 +200,9 @@ class _PageMapState extends State<PageMap> {
         drawer: _drawer(),
         extendBodyBehindAppBar: true,
         drawerEnableOpenDragGesture: true,
-        // resizeToAvoidBottomInset: true,
+
+        // resizeToAvoidBottomInset: false,
+
         // floatingActionButton: FloatingActionButton(
         //   child: Icon(Icons.add, color: DSColors.white),
 
@@ -267,64 +312,87 @@ class _PageMapState extends State<PageMap> {
 
   Widget _body() {
     return Consumer(builder: (_, LocationProvider value, child) {
-      if (value.lastLocation == null || value.responseGetPinData == null) {
+      if (value.lastLocation == null || value.responseGetPinDatas == null) {
         return Center(child: CircularProgressIndicator());
       } else {
         LatLng _lastLocation = value.lastLocation!;
-        return Stack(
-          children: [
-            GoogleMap(
-              onMapCreated: (controller) async {
-                await _onMapCreated(controller, _lastLocation);
-              },
-              initialCameraPosition: CameraPosition(
-                target: _lastLocation,
-                zoom: 15,
+
+        return SlidingUpPanel(
+          controller: panelController,
+          backdropEnabled: true,
+          minHeight: 120,
+          maxHeight: SizeConfig.screenHeight * 0.8,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(12), topRight: Radius.circular(12)),
+          // renderPanelSheet: false,
+          collapsed: _floatingCollapsed(),
+          panel: _floatingPanel(),
+
+          body: Stack(
+            children: [
+              GoogleMap(
+                onMapCreated: (controller) async {
+                  await _onMapCreated(controller, _lastLocation);
+                },
+                initialCameraPosition: CameraPosition(
+                  target: _lastLocation,
+                  zoom: 15,
+                ),
+                markers: [..._markers, ..._temporaryMaker].toSet(),
+                rotateGesturesEnabled: false,
+                myLocationEnabled: true,
+                myLocationButtonEnabled: true,
+                padding: EdgeInsets.only(bottom: 100, right: 0),
+                mapToolbarEnabled: false,
+                zoomControlsEnabled: false,
+                onCameraMove: _onCameraMove,
+                onCameraIdle: _onCameraIdle,
+                onTap: (point) {
+                  _handleTap(point);
+                },
               ),
-              markers: [..._markers, ..._temporaryMaker].toSet(),
-              rotateGesturesEnabled: false,
-              myLocationEnabled: true,
-              myLocationButtonEnabled: true,
-              // padding: EdgeInsets.only(bottom: 60, right: 8),
-              mapToolbarEnabled: false,
-              zoomControlsEnabled: false,
-              onCameraMove: _onCameraMove,
-              onCameraIdle: _onCameraIdle,
-              onTap: (point) {
-                _handleTap(point);
-              },
-            ),
-            Positioned(
-              bottom: 30,
-              left: 24,
-              child: InkWell(
-                  onTap: () {
-                    Navigator.of(context).pushNamed('PagePost').then((value) {
-                      setState(() {});
-                    });
-                  },
-                  child: _newsInfoWidget()),
-            ),
-            // Positioned(
-            //   top: AppBar().preferredSize.height +
-            //       MediaQuery.of(context).padding.top +
-            //       30,
-            //   right: 12,
-            //   child: InkWell(
-            //     onTap: () async {
-            //       getMyLocation();
-            //     },
-            //     child: CircleAvatar(
-            //       backgroundColor: DSColors.white,
-            //       foregroundColor: DSColors.black,
-            //       child: Icon(Icons.my_location),
-            //     ),
-            //   ),
-            // ),
-          ],
+              // Positioned(
+              //   bottom: 30,
+              //   left: 24,
+              //   child: InkWell(
+              //       onTap: () {
+              //         Navigator.of(context).pushNamed('PagePost').then((value) {
+              //           setState(() {});
+              //         });
+              //       },
+              //       child: _newsInfoWidget()),
+              // ),
+            ],
+          ),
         );
       }
     });
+  }
+
+  Widget _floatingCollapsed() {
+    var provider = context.read<LocationProvider>();
+
+    return provider.selectedPinData == null
+        ? postSummaryWidget()
+        : postContentsBottomSheet(provider.responseGetPinDatas!);
+  }
+
+  Widget postSummaryWidget() {
+    return _newsInfoWidget();
+  }
+
+  Widget _floatingPanel() {
+    var provider = context.read<LocationProvider>();
+
+    if (provider.selectedPinData == null) {
+      return PagePost();
+    } else {
+      return SafeArea(
+        bottom: true,
+        top: false,
+        child: viewPostContents(),
+      );
+    }
   }
 
   Widget _drawerHeader() {
@@ -351,12 +419,6 @@ class _PageMapState extends State<PageMap> {
     );
   }
 
-  addMyPin() {
-    var provider = context.read<LocationProvider>();
-    _markers.clear();
-    addMarker(0, provider.lastLocation!);
-  }
-
   Future<void> _onMapCreated(
       GoogleMapController controller, LatLng location) async {
     _markers.clear();
@@ -364,7 +426,6 @@ class _PageMapState extends State<PageMap> {
 
     print('onMapCreate');
     print(location.toString());
-    addMarker(0, location);
 
     _controller.complete(controller);
     provider.getAddress(location);
@@ -372,16 +433,16 @@ class _PageMapState extends State<PageMap> {
 
   void _onCameraIdle() async {
     _markers.clear();
+
     var provider = context.read<LocationProvider>();
 
-    // addMyPin();
     await provider.getPinInRagne(provider.lastLocation!.latitude,
         provider.lastLocation!.longitude, 1000);
-    provider.responseGetPinData!.forEach((element) {
-      addMarker(element.pin!.id!, LatLng(element.pin!.lat!, element.pin!.lng!));
+    provider.responseGetPinDatas!.forEach((element) async {
+      customIcon = await createCustomMarkerBitmap(element.pin!.title!);
+      addCustomMarker(element.pin!.id!,
+          LatLng(element.pin!.lat!, element.pin!.lng!), element);
     });
-
-    // await provider.getPinAll();
     print("Idle");
   }
 
@@ -391,26 +452,60 @@ class _PageMapState extends State<PageMap> {
     print("move");
   }
 
-  void addMarker(int id, LatLng latLng) {
+  void addCustomMarker(int id, LatLng latLng, ResponseGetPinData? data) async {
     final marker = Marker(
         markerId: MarkerId(id.toString()),
         position: latLng,
-        // icon: customIcon!,
+        icon: customIcon!,
+        onTap: () async {
+          print('marker onTap()');
+          var responseGetPinDatas = context
+              .read<LocationProvider>()
+              .responseGetPinDatas!
+              .where((element) {
+            return element.pin!.id == id;
+          }).toList();
+          context.read<LocationProvider>().selectedPinData =
+              responseGetPinDatas.first;
+          context.read<LocationProvider>().getPinReply(id);
 
+          // showModalBottomSheet(
+          //   context: context,
+          //   isScrollControlled: true,
+          //   builder: (context) {
+          //     return Padding(
+          //       padding: EdgeInsets.only(
+          //           bottom: MediaQuery.of(context).viewInsets.bottom),
+          //       child: buildBottomSheet(context, id),
+          //     );
+          //   },
+          // );
+        });
+    _markers.add(marker);
+    setState(() {});
+  }
+
+  void addMarker(int id, LatLng latLng) async {
+    final marker = Marker(
+        markerId: MarkerId(id.toString()),
+        position: latLng,
         onTap: () async {
           print('marker onTap()');
           context.read<LocationProvider>().getPinReply(id);
-          showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            builder: (context) {
-              return Padding(
-                padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context).viewInsets.bottom),
-                child: buildBottomSheet(context, id),
-              );
-            },
-          );
+
+          // context.read<LocationProvider>().setSelectedId(id);
+
+          // showModalBottomSheet(
+          //   context: context,
+          //   isScrollControlled: true,
+          //   builder: (context) {
+          //     return Padding(
+          //       padding: EdgeInsets.only(
+          //           bottom: MediaQuery.of(context).viewInsets.bottom),
+          //       child: buildBottomSheet(context, id),
+          //     );
+          //   },
+          // );
         });
     _markers.add(marker);
   }
@@ -442,14 +537,14 @@ class _PageMapState extends State<PageMap> {
 
   Widget buildSelectLocationBottomSheet(BuildContext context) {
     var provider = context.watch<LocationProvider>();
-    String? address = provider.placemarks[0].name!;
-    // String? address = provider.placemarks[0].locality! +
-    //     " " +
-    //     provider.placemarks[0].subLocality! +
-    //     " " +
-    //     provider.placemarks[0].thoroughfare! +
-    //     " " +
-    //     provider.placemarks[0].subThoroughfare!;
+    // String? address = provider.placemarks[0].name!;
+    String? address = provider.placemarks[0].locality! +
+        " " +
+        provider.placemarks[0].subLocality! +
+        " " +
+        provider.placemarks[0].thoroughfare! +
+        " " +
+        provider.placemarks[0].subThoroughfare!;
     return Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.only(
@@ -501,19 +596,26 @@ class _PageMapState extends State<PageMap> {
   Widget _newsInfoWidget() {
     var provider = context.read<LocationProvider>();
 
-    return provider.responseGetPinData!.length == 0
-        ? SizedBox.shrink()
+    return provider.responseGetPinDatas!.length == 0
+        ? Container(
+            decoration: BoxDecoration(
+              color: DSColors.white,
+            ),
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: Column(
+              children: [Text('주변에 글이 없어요. 첫 글을 작성해보세요. 😀')],
+            ),
+          )
         : InkWell(
             onTap: () {
               Navigator.of(context).pushNamed('PagePost');
             },
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 color: DSColors.white,
-                borderRadius: BorderRadius.circular(8),
               ),
-              width: SizeConfig.screenWidth * 0.7,
+              padding: EdgeInsets.symmetric(
+                  horizontal: kDefaultHorizontalPadding, vertical: 8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -521,7 +623,7 @@ class _PageMapState extends State<PageMap> {
                     text: TextSpan(
                       children: [
                         TextSpan(
-                            text: ' ${provider.responseGetPinData!.length}개',
+                            text: ' ${provider.responseGetPinDatas!.length}개',
                             style: DSTextStyles.bold14Black),
                         TextSpan(
                             text: '의 글이 검색되었어요.',
@@ -537,17 +639,70 @@ class _PageMapState extends State<PageMap> {
           );
   }
 
-  Widget buildBottomSheet(BuildContext context, int id) {
-    var responseGetPinDatas =
-        context.read<LocationProvider>().responseGetPinData!.where((element) {
-      return element.pin!.id == id;
-    }).toList();
-    context.read<LocationProvider>().selectedPinData =
-        responseGetPinDatas.first;
-    return viewPostContents(responseGetPinDatas);
+  Widget postContentsBottomSheet(List<ResponseGetPinData> responseGetPinDatas) {
+    return Consumer<LocationProvider>(builder: (_, data, __) {
+      if (data.state == ViewState.Busy) {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+      return Container(
+        height: 120,
+        decoration: BoxDecoration(
+          color: DSColors.white,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+              horizontal: kDefaultHorizontalPadding, vertical: 5),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.all(8),
+                child: data.selectedPinData!.pin!.images == null ||
+                        data.selectedPinData!.pin!.images!.isEmpty
+                    ? SvgPicture.asset(
+                        'assets/images/void.svg',
+                        height: 50,
+                        width: 50,
+                      )
+                    : CachedNetworkImage(
+                        imageUrl: data.selectedPinData!.pin!.images!.first,
+                        width: 50,
+                        height: 50,
+                        errorWidget: (_, __, ___) {
+                          return SvgPicture.asset(
+                            'assets/images/void.svg',
+                            height: 50,
+                            width: 50,
+                          );
+                        },
+                      ),
+              ),
+              SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(data.selectedPinData!.pin!.title!,
+                      style: DSTextStyles.bold18Black),
+                  SizedBox(height: 10),
+                  Text(
+                    data.selectedPinData!.pin!.body!,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    });
   }
 
-  Widget viewPostContents(List<ResponseGetPinData> responseGetPinDatas) {
+  Widget viewPostContents() {
     return Consumer<LocationProvider>(builder: (_, data, __) {
       if (data.state == ViewState.Busy) {
         return Center(
@@ -559,10 +714,6 @@ class _PageMapState extends State<PageMap> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            SizedBox(
-                height: 30,
-                width: double.infinity,
-                child: Center(child: Icon(Ionicons.chevron_down_outline))),
             Expanded(
               child: SingleChildScrollView(
                 keyboardDismissBehavior:
@@ -572,20 +723,26 @@ class _PageMapState extends State<PageMap> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   mainAxisSize: MainAxisSize.max,
                   children: [
-                    DSPhotoView(
-                        iamgeUrls: data.selectedPinData!.pin!.images ?? []),
+                    Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: DSPhotoView(
+                            iamgeUrls: data.selectedPinData!.pin!.images ?? []),
+                      ),
+                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: kDefaultHorizontalPadding),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(height: 20),
+                          SizedBox(height: 10),
                           Text(data.selectedPinData!.pin!.title!,
                               style: DSTextStyles.bold18Black),
-                          SizedBox(height: 20),
+                          SizedBox(height: 10),
                           Text(data.selectedPinData!.pin!.body!),
-                          SizedBox(height: 30),
+                          SizedBox(height: 10),
                           Divider(),
                           _buildReviewList(data),
                         ],
@@ -627,7 +784,7 @@ class _PageMapState extends State<PageMap> {
             repeatForever: true,
             isRepeatingAnimation: true,
             animatedTexts: [
-              for (ResponseGetPinData data in provider.responseGetPinData!)
+              for (ResponseGetPinData data in provider.responseGetPinDatas!)
                 buildText(data),
             ],
           ),
@@ -641,62 +798,60 @@ class _PageMapState extends State<PageMap> {
   }
 
   Widget _buildMessageComposer(LocationProvider data) {
-    return SafeArea(
-      child: Column(
-        children: [
-          Container(
-            // height: 50,
-            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 12),
-            child: Row(
-              children: [
-                InkWell(
-                  onTap: () {},
-                  child: Icon(Icons.add_a_photo),
-                ),
-                SizedBox(width: 10),
-                Expanded(
-                  child: Container(
-                    height: 42,
-                    margin: EdgeInsets.all(0),
-                    padding: EdgeInsets.all(0),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Color(0xFFEFEFEF)),
-                      borderRadius: BorderRadius.circular(21),
-                      color: Color(0xFFF8F8F8),
-                    ),
-                    child: Row(
-                      children: <Widget>[
-                        const SizedBox(
-                          width: 8,
-                        ),
-                        Expanded(
-                          child: TextField(
-                            controller: _tecMessage,
-                            onChanged: (value) {},
-                            keyboardType: TextInputType.multiline,
-                            maxLines: null,
-                            decoration: InputDecoration.collapsed(
-                              hintText: '메세지를 입력하세요',
-                            ),
-                          ),
-                        ),
-                        InkWell(
-                          child: Container(
-                            child: Icon(Icons.send),
-                            padding: EdgeInsets.all(4),
-                          ),
-                          onTap: () {
-                            createReply();
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+    return Padding(
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: Container(
+        // height: 50,
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+        child: Row(
+          children: [
+            InkWell(
+              onTap: () {},
+              child: Icon(Icons.add_a_photo),
             ),
-          ),
-        ],
+            SizedBox(width: 10),
+            Expanded(
+              child: Container(
+                height: 42,
+                margin: EdgeInsets.all(0),
+                padding: EdgeInsets.all(0),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Color(0xFFEFEFEF)),
+                  borderRadius: BorderRadius.circular(21),
+                  color: Color(0xFFF8F8F8),
+                ),
+                child: Row(
+                  children: <Widget>[
+                    const SizedBox(
+                      width: 8,
+                    ),
+                    Expanded(
+                      child: TextField(
+                        controller: _tecMessage,
+                        onChanged: (value) {},
+                        keyboardType: TextInputType.multiline,
+                        maxLines: null,
+                        decoration: InputDecoration.collapsed(
+                          hintText: '메세지를 입력하세요',
+                        ),
+                      ),
+                    ),
+                    InkWell(
+                      child: Container(
+                        child: Icon(Icons.send),
+                        padding: EdgeInsets.all(4),
+                      ),
+                      onTap: () {
+                        createReply();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -730,6 +885,7 @@ class _PageMapState extends State<PageMap> {
         : ListView.separated(
             physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
+            padding: EdgeInsets.only(top: 0),
             itemCount: provider.responseGetPinReplyData!.length,
             itemBuilder: (context, index) {
               var data = provider.responseGetPinReplyData![index];
@@ -740,6 +896,8 @@ class _PageMapState extends State<PageMap> {
                   _tecMessage.text = '@${data.name} ';
                 },
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(

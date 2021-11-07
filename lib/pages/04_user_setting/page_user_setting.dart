@@ -117,6 +117,5 @@ class _PageUserSettingState extends State<PageUserSetting> {
 
     context.read<UserProvider>().setUser(modelRequestUserSet);
     Navigator.of(context).pop();
-    // Navigator.of(context).pushNamedAndRemoveUntil('PageMap', (route) => false);
   }
 }

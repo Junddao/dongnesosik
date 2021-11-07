@@ -25,7 +25,7 @@ class _PagePostState extends State<PagePost> {
 
   _body() {
     var responseGetPinData =
-        context.watch<LocationProvider>().responseGetPinData;
+        context.watch<LocationProvider>().responseGetPinDatas;
     return SingleChildScrollView(
       child: ListView.separated(
           shrinkWrap: true,
