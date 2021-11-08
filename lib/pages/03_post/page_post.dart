@@ -28,6 +28,7 @@ class _PagePostState extends State<PagePost> {
         context.watch<LocationProvider>().responseGetPinDatas;
     return SingleChildScrollView(
       child: ListView.separated(
+          padding: EdgeInsets.only(top: 0),
           shrinkWrap: true,
           physics: NeverScrollableScrollPhysics(),
           itemBuilder: (context, index) {

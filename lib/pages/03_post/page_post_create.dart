@@ -11,6 +11,7 @@ import 'package:dongnesosik/pages/components/ds_image_picker.dart';
 import 'package:dongnesosik/pages/components/ds_two_button_dialog.dart';
 import 'package:dongnesosik/pages/components/ds_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as map;
 import 'package:heic_to_jpg/heic_to_jpg.dart';
@@ -31,7 +32,7 @@ class _PagePostCreateState extends State<PagePostCreate> {
   final _formKey = GlobalKey<FormState>();
 
   List<File> _images = [];
-  // List<String> imageUrls = [];
+  List<String> _imageUrls = [];
   List<AssetEntity> _selectedAssetList = [];
   map.LatLng? location;
   String? address;
@@ -328,7 +329,7 @@ class _PagePostCreateState extends State<PagePostCreate> {
           final int resizePercent = (1080.0 / shorterSide! * 100).toInt();
 
           File compressedFile = await FlutterNativeImage.compressImage(filePath,
-              quality: 85, percentage: resizePercent);
+              quality: 50, percentage: resizePercent);
 
           print('resize Percent = $resizePercent');
           print('compressed File = ${compressedFile.toString()}');
@@ -411,7 +412,7 @@ class _PagePostCreateState extends State<PagePostCreate> {
           .read<FileProvider>()
           .uploadImages(_images)
           .then((value) async {
-        // imageUrls = value!.images!;
+        _imageUrls = value!.images!;
       });
     }
   }
@@ -429,35 +430,43 @@ class _PagePostCreateState extends State<PagePostCreate> {
     }
 
     location = context.read<LocationProvider>().myPostLocation;
-
-    ModelRequestCreatePin requestCreatePin = ModelRequestCreatePin(
-      lat: location!.latitude,
-      lng: location!.longitude,
-      title: _titleController.text,
-      body: _bodyController.text,
-    );
-
+    EasyLoading.show(status: 'loading...');
     // 이미지 보내기
-    await updateImageToServer().catchError((onError) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('이미지 업로드에 실패했습니다. 이미지를 다시 선택 후 시도해 주세요.'),
-        ),
+    try {
+      await updateImageToServer().catchError((onError) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('이미지 업로드에 실패했습니다. 이미지를 다시 선택 후 시도해 주세요.'),
+          ),
+        );
+        throw Exception();
+      });
+      ModelRequestCreatePin requestCreatePin = ModelRequestCreatePin(
+        lat: location!.latitude,
+        lng: location!.longitude,
+        title: _titleController.text,
+        body: _bodyController.text,
+        images: _imageUrls,
       );
-      return;
-    });
 
-    await context
-        .read<LocationProvider>()
-        .createPin(requestCreatePin)
-        .catchError((onError) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('생성에 실패하였습니다. 다시 시도해 주세요.'),
-        ),
-      );
-      return;
-    });
-    Navigator.of(context).pushNamedAndRemoveUntil('PageMap', (route) => false);
+      await context
+          .read<LocationProvider>()
+          .createPin(requestCreatePin)
+          .catchError((onError) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('생성에 실패하였습니다. 다시 시도해 주세요.'),
+          ),
+        );
+        throw Exception();
+      });
+      EasyLoading.dismiss();
+      Navigator.of(context)
+          .pushNamedAndRemoveUntil('PageMap', (route) => false);
+    } catch (e) {
+      print(e);
+    } finally {
+      EasyLoading.dismiss();
+    }
   }
 }

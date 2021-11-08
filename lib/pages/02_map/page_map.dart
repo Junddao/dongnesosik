@@ -12,6 +12,7 @@ import 'package:dongnesosik/global/provider/location_provider.dart';
 import 'package:dongnesosik/global/style/constants.dart';
 import 'package:dongnesosik/global/style/dscolors.dart';
 import 'package:dongnesosik/global/style/dstextstyles.dart';
+import 'package:dongnesosik/global/util/range_by_zoom.dart';
 import 'package:dongnesosik/pages/03_post/page_post.dart';
 import 'package:dongnesosik/pages/components/ds_button.dart';
 import 'package:dongnesosik/pages/components/ds_photo_view.dart';
@@ -29,6 +30,7 @@ class PageMap extends StatefulWidget {
   const PageMap({Key? key, this.pinId}) : super(key: key);
 
   final int? pinId;
+
   @override
   _PageMapState createState() => _PageMapState();
 }
@@ -42,6 +44,7 @@ class _PageMapState extends State<PageMap> {
 
   BitmapDescriptor? customIcon;
   Timer? _timer;
+  int? range = 1000;
 
   List<String> imageUrls = [test_image_url, test_image_url, test_image_url];
   TextEditingController _tecMessage = TextEditingController();
@@ -385,7 +388,7 @@ class _PageMapState extends State<PageMap> {
     var provider = context.read<LocationProvider>();
 
     if (provider.selectedPinData == null) {
-      return PagePost();
+      return postListWidget();
     } else {
       return SafeArea(
         bottom: true,
@@ -393,6 +396,82 @@ class _PageMapState extends State<PageMap> {
         child: viewPostContents(),
       );
     }
+  }
+
+  Widget postListWidget() {
+    var responseGetPinData =
+        context.watch<LocationProvider>().responseGetPinDatas;
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Container(
+              padding: EdgeInsets.all(kDefaultPadding),
+              child: Text('동내 게시글', style: DSTextStyles.bold18Black)),
+          ListView.separated(
+              padding: EdgeInsets.only(top: 0),
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                return _listItem(index, responseGetPinData!);
+              },
+              separatorBuilder: (context, index) {
+                return Divider();
+              },
+              itemCount: responseGetPinData!.length),
+        ],
+      ),
+    );
+  }
+
+  Widget _listItem(int index, List<ResponseGetPinData> responseGetPinData) {
+    return ListTile(
+      leading: responseGetPinData[index].pin!.images == null ||
+              responseGetPinData[index].pin!.images!.isEmpty
+          ? SvgPicture.asset(
+              'assets/images/void.svg',
+              height: 40,
+              width: 40,
+            )
+          : CachedNetworkImage(
+              imageUrl: responseGetPinData[index].pin!.images!.first,
+              width: 40,
+              height: 40,
+              errorWidget: (_, __, ___) {
+                return SvgPicture.asset(
+                  'assets/images/void.svg',
+                  height: 40,
+                  width: 40,
+                );
+              },
+            ),
+      title: Text(responseGetPinData[index].pin!.title!),
+      subtitle: Text(responseGetPinData[index].pin!.body!),
+      onTap: () {
+        context.read<LocationProvider>().selectedPinData =
+            responseGetPinData[index];
+        LatLng location = LatLng(responseGetPinData[index].pin!.lat!,
+            responseGetPinData[index].pin!.lng!);
+        context.read<LocationProvider>().setLastLocation(location);
+        Navigator.of(context).pushNamedAndRemoveUntil(
+            'PageMap', (route) => false,
+            arguments: responseGetPinData[index].pin!.id!);
+
+        // context.read<LocationProvider>().selectedPinData =
+        //     responseGetPinData[index];
+        // Navigator.of(context).pushNamed('PagePostDetail');
+      },
+      // trailing: IconButton(
+      //   onPressed: () {
+      //     LatLng location = LatLng(responseGetPinData[index].pin!.lat!,
+      //         responseGetPinData[index].pin!.lng!);
+      //     context.read<LocationProvider>().setLastLocation(location);
+      //     Navigator.of(context).pushNamedAndRemoveUntil(
+      //         'PageMap', (route) => false,
+      //         arguments: responseGetPinData[index].pin!.id!);
+      //   },
+      //   icon: Icon(Ionicons.map_outline),
+      // ),
+    );
   }
 
   Widget _drawerHeader() {
@@ -437,19 +516,31 @@ class _PageMapState extends State<PageMap> {
     var provider = context.read<LocationProvider>();
 
     await provider.getPinInRagne(provider.lastLocation!.latitude,
-        provider.lastLocation!.longitude, 1000);
+        provider.lastLocation!.longitude, range);
     provider.responseGetPinDatas!.forEach((element) async {
       customIcon = await createCustomMarkerBitmap(element.pin!.title!);
       addCustomMarker(element.pin!.id!,
           LatLng(element.pin!.lat!, element.pin!.lng!), element);
     });
+    if (provider.selectedPinData == null) {
+      return;
+    }
+    LatLng selectedLocation = LatLng(provider.selectedPinData!.pin!.lat!,
+        provider.selectedPinData!.pin!.lng!);
+    if (selectedLocation != provider.lastLocation) {
+      provider.selectedPinData = null;
+    }
+
     print("Idle");
   }
 
   void _onCameraMove(CameraPosition position) {
     var provider = context.read<LocationProvider>();
+
     provider.setLastLocation(position.target);
     print("move");
+    print(position.zoom.toString());
+    range = RangeByZoom.getRangeByZooom(position.zoom);
   }
 
   void addCustomMarker(int id, LatLng latLng, ResponseGetPinData? data) async {
