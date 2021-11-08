@@ -194,26 +194,26 @@ class _PageMapState extends State<PageMap> {
         return Future(() => false);
       },
       child: Scaffold(
-        key: _scaffoldKey,
-        appBar: _appBar(),
-        body: _body(),
-        drawer: _drawer(),
-        extendBodyBehindAppBar: true,
-        drawerEnableOpenDragGesture: true,
+          key: _scaffoldKey,
+          appBar: _appBar(),
+          body: _body(),
+          drawer: _drawer(),
+          extendBodyBehindAppBar: true,
+          drawerEnableOpenDragGesture: true,
+          resizeToAvoidBottomInset: false
+          // resizeToAvoidBottomInset: false,
 
-        // resizeToAvoidBottomInset: false,
+          // floatingActionButton: FloatingActionButton(
+          //   child: Icon(Icons.add, color: DSColors.white),
 
-        // floatingActionButton: FloatingActionButton(
-        //   child: Icon(Icons.add, color: DSColors.white),
-
-        //   // child: Text('글쓰기', style: DSTextStyle.bold12Black),
-        //   backgroundColor: DSColors.tomato,
-        //   onPressed: () async {
-        //     Navigator.of(context).pushNamed('PagePostCreate');
-        //   },
-        // ),
-        // floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      ),
+          //   // child: Text('글쓰기', style: DSTextStyle.bold12Black),
+          //   backgroundColor: DSColors.tomato,
+          //   onPressed: () async {
+          //     Navigator.of(context).pushNamed('PagePostCreate');
+          //   },
+          // ),
+          // floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+          ),
     );
   }
 
@@ -709,56 +709,78 @@ class _PageMapState extends State<PageMap> {
           child: CircularProgressIndicator(),
         );
       }
-      return SizedBox(
-        height: SizeConfig.screenHeight * 0.8,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: DSPhotoView(
-                            iamgeUrls: data.selectedPinData!.pin!.images ?? []),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: kDefaultHorizontalPadding),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: 10),
-                          Text(data.selectedPinData!.pin!.title!,
-                              style: DSTextStyles.bold18Black),
-                          SizedBox(height: 10),
-                          Text(data.selectedPinData!.pin!.body!),
-                          SizedBox(height: 10),
-                          Divider(),
-                          _buildReviewList(data),
-                        ],
-                      ),
-                    ),
+      return GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Padding(
+          padding:
+              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: SizedBox(
+            height: SizeConfig.screenHeight * 0.8,
+            child: Column(
+              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(height: 12),
+                buildDragHandle(),
+                Expanded(
+                  child: SingleChildScrollView(
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
+                    // reverse: true,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: DSPhotoView(
+                                iamgeUrls:
+                                    data.selectedPinData!.pin!.images ?? []),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: kDefaultHorizontalPadding),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(height: 10),
+                              Text(data.selectedPinData!.pin!.title!,
+                                  style: DSTextStyles.bold18Black),
+                              SizedBox(height: 10),
+                              Text(data.selectedPinData!.pin!.body!),
+                              SizedBox(height: 10),
+                              Divider(),
+                              _buildReviewList(data),
+                            ],
+                          ),
+                        ),
 
-                    // const SizedBox(height: 90),
-                  ],
+                        // const SizedBox(height: 90),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+                _buildMessageComposer(data),
+              ],
             ),
-            _buildMessageComposer(data),
-          ],
+          ),
         ),
       );
     });
+  }
+
+  Widget buildDragHandle() {
+    return Center(
+      child: Container(
+          width: 30,
+          height: 5,
+          decoration: BoxDecoration(
+            color: DSColors.warm_grey,
+          )),
+    );
   }
 
   void goDetailPage() async {
@@ -798,60 +820,57 @@ class _PageMapState extends State<PageMap> {
   }
 
   Widget _buildMessageComposer(LocationProvider data) {
-    return Padding(
-      padding:
-          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-      child: Container(
-        // height: 50,
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 12),
-        child: Row(
-          children: [
-            InkWell(
-              onTap: () {},
-              child: Icon(Icons.add_a_photo),
-            ),
-            SizedBox(width: 10),
-            Expanded(
-              child: Container(
-                height: 42,
-                margin: EdgeInsets.all(0),
-                padding: EdgeInsets.all(0),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Color(0xFFEFEFEF)),
-                  borderRadius: BorderRadius.circular(21),
-                  color: Color(0xFFF8F8F8),
-                ),
-                child: Row(
-                  children: <Widget>[
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    Expanded(
-                      child: TextField(
-                        controller: _tecMessage,
-                        onChanged: (value) {},
-                        keyboardType: TextInputType.multiline,
-                        maxLines: null,
-                        decoration: InputDecoration.collapsed(
-                          hintText: '메세지를 입력하세요',
-                        ),
+    return Container(
+      // height: 50,
+      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+      child: Row(
+        children: [
+          InkWell(
+            onTap: () {},
+            child: Icon(Icons.add_a_photo),
+          ),
+          SizedBox(width: 10),
+          Expanded(
+            child: Container(
+              height: 42,
+              margin: EdgeInsets.all(0),
+              padding: EdgeInsets.all(0),
+              decoration: BoxDecoration(
+                border: Border.all(color: Color(0xFFEFEFEF)),
+                borderRadius: BorderRadius.circular(21),
+                color: Color(0xFFF8F8F8),
+              ),
+              child: Row(
+                children: <Widget>[
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  Expanded(
+                    child: TextField(
+                      controller: _tecMessage,
+                      onChanged: (value) {},
+                      keyboardType: TextInputType.multiline,
+                      maxLines: null,
+                      decoration: InputDecoration.collapsed(
+                        hintText: '메세지를 입력하세요',
                       ),
                     ),
-                    InkWell(
-                      child: Container(
-                        child: Icon(Icons.send),
-                        padding: EdgeInsets.all(4),
-                      ),
-                      onTap: () {
-                        createReply();
-                      },
+                  ),
+                  InkWell(
+                    child: Container(
+                      child: Icon(Icons.send),
+                      padding: EdgeInsets.all(4),
                     ),
-                  ],
-                ),
+                    onTap: () {
+                      createReply();
+                      FocusScope.of(context).unfocus();
+                    },
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
