@@ -5,9 +5,11 @@ import 'dart:ui';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dongnesosik/global/enums/view_state.dart';
+import 'package:dongnesosik/global/model/model_shared_preferences.dart';
 import 'package:dongnesosik/global/model/pin/model_request_create_pin_reply.dart';
 import 'package:dongnesosik/global/model/pin/model_response_get_pin.dart';
 import 'package:dongnesosik/global/model/singleton_user.dart';
+import 'package:dongnesosik/global/model/user/model_user_info.dart';
 import 'package:dongnesosik/global/provider/location_provider.dart';
 import 'package:dongnesosik/global/style/constants.dart';
 import 'package:dongnesosik/global/style/dscolors.dart';
@@ -24,6 +26,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class PageMap extends StatefulWidget {
@@ -49,6 +52,7 @@ class _PageMapState extends State<PageMap> {
   List<String> imageUrls = [test_image_url, test_image_url, test_image_url];
   TextEditingController _tecMessage = TextEditingController();
   final PanelController panelController = new PanelController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -193,9 +197,7 @@ class _PageMapState extends State<PageMap> {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return WillPopScope(
-      onWillPop: () {
-        return Future(() => false);
-      },
+      onWillPop: _onWillPop,
       child: Scaffold(
           key: _scaffoldKey,
           appBar: _appBar(),
@@ -218,6 +220,15 @@ class _PageMapState extends State<PageMap> {
           // floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
           ),
     );
+  }
+
+  Future<bool> _onWillPop() async {
+    if (panelController.isPanelOpen) {
+      panelController.close();
+      return false;
+    } else {
+      return true;
+    }
   }
 
   AppBar _appBar() {
@@ -295,18 +306,21 @@ class _PageMapState extends State<PageMap> {
                 )
               : SizedBox.shrink(),
 
-          // ListTile(
-          //   leading: Icon(Ionicons.log_out_outline),
-          //   title: Text(
-          //     '로그아웃',
-          //     style: DSTextStyles.bold14Black,
-          //   ),
-          //   onTap: () {
-          //     FirebaseAuth.instance.signOut();
-          //     Navigator.of(context)
-          //         .pushNamedAndRemoveUntil('PageRoot', (route) => false);
-          //   },
-          // ),
+          ListTile(
+            leading: Icon(Ionicons.log_out_outline),
+            title: Text(
+              '로그아웃',
+              style: DSTextStyles.bold14Black,
+            ),
+            onTap: () {
+              FirebaseAuth.instance.signOut();
+              SingletonUser.singletonUser.userData = ModelUserInfo();
+              ModelSharedPreferences.removeToken();
+
+              Navigator.of(context)
+                  .pushNamedAndRemoveUntil('PageSplash', (route) => false);
+            },
+          ),
         ],
       ),
     );
@@ -320,52 +334,59 @@ class _PageMapState extends State<PageMap> {
       } else {
         LatLng _lastLocation = value.lastLocation!;
 
-        return SlidingUpPanel(
-          controller: panelController,
-          backdropEnabled: true,
-          minHeight: 120,
-          maxHeight: SizeConfig.screenHeight * 0.8,
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(12), topRight: Radius.circular(12)),
-          // renderPanelSheet: false,
-          collapsed: _floatingCollapsed(),
-          panel: _floatingPanel(),
+        return SafeArea(
+          top: false,
+          child: SlidingUpPanel(
+            controller: panelController,
+            backdropEnabled: true,
+            minHeight: kDefaultCollapseHeight,
+            maxHeight: SizeConfig.screenHeight * 0.8,
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(12), topRight: Radius.circular(12)),
+            // renderPanelSheet: false,
+            collapsed: _floatingCollapsed(),
+            panel: _floatingPanel(),
+            onPanelClosed: () {
+              FocusScope.of(context).unfocus();
+            },
 
-          body: Stack(
-            children: [
-              GoogleMap(
-                onMapCreated: (controller) async {
-                  await _onMapCreated(controller, _lastLocation);
-                },
-                initialCameraPosition: CameraPosition(
-                  target: _lastLocation,
-                  zoom: 15,
+            body: Stack(
+              children: [
+                GoogleMap(
+                  onMapCreated: (controller) async {
+                    await _onMapCreated(controller, _lastLocation);
+                  },
+                  initialCameraPosition: CameraPosition(
+                    target: _lastLocation,
+                    zoom: 15,
+                  ),
+                  markers: [..._markers, ..._temporaryMaker].toSet(),
+                  rotateGesturesEnabled: false,
+                  myLocationEnabled: true,
+                  myLocationButtonEnabled: true,
+
+                  padding: EdgeInsets.only(bottom: 130, right: 0),
+                  // mapToolbarEnabled: false,
+                  zoomControlsEnabled: false,
+                  onCameraMove: _onCameraMove,
+                  onCameraIdle: _onCameraIdle,
+                  onTap: (point) {
+                    _handleTap(point);
+                  },
                 ),
-                markers: [..._markers, ..._temporaryMaker].toSet(),
-                rotateGesturesEnabled: false,
-                myLocationEnabled: true,
-                myLocationButtonEnabled: true,
-                padding: EdgeInsets.only(bottom: 100, right: 0),
-                mapToolbarEnabled: false,
-                zoomControlsEnabled: false,
-                onCameraMove: _onCameraMove,
-                onCameraIdle: _onCameraIdle,
-                onTap: (point) {
-                  _handleTap(point);
-                },
-              ),
-              // Positioned(
-              //   bottom: 30,
-              //   left: 24,
-              //   child: InkWell(
-              //       onTap: () {
-              //         Navigator.of(context).pushNamed('PagePost').then((value) {
-              //           setState(() {});
-              //         });
-              //       },
-              //       child: _newsInfoWidget()),
-              // ),
-            ],
+                // Positioned(
+                //   bottom: 30,
+                //   left: 24,
+                //   child: InkWell(
+                //       onTap: () {
+                //         Navigator.of(context).pushNamed('PagePost').then((value) {
+                //           setState(() {});
+                //         });
+                //       },
+                //       child: _newsInfoWidget()),
+                // ),
+              ],
+            ),
           ),
         );
       }
@@ -404,9 +425,14 @@ class _PageMapState extends State<PageMap> {
     return SingleChildScrollView(
       child: Column(
         children: [
+          SizedBox(height: 10),
+          buildDragHandle(),
           Container(
+              height: 90,
               padding: EdgeInsets.all(kDefaultPadding),
-              child: Text('동내 게시글', style: DSTextStyles.bold18Black)),
+              child: Center(
+                  child: Text('동내 게시글', style: DSTextStyles.bold18Black))),
+          Divider(),
           ListView.separated(
               padding: EdgeInsets.only(top: 0),
               shrinkWrap: true,
@@ -424,53 +450,53 @@ class _PageMapState extends State<PageMap> {
   }
 
   Widget _listItem(int index, List<ResponseGetPinData> responseGetPinData) {
-    return ListTile(
-      leading: responseGetPinData[index].pin!.images == null ||
-              responseGetPinData[index].pin!.images!.isEmpty
-          ? SvgPicture.asset(
-              'assets/images/void.svg',
-              height: 40,
-              width: 40,
-            )
-          : CachedNetworkImage(
-              imageUrl: responseGetPinData[index].pin!.images!.first,
-              width: 40,
-              height: 40,
-              errorWidget: (_, __, ___) {
-                return SvgPicture.asset(
-                  'assets/images/void.svg',
-                  height: 40,
-                  width: 40,
-                );
-              },
-            ),
-      title: Text(responseGetPinData[index].pin!.title!),
-      subtitle: Text(responseGetPinData[index].pin!.body!),
+    return InkWell(
       onTap: () {
         context.read<LocationProvider>().selectedPinData =
             responseGetPinData[index];
         LatLng location = LatLng(responseGetPinData[index].pin!.lat!,
             responseGetPinData[index].pin!.lng!);
         context.read<LocationProvider>().setLastLocation(location);
-        Navigator.of(context).pushNamedAndRemoveUntil(
-            'PageMap', (route) => false,
-            arguments: responseGetPinData[index].pin!.id!);
-
-        // context.read<LocationProvider>().selectedPinData =
-        //     responseGetPinData[index];
-        // Navigator.of(context).pushNamed('PagePostDetail');
+        setState(() {
+          moveCameraToLastLocation();
+        });
+        // panelController.close();
       },
-      // trailing: IconButton(
-      //   onPressed: () {
-      //     LatLng location = LatLng(responseGetPinData[index].pin!.lat!,
-      //         responseGetPinData[index].pin!.lng!);
-      //     context.read<LocationProvider>().setLastLocation(location);
-      //     Navigator.of(context).pushNamedAndRemoveUntil(
-      //         'PageMap', (route) => false,
-      //         arguments: responseGetPinData[index].pin!.id!);
-      //   },
-      //   icon: Icon(Ionicons.map_outline),
-      // ),
+      child: ListTile(
+        leading: responseGetPinData[index].pin!.images == null ||
+                responseGetPinData[index].pin!.images!.isEmpty
+            ? SvgPicture.asset(
+                'assets/images/void.svg',
+                height: 40,
+                width: 40,
+              )
+            : CachedNetworkImage(
+                imageUrl: responseGetPinData[index].pin!.images!.first,
+                width: 40,
+                height: 40,
+                errorWidget: (_, __, ___) {
+                  return SvgPicture.asset(
+                    'assets/images/void.svg',
+                    height: 40,
+                    width: 40,
+                  );
+                },
+              ),
+        title: Text(responseGetPinData[index].pin!.title!),
+        subtitle: Text(responseGetPinData[index].pin!.body!),
+
+        // trailing: IconButton(
+        //   onPressed: () {
+        //     LatLng location = LatLng(responseGetPinData[index].pin!.lat!,
+        //         responseGetPinData[index].pin!.lng!);
+        //     context.read<LocationProvider>().setLastLocation(location);
+        //     Navigator.of(context).pushNamedAndRemoveUntil(
+        //         'PageMap', (route) => false,
+        //         arguments: responseGetPinData[index].pin!.id!);
+        //   },
+        //   icon: Icon(Ionicons.map_outline),
+        // ),
+      ),
     );
   }
 
@@ -545,33 +571,23 @@ class _PageMapState extends State<PageMap> {
 
   void addCustomMarker(int id, LatLng latLng, ResponseGetPinData? data) async {
     final marker = Marker(
-        markerId: MarkerId(id.toString()),
-        position: latLng,
-        icon: customIcon!,
-        onTap: () async {
-          print('marker onTap()');
-          var responseGetPinDatas = context
-              .read<LocationProvider>()
-              .responseGetPinDatas!
-              .where((element) {
-            return element.pin!.id == id;
-          }).toList();
-          context.read<LocationProvider>().selectedPinData =
-              responseGetPinDatas.first;
-          context.read<LocationProvider>().getPinReply(id);
-
-          // showModalBottomSheet(
-          //   context: context,
-          //   isScrollControlled: true,
-          //   builder: (context) {
-          //     return Padding(
-          //       padding: EdgeInsets.only(
-          //           bottom: MediaQuery.of(context).viewInsets.bottom),
-          //       child: buildBottomSheet(context, id),
-          //     );
-          //   },
-          // );
-        });
+      markerId: MarkerId(id.toString()),
+      position: latLng,
+      icon: customIcon!,
+      onTap: () async {
+        print('marker onTap()');
+        var responseGetPinDatas = context
+            .read<LocationProvider>()
+            .responseGetPinDatas!
+            .where((element) {
+          return element.pin!.id == id;
+        }).toList();
+        context.read<LocationProvider>().selectedPinData =
+            responseGetPinDatas.first;
+        context.read<LocationProvider>().getPinReply(id);
+        panelController.open();
+      },
+    );
     _markers.add(marker);
     setState(() {});
   }
@@ -699,7 +715,7 @@ class _PageMapState extends State<PageMap> {
           )
         : InkWell(
             onTap: () {
-              Navigator.of(context).pushNamed('PagePost');
+              panelController.open();
             },
             child: Container(
               decoration: BoxDecoration(
@@ -737,56 +753,63 @@ class _PageMapState extends State<PageMap> {
           child: CircularProgressIndicator(),
         );
       }
-      return Container(
-        height: 120,
-        decoration: BoxDecoration(
-          color: DSColors.white,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-              horizontal: kDefaultHorizontalPadding, vertical: 5),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.all(8),
-                child: data.selectedPinData!.pin!.images == null ||
-                        data.selectedPinData!.pin!.images!.isEmpty
-                    ? SvgPicture.asset(
-                        'assets/images/void.svg',
-                        height: 50,
-                        width: 50,
-                      )
-                    : CachedNetworkImage(
-                        imageUrl: data.selectedPinData!.pin!.images!.first,
-                        width: 50,
-                        height: 50,
-                        errorWidget: (_, __, ___) {
-                          return SvgPicture.asset(
+      return InkWell(
+        onTap: () {
+          panelController.open();
+        },
+        child: Container(
+          height: kDefaultCollapseHeight,
+          decoration: BoxDecoration(
+            color: DSColors.white,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+                horizontal: kDefaultHorizontalPadding,
+                vertical: kDefaultVerticalPadding),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(18),
+                  child: Container(
+                    height: 60,
+                    width: 60,
+                    child: data.selectedPinData!.pin!.images == null ||
+                            data.selectedPinData!.pin!.images!.isEmpty
+                        ? SvgPicture.asset(
                             'assets/images/void.svg',
-                            height: 50,
-                            width: 50,
-                          );
-                        },
-                      ),
-              ),
-              SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(data.selectedPinData!.pin!.title!,
-                      style: DSTextStyles.bold18Black),
-                  SizedBox(height: 10),
-                  Text(
-                    data.selectedPinData!.pin!.body!,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
+                            fit: BoxFit.cover,
+                          )
+                        : CachedNetworkImage(
+                            imageUrl: data.selectedPinData!.pin!.images!.first,
+                            fit: BoxFit.cover,
+                            errorWidget: (_, __, ___) {
+                              return SvgPicture.asset(
+                                'assets/images/void.svg',
+                                fit: BoxFit.cover,
+                              );
+                            },
+                          ),
                   ),
-                ],
-              ),
-            ],
+                ),
+                SizedBox(width: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(data.selectedPinData!.pin!.title!,
+                        style: DSTextStyles.bold18Black),
+                    SizedBox(height: 10),
+                    Text(
+                      data.selectedPinData!.pin!.body!,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       );
@@ -810,10 +833,18 @@ class _PageMapState extends State<PageMap> {
             child: Column(
               // mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox(height: 12),
+                SizedBox(height: 10),
                 buildDragHandle(),
+                Container(
+                  height: 90,
+                  child: Center(
+                    child: Text(data.selectedPinData!.pin!.title!,
+                        style: DSTextStyles.bold18Black),
+                  ),
+                ),
                 Expanded(
                   child: SingleChildScrollView(
+                    controller: _scrollController,
                     keyboardDismissBehavior:
                         ScrollViewKeyboardDismissBehavior.onDrag,
                     // reverse: true,
@@ -838,9 +869,6 @@ class _PageMapState extends State<PageMap> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(height: 10),
-                              Text(data.selectedPinData!.pin!.title!,
-                                  style: DSTextStyles.bold18Black),
-                              SizedBox(height: 10),
                               Text(data.selectedPinData!.pin!.body!),
                               SizedBox(height: 10),
                               Divider(),
@@ -863,6 +891,11 @@ class _PageMapState extends State<PageMap> {
     });
   }
 
+  _scrollToEnd() async {
+    _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
+  }
+
   Widget buildDragHandle() {
     return Center(
       child: Container(
@@ -872,14 +905,6 @@ class _PageMapState extends State<PageMap> {
             color: DSColors.warm_grey,
           )),
     );
-  }
-
-  void goDetailPage() async {
-    Navigator.of(context).pushNamed('PagePostDetail');
-  }
-
-  void goCommunityPage() async {
-    Navigator.of(context).pushNamed('PagePostCommunity');
   }
 
   void onClosePress() async {
@@ -955,6 +980,8 @@ class _PageMapState extends State<PageMap> {
                     onTap: () {
                       createReply();
                       FocusScope.of(context).unfocus();
+                      WidgetsBinding.instance!
+                          .addPostFrameCallback((_) => _scrollToEnd());
                     },
                   ),
                 ],

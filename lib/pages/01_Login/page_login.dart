@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:dongnesosik/global/model/singleton_user.dart';
 import 'package:dongnesosik/global/model/user/model_request_user_connect.dart';
 import 'package:dongnesosik/global/model/user/model_request_user_set.dart';
 import 'package:dongnesosik/global/provider/auth_provider.dart';
@@ -88,7 +89,7 @@ class _PageLoginState extends State<PageLogin> {
                     ModelRequestUserSet modelRequestUserSet =
                         ModelRequestUserSet(
                       email: user.email ?? '',
-                      name: user.displayName ?? '',
+                      name: user.displayName ?? '이름없음',
                       phoneNumber: user.phoneNumber ?? '',
                       profileImage: user.photoURL ?? '',
                     );
@@ -96,6 +97,8 @@ class _PageLoginState extends State<PageLogin> {
                     await context
                         .read<UserProvider>()
                         .setUser(modelRequestUserSet);
+
+                    await context.read<UserProvider>().getUser();
 
                     Navigator.of(context)
                         .pushNamedAndRemoveUntil('PageMap', (route) => false);
@@ -154,6 +157,8 @@ class _PageLoginState extends State<PageLogin> {
                               .read<UserProvider>()
                               .setUser(modelRequestUserSet);
 
+                          await context.read<UserProvider>().getUser();
+
                           Navigator.of(context).pushNamedAndRemoveUntil(
                               'PageMap', (route) => false);
                         },
@@ -197,7 +202,7 @@ class _PageLoginState extends State<PageLogin> {
                             borderRadius: BorderRadius.circular(30.0),
                             color: Colors.transparent),
                         child: Center(
-                            child: Text('Guest로 계속 사용하기',
+                            child: Text('Guest로 사용하기',
                                 style:
                                     DSTextStyles.regular12WarmGrey_underline)),
                       ),

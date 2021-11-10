@@ -73,7 +73,8 @@ class _PageUserSettingState extends State<PageUserSetting> {
                   ],
                 ),
               ),
-              Text('이메일 ${SingletonUser.singletonUser.userData.email!}'),
+              SizedBox(height: 20),
+              Text('${SingletonUser.singletonUser.userData.email!}'),
               SizedBox(height: 20),
               DSInputField(
                 controller: _tecName,

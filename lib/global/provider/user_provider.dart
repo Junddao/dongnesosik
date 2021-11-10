@@ -68,6 +68,7 @@ class UserProvider extends ParentProvider {
       // user factory 에 정보 때려박기
       ModelUserInfo modelUserInfo =
           ModelUserInfo.fromMap(modelRequestUserSet.toMap());
+      modelUserInfo.id = SingletonUser.singletonUser.userData.id;
       SingletonUser.singletonUser.setUser(modelUserInfo);
 
       setStateIdle();

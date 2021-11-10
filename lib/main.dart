@@ -83,7 +83,7 @@ class _MyAppState extends State<MyApp> {
                   ),
                   scaffoldBackgroundColor: Colors.white),
               onGenerateRoute: Routers.generateRoute,
-              home: SplashScreen(),
+              home: PageSplash(),
               builder: EasyLoading.init(),
             ),
           );

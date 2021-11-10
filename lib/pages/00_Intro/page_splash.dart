@@ -7,12 +7,12 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
-class SplashScreen extends StatefulWidget {
+class PageSplash extends StatefulWidget {
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  _PageSplashState createState() => _PageSplashState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _PageSplashState extends State<PageSplash> {
   Future<bool> _isLogin() async {
     // FirebaseAuth.instance.signOut();
     await Future.delayed(Duration(milliseconds: 2000));

@@ -8,6 +8,7 @@ const String APP_NAME = "동내소식";
 
 const kPrimaryColor = DSColors.tomato;
 const kTextColor = Color(0XFF171717);
+const kDefaultCollapseHeight = 100.0;
 
 const kDefaultPadding = 24.0;
 const kDefaultVerticalPadding = 10.0;
