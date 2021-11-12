@@ -56,8 +56,16 @@ class _PagePopularPostState extends State<PagePopularPost> {
   Widget _listItem(int index, List<ResponseGetPinData> top50PinDatas) {
     return ListTile(
       leading: Icon(Icons.person),
-      title: Text(top50PinDatas[index].pin!.title!),
-      subtitle: Text(top50PinDatas[index].pin!.body!),
+      title: Text(
+        top50PinDatas[index].pin!.title!,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      subtitle: Text(
+        top50PinDatas[index].pin!.body!,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
       onTap: () {
         context.read<LocationProvider>().selectedPinData = top50PinDatas[index];
         LatLng location = LatLng(

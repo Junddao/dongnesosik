@@ -894,7 +894,7 @@ class _PageMapState extends State<PageMap> {
                 Container(
                   height: 90,
                   child: Center(
-                    child: Text(data.selectedPinData!.pin!.title!,
+                    child: Text('${data.selectedPinData!.name!}님의 글',
                         style: DSTextStyles.bold18Black),
                   ),
                 ),
@@ -918,15 +918,42 @@ class _PageMapState extends State<PageMap> {
                                     data.selectedPinData!.pin!.images ?? []),
                           ),
                         ),
-                        // 여기 좋아요 버튼 달기
+
                         Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: kDefaultHorizontalPadding),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              Text(data.selectedPinData!.pin!.title!,
+                                  style: DSTextStyles.bold16Black),
                               SizedBox(height: 10),
                               Text(data.selectedPinData!.pin!.body!),
+                              SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  data.selectedPinData!.like ?? false == false
+                                      ? InkWell(
+                                          onTap: () {
+                                            context
+                                                .read<LocationProvider>()
+                                                .pinLikeToId(data
+                                                    .selectedPinData!.pin!.id!);
+                                          },
+                                          child: Icon(
+                                            Icons.favorite_border_outlined,
+                                          ),
+                                        )
+                                      : Icon(
+                                          Icons.favorite,
+                                          color: DSColors.tomato,
+                                        ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                      '${data.selectedPinData!.pin!.likeCount ?? 0}',
+                                      style: DSTextStyles.regular10Grey06),
+                                ],
+                              ),
                               SizedBox(height: 10),
                               Divider(),
                               _buildReviewList(data),

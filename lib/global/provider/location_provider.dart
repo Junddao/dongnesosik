@@ -161,4 +161,28 @@ class LocationProvider extends ParentProvider {
       setStateError();
     }
   }
+
+  Future<void> pinLikeToId(int id) async {
+    try {
+      setStateBusy();
+      var api = ApiService();
+      var response = await api.get('/pin/like/$id');
+
+      setStateIdle();
+    } catch (error) {
+      setStateError();
+    }
+  }
+
+  Future<void> pinDelete(int id) async {
+    try {
+      setStateBusy();
+      var api = ApiService();
+      var response = await api.get('/pin/delete/$id');
+
+      setStateIdle();
+    } catch (error) {
+      setStateError();
+    }
+  }
 }
