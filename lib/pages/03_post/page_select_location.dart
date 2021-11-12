@@ -40,6 +40,7 @@ class _PageSelectLocationState extends State<PageSelectLocation> {
   AppBar _appBar() {
     return AppBar(
       title: Text('위치 선택'),
+      centerTitle: true,
     );
   }
 

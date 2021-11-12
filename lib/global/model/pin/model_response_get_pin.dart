@@ -36,15 +36,21 @@ class ModelResponseGetPin {
 class ResponseGetPinData {
   ResponsePin? pin;
   String? name;
+  bool? like;
+  String? createAt;
   ResponseGetPinData({
     this.pin,
     this.name,
+    this.like = false,
+    this.createAt,
   });
 
   Map<String, dynamic> toMap() {
     return {
       'pin': pin?.toMap(),
       'name': name,
+      'like': like,
+      'createAt': createAt,
     };
   }
 
@@ -52,6 +58,8 @@ class ResponseGetPinData {
     return ResponseGetPinData(
       pin: map['pin'] != null ? ResponsePin.fromMap(map['pin']) : null,
       name: map['name'] != null ? map['name'] : null,
+      like: map['like'] != null ? map['like'] : null,
+      createAt: map['createAt'] != null ? map['createAt'] : null,
     );
   }
 
@@ -68,6 +76,7 @@ class ResponsePin {
   String? title;
   String? body;
   List<String>? images;
+  int? likeCount;
   ResponsePin({
     this.id,
     this.lat,
@@ -75,6 +84,7 @@ class ResponsePin {
     this.title,
     this.body,
     this.images,
+    this.likeCount,
   });
 
   Map<String, dynamic> toMap() {
@@ -84,7 +94,8 @@ class ResponsePin {
       'lng': lng,
       'title': title,
       'body': body,
-      'Images': images,
+      'images': images,
+      'likeCount': likeCount,
     };
   }
 
@@ -96,6 +107,7 @@ class ResponsePin {
       title: map['title'] != null ? map['title'] : null,
       body: map['body'] != null ? map['body'] : null,
       images: map['images'] != null ? List<String>.from(map['images']) : null,
+      likeCount: map['likeCount'] != null ? map['likeCount'] : null,
     );
   }
 

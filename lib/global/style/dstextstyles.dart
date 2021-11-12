@@ -101,6 +101,13 @@ class DSTextStyles {
       fontStyle: FontStyle.normal,
       fontSize: 18.0);
 
+  static const bold18WarmGrey = const TextStyle(
+      color: DSColors.warm_grey,
+      fontWeight: FontWeight.w700,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 18.0);
+
   static const bold18Black = const TextStyle(
       color: DSColors.blackColor,
       fontWeight: FontWeight.w700,
@@ -667,6 +674,24 @@ class DSTextStyles {
     // height: 1.5,
   );
 
+  static const bold32black = const TextStyle(
+    color: Colors.black,
+    fontWeight: FontWeight.w700,
+    fontFamily: 'NotoSansKR',
+    fontSize: 32.0,
+    fontStyle: FontStyle.normal,
+    // height: 1.5,
+  );
+
+  static const bold32white = const TextStyle(
+    color: Colors.white,
+    fontWeight: FontWeight.w700,
+    fontFamily: 'NotoSansKR',
+    fontSize: 32.0,
+    fontStyle: FontStyle.normal,
+    // height: 1.5,
+  );
+
   static const bold40white = const TextStyle(
     color: Colors.white,
     fontWeight: FontWeight.w700,
@@ -679,6 +704,15 @@ class DSTextStyles {
   static const bold40black = const TextStyle(
     color: Colors.black,
     fontWeight: FontWeight.w700,
+    fontFamily: 'NotoSansKR',
+    fontSize: 40.0,
+    fontStyle: FontStyle.normal,
+    // height: 1.5,
+  );
+
+  static const regular40black = const TextStyle(
+    color: Colors.black,
+    fontWeight: FontWeight.w400,
     fontFamily: 'NotoSansKR',
     fontSize: 40.0,
     fontStyle: FontStyle.normal,

@@ -18,6 +18,7 @@ class _PagePostState extends State<PagePost> {
     return Scaffold(
       appBar: AppBar(
         title: Text('동내 게시글'),
+        centerTitle: true,
       ),
       body: _body(),
     );

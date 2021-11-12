@@ -5,7 +5,12 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 class AuthProvider {
   Future<User?> signInWithGoogle() async {
     try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      final GoogleSignInAccount? googleUser = await GoogleSignIn(
+        scopes: [
+          'email',
+          'https://www.googleapis.com/auth/contacts.readonly',
+        ],
+      ).signIn();
       final GoogleSignInAuthentication googleAuth =
           await googleUser!.authentication;
       final OAuthCredential credential = GoogleAuthProvider.credential(

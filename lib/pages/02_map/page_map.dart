@@ -83,35 +83,39 @@ class _PageMapState extends State<PageMap> {
   @override
   void dispose() {
     _timer?.cancel();
+
     super.dispose();
   }
 
-  void setCustomMarker() async {
-    // id에 맞게 설정해줘야함...
-    customIcon = await createCustomMarkerBitmap('aaaaaaaaaa'.substring(0, 5));
-  }
-
   Future<BitmapDescriptor> createCustomMarkerBitmap(String title) async {
-    TextSpan span = new TextSpan(
-      style: DSTextStyles.bold16Black,
-      text: title,
-    );
+    // TextSpan span = new TextSpan(
+    //   // style: DSTextStyles.bold16Black,
+    //   text: title,
+    // );
 
     TextPainter tp = new TextPainter(
-      text: span,
+      // text: span,
       textAlign: TextAlign.center,
       textDirection: TextDirection.ltr,
     );
-    tp.text = TextSpan(text: title, style: DSTextStyles.bold40black);
+    tp.text = TextSpan(
+        text: title.length < 10 ? title : title.substring(0, 10) + '..',
+        style: DSTextStyles.bold32white);
 
     var myPaint = Paint();
-    myPaint.color = DSColors.white;
+    myPaint.color = DSColors.gray6;
     PictureRecorder recorder = new PictureRecorder();
     Canvas c = new Canvas(recorder);
-
-    c.drawRRect(RRect.fromRectAndRadius(Rect.largest, Radius.zero), myPaint);
-
     tp.layout();
+    // double rectWidth = tp != null ? tp.width : 0.0;
+    // double rectHeight = tp != null ? tp.height : 0.0;
+    c.drawRRect(
+        RRect.fromRectAndRadius(
+            const Offset(0.0, 0.0) & Size(tp.width + 40, tp.height + 20),
+            Radius.circular(12)),
+        myPaint);
+
+    // tp.layout();
     tp.paint(c, new Offset(20.0, 10.0));
 
     /* Do your painting of the custom icon here, including drawing text, shapes, etc. */
@@ -199,26 +203,28 @@ class _PageMapState extends State<PageMap> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-          key: _scaffoldKey,
-          appBar: _appBar(),
-          body: _body(),
-          drawer: _drawer(),
-          extendBodyBehindAppBar: true,
-          drawerEnableOpenDragGesture: true,
-          resizeToAvoidBottomInset: false
-          // resizeToAvoidBottomInset: false,
+        key: _scaffoldKey,
+        floatingActionButton: _floatingActionButton(),
+        appBar: _appBar(),
+        body: _body(),
+        drawer: _drawer(),
+        extendBodyBehindAppBar: true,
+        drawerEnableOpenDragGesture: true,
+        resizeToAvoidBottomInset: false,
+        floatingActionButtonLocation: FloatingActionButtonLocation.miniEndTop,
+        // resizeToAvoidBottomInset: false,
 
-          // floatingActionButton: FloatingActionButton(
-          //   child: Icon(Icons.add, color: DSColors.white),
+        // floatingActionButton: FloatingActionButton(
+        //   child: Icon(Icons.add, color: DSColors.white),
 
-          //   // child: Text('글쓰기', style: DSTextStyle.bold12Black),
-          //   backgroundColor: DSColors.tomato,
-          //   onPressed: () async {
-          //     Navigator.of(context).pushNamed('PagePostCreate');
-          //   },
-          // ),
-          // floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-          ),
+        //   // child: Text('글쓰기', style: DSTextStyle.bold12Black),
+        //   backgroundColor: DSColors.tomato,
+        //   onPressed: () async {
+        //     Navigator.of(context).pushNamed('PagePostCreate');
+        //   },
+        // ),
+        // floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      ),
     );
   }
 
@@ -229,6 +235,19 @@ class _PageMapState extends State<PageMap> {
     } else {
       return true;
     }
+  }
+
+  Widget _floatingActionButton() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 100.0),
+      child: FloatingActionButton(
+        mini: true,
+        child: Icon(Icons.my_location_outlined),
+        onPressed: () {
+          moveCameraToMyLocation();
+        },
+      ),
+    );
   }
 
   AppBar _appBar() {
@@ -247,6 +266,7 @@ class _PageMapState extends State<PageMap> {
               ? ''
               : provider.placemarks[0].subLocality!,
           style: DSTextStyles.bold18Black),
+      centerTitle: true,
       actions: [
         TextButton(
           onPressed: () {
@@ -286,7 +306,7 @@ class _PageMapState extends State<PageMap> {
               style: DSTextStyles.bold14Black,
             ),
             onTap: () {
-              Navigator.of(context).pop(); // drawer 닫기
+              Navigator.of(context).pushNamed('PagePopularPost');
             },
           ),
           SingletonUser.singletonUser.userData.email == null ||
@@ -305,22 +325,24 @@ class _PageMapState extends State<PageMap> {
                   },
                 )
               : SizedBox.shrink(),
+          SingletonUser.singletonUser.userData.email == null ||
+                  SingletonUser.singletonUser.userData.email!.isEmpty
+              ? SizedBox.shrink()
+              : ListTile(
+                  leading: Icon(Ionicons.log_out_outline),
+                  title: Text(
+                    '로그아웃',
+                    style: DSTextStyles.bold14Black,
+                  ),
+                  onTap: () {
+                    FirebaseAuth.instance.signOut();
+                    SingletonUser.singletonUser.userData = ModelUserInfo();
+                    ModelSharedPreferences.removeToken();
 
-          ListTile(
-            leading: Icon(Ionicons.log_out_outline),
-            title: Text(
-              '로그아웃',
-              style: DSTextStyles.bold14Black,
-            ),
-            onTap: () {
-              FirebaseAuth.instance.signOut();
-              SingletonUser.singletonUser.userData = ModelUserInfo();
-              ModelSharedPreferences.removeToken();
-
-              Navigator.of(context)
-                  .pushNamedAndRemoveUntil('PageSplash', (route) => false);
-            },
-          ),
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                        'PageSplash', (route) => false);
+                  },
+                ),
         ],
       ),
     );
@@ -363,7 +385,7 @@ class _PageMapState extends State<PageMap> {
                   markers: [..._markers, ..._temporaryMaker].toSet(),
                   rotateGesturesEnabled: false,
                   myLocationEnabled: true,
-                  myLocationButtonEnabled: true,
+                  myLocationButtonEnabled: false,
 
                   padding: EdgeInsets.only(bottom: 130, right: 0),
                   // mapToolbarEnabled: false,
@@ -501,23 +523,56 @@ class _PageMapState extends State<PageMap> {
   }
 
   Widget _drawerHeader() {
-    return Container(
-      height: 200,
-      child: DrawerHeader(
-        margin: EdgeInsets.zero,
-        padding: EdgeInsets.only(left: 16, top: 16, bottom: 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).pushNamed('PageUserSetting');
+      },
+      child: Container(
+        height: 200,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            ListTile(
-              title: Text(SingletonUser.singletonUser.userData.name!,
-                  style: DSTextStyles.bold16Black),
-              subtitle: Text('반갑습니다.', style: DSTextStyles.regular12WarmGrey),
-              trailing: Icon(Icons.arrow_forward_ios),
-              onTap: () {
-                Navigator.of(context).pushNamed('PageUserSetting');
-              },
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  height: 80,
+                  width: 80,
+                  child: ClipOval(
+                    child: SingletonUser.singletonUser.userData.profileImage ==
+                                null ||
+                            SingletonUser.singletonUser.userData.profileImage ==
+                                ''
+                        ? SvgPicture.asset(
+                            'assets/images/person.svg',
+                            fit: BoxFit.cover,
+                            height: 80,
+                            width: 80,
+                          )
+                        : CachedNetworkImage(
+                            imageUrl: SingletonUser
+                                .singletonUser.userData.profileImage!,
+                            fit: BoxFit.cover,
+                            height: 80,
+                            width: 80,
+                          ),
+                  ),
+                ),
+                SizedBox(width: 20),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(SingletonUser.singletonUser.userData.name!,
+                        style: DSTextStyles.bold16Black),
+                    Text('반갑습니다.', style: DSTextStyles.regular12WarmGrey),
+                  ],
+                ),
+              ],
             ),
+            Icon(Icons.arrow_forward_ios),
           ],
         ),
       ),
@@ -533,6 +588,7 @@ class _PageMapState extends State<PageMap> {
     print(location.toString());
 
     _controller.complete(controller);
+
     provider.getAddress(location);
   }
 
@@ -862,6 +918,7 @@ class _PageMapState extends State<PageMap> {
                                     data.selectedPinData!.pin!.images ?? []),
                           ),
                         ),
+                        // 여기 좋아요 버튼 달기
                         Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: kDefaultHorizontalPadding),
@@ -1066,7 +1123,7 @@ class _PageMapState extends State<PageMap> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('리뷰 없음'),
+          Text('첫 리뷰를 작성해 보세요. 🙂'),
         ],
       ),
     );

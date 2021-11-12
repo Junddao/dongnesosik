@@ -58,6 +58,7 @@ class _PagePostCreateState extends State<PagePostCreate> {
     return AppBar(
       automaticallyImplyLeading: false,
       title: Text('글쓰기'),
+      centerTitle: true,
       leading: TextButton(
         onPressed: () {
           DSTwoButtonDialog.showCancelDialog(context: context).then((value) {
@@ -430,7 +431,7 @@ class _PagePostCreateState extends State<PagePostCreate> {
     }
 
     location = context.read<LocationProvider>().myPostLocation;
-    EasyLoading.show(status: 'loading...');
+    EasyLoading.show(status: 'loading...', dismissOnTap: true);
     // 이미지 보내기
     try {
       await updateImageToServer().catchError((onError) {

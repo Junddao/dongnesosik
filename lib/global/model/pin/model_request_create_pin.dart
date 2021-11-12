@@ -7,6 +7,7 @@ class ModelRequestCreatePin {
   String? title;
   String? body;
   List<String>? images;
+  int? likeCount;
   ModelRequestCreatePin({
     this.password,
     this.lat,
@@ -14,6 +15,7 @@ class ModelRequestCreatePin {
     this.title,
     this.body,
     this.images,
+    this.likeCount,
   });
 
   Map<String, dynamic> toMap() {
@@ -24,6 +26,7 @@ class ModelRequestCreatePin {
       'title': title,
       'body': body,
       'images': images,
+      'likeCount': likeCount,
     };
   }
 
@@ -35,6 +38,7 @@ class ModelRequestCreatePin {
       title: map['title'] != null ? map['title'] : null,
       body: map['body'] != null ? map['body'] : null,
       images: map['images'] != null ? List<String>.from(map['images']) : null,
+      likeCount: map['likeCount'] != null ? map['likeCount'] : null,
     );
   }
 

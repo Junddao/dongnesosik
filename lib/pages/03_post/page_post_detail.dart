@@ -40,7 +40,10 @@ class _PagePostDetailState extends State<PagePostDetail> {
   }
 
   AppBar _appBar(ResponseGetPinData selectedGetPinData) {
-    return AppBar(title: Text('${selectedGetPinData.pin!.title}'));
+    return AppBar(
+      title: Text('${selectedGetPinData.pin!.title}'),
+      centerTitle: true,
+    );
   }
 
   Widget _bottomButton() {
