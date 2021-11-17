@@ -239,7 +239,6 @@ class _PagePostDetailState extends State<PagePostDetail> {
         ModelRequestCreatePinReply(
       pinId: provider.selectedPinData!.pin!.id,
       body: _tecMessage.text,
-      password: '0000',
     );
     _tecMessage.text = '';
     provider.createReply(modelRequestCreatePinReply).then((value) {

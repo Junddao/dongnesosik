@@ -187,7 +187,7 @@ class _PageLoginState extends State<PageLogin> {
                         ),
                       )
                     : SizedBox.shrink(),
-                SizedBox(height: 20.0),
+                SizedBox(height: 40.0),
                 InkWell(
                   onTap: () async {
                     Navigator.of(context)
@@ -200,11 +200,10 @@ class _PageLoginState extends State<PageLogin> {
                         width: SizeConfig.screenWidth * 0.8,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(30.0),
-                            color: Colors.transparent),
+                            color: DSColors.warm_grey),
                         child: Center(
                             child: Text('Guest로 사용하기',
-                                style:
-                                    DSTextStyles.regular12WarmGrey_underline)),
+                                style: DSTextStyles.bold16White)),
                       ),
                     ],
                   ),

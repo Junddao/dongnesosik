@@ -58,13 +58,13 @@ class _PagePopularPostState extends State<PagePopularPost> {
       leading: Icon(Icons.person),
       title: Text(
         top50PinDatas[index].pin!.title!,
-        maxLines: 1,
         overflow: TextOverflow.ellipsis,
+        maxLines: 1,
       ),
       subtitle: Text(
         top50PinDatas[index].pin!.body!,
-        maxLines: 1,
         overflow: TextOverflow.ellipsis,
+        maxLines: 1,
       ),
       onTap: () {
         context.read<LocationProvider>().selectedPinData = top50PinDatas[index];

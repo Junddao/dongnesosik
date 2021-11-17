@@ -102,10 +102,12 @@ class _PageMyPostState extends State<PageMyPost> {
         title: Text(
           myPinDatas[index].pin!.title!,
           overflow: TextOverflow.ellipsis,
+          maxLines: 1,
         ),
         subtitle: Text(
           myPinDatas[index].pin!.body!,
           overflow: TextOverflow.ellipsis,
+          maxLines: 1,
         ),
         onTap: () {
           context.read<LocationProvider>().selectedPinData = myPinDatas[index];

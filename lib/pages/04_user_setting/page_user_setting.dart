@@ -1,23 +1,29 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dongnesosik/global/model/model_shared_preferences.dart';
 import 'package:dongnesosik/global/model/singleton_user.dart';
 import 'package:dongnesosik/global/model/user/model_request_user_set.dart';
 import 'package:dongnesosik/global/provider/file_provider.dart';
+import 'package:dongnesosik/global/provider/location_provider.dart';
 import 'package:dongnesosik/global/provider/user_provider.dart';
 import 'package:dongnesosik/global/style/constants.dart';
 import 'package:dongnesosik/global/style/dscolors.dart';
 import 'package:dongnesosik/global/style/dstextstyles.dart';
+import 'package:dongnesosik/pages/components/ds_button.dart';
 import 'package:dongnesosik/pages/components/ds_image_picker.dart';
 import 'package:dongnesosik/pages/components/ds_input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:heic_to_jpg/heic_to_jpg.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:kpostal/kpostal.dart';
 import 'package:provider/provider.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' as googleMap;
 
 class PageUserSetting extends StatefulWidget {
   const PageUserSetting({Key? key}) : super(key: key);
@@ -33,6 +39,14 @@ class _PageUserSettingState extends State<PageUserSetting> {
   List<File> _images = [];
   List<String> _imageUrls = [];
   List<AssetEntity> _selectedAssetList = [];
+
+  String? address = SingletonUser.singletonUser.userData.address;
+
+  @override
+  void initState() {
+    _tecName.text = SingletonUser.singletonUser.userData.name!;
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -57,7 +71,7 @@ class _PageUserSettingState extends State<PageUserSetting> {
             onSave();
           },
           child: Text(
-            '등록',
+            '등록하기',
             style: DSTextStyles.bold14Tomato,
           ),
         ),
@@ -152,12 +166,13 @@ class _PageUserSettingState extends State<PageUserSetting> {
                   ),
                   SizedBox(width: 18),
                   Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       RichText(
                         text: TextSpan(
                           children: [
                             TextSpan(
-                                text: '안녕하세요 ',
+                                text: '안녕하세요\n',
                                 style: DSTextStyles.bold18WarmGrey),
                             TextSpan(
                                 text:
@@ -167,6 +182,7 @@ class _PageUserSettingState extends State<PageUserSetting> {
                                 text: '님!', style: DSTextStyles.bold18WarmGrey),
                           ],
                         ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                       SizedBox(height: 20),
                       Text('${SingletonUser.singletonUser.userData.email!}'),
@@ -176,13 +192,32 @@ class _PageUserSettingState extends State<PageUserSetting> {
               ),
 
               SizedBox(height: 20),
+              Text('이름 수정하기', style: DSTextStyles.bold18Black),
               DSInputField(
                 controller: _tecName,
-                // title: "성명",
                 hintText: "변경하실 성명을 입력해주세요",
                 warningMessage: "성명을 입력해주세요",
                 onEditingComplete: () => node.nextFocus(),
+                validator: (value) {
+                  if (value!.length > 10) {
+                    return "10자 내로 입력해주세요.";
+                  }
+                },
               ),
+
+              const SizedBox(height: 20),
+              Text('주소 변경하기', style: DSTextStyles.bold18Black),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(address!),
+                  DSButton(
+                      text: '변경하기',
+                      press: getAddressWidget,
+                      type: ButtonType.transparent),
+                ],
+              ),
+
               // DSInputField(
               //   controller: _tecPhone,
               //   title: "연락처:",
@@ -199,6 +234,38 @@ class _PageUserSettingState extends State<PageUserSetting> {
     );
   }
 
+  void getAddressWidget() async {
+    Kpostal result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => KpostalView(
+            useLocalServer: true,
+            callback: (Kpostal result) {
+              print(result.address);
+            },
+          ),
+        ));
+    setState(() {});
+    if (result != null) {
+      googleMap.LatLng? myLocation;
+      if (result.latitude == null) {
+        Location? location = await result.latLng;
+        myLocation = googleMap.LatLng(location!.latitude, location.longitude);
+      } else {
+        myLocation = googleMap.LatLng(result.latitude!, result.longitude!);
+      }
+
+      context.read<LocationProvider>().myLocation =
+          googleMap.LatLng(myLocation.latitude, myLocation.longitude);
+      context.read<LocationProvider>().lastLocation =
+          googleMap.LatLng(myLocation.latitude, myLocation.longitude);
+      address = result.address;
+      print(context.read<LocationProvider>().myLocation);
+      ModelSharedPreferences.writeMyLat(myLocation.latitude);
+      ModelSharedPreferences.writeMyLng(myLocation.longitude);
+    }
+  }
+
   void onSave() async {
     if (!_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -213,26 +280,29 @@ class _PageUserSettingState extends State<PageUserSetting> {
     EasyLoading.show(status: 'loading...', dismissOnTap: true);
 
     try {
-      await updateImageToServer().catchError((onError) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('이미지 업로드에 실패했습니다. 이미지를 다시 선택 후 시도해 주세요.'),
-          ),
-        );
-        throw Exception();
-      });
+      if (_selectedAssetList.isNotEmpty) {
+        await updateImageToServer().catchError((onError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('이미지 업로드에 실패했습니다. 이미지를 다시 선택 후 시도해 주세요.'),
+            ),
+          );
+          throw Exception();
+        });
+      }
+
       SingletonUser.singletonUser.userData.name = _tecName.text;
-      SingletonUser.singletonUser.userData.profileImage = _imageUrls[0];
+      SingletonUser.singletonUser.userData.address = address;
 
       ModelRequestUserSet modelRequestUserSet = ModelRequestUserSet.fromMap(
           SingletonUser.singletonUser.userData.toMap());
 
       context.read<UserProvider>().setUser(modelRequestUserSet);
-      Navigator.of(context).pop();
     } catch (e) {
       print(e);
     } finally {
       EasyLoading.dismiss();
+      Navigator.of(context).pop();
     }
   }
 
@@ -243,6 +313,7 @@ class _PageUserSettingState extends State<PageUserSetting> {
           .uploadImages(_images)
           .then((value) async {
         _imageUrls = value!.images!;
+        SingletonUser.singletonUser.userData.profileImage = _imageUrls[0];
       });
     }
   }

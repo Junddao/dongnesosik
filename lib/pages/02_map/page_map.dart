@@ -14,6 +14,7 @@ import 'package:dongnesosik/global/provider/location_provider.dart';
 import 'package:dongnesosik/global/style/constants.dart';
 import 'package:dongnesosik/global/style/dscolors.dart';
 import 'package:dongnesosik/global/style/dstextstyles.dart';
+import 'package:dongnesosik/global/util/date_converter.dart';
 import 'package:dongnesosik/global/util/range_by_zoom.dart';
 import 'package:dongnesosik/pages/03_post/page_post.dart';
 import 'package:dongnesosik/pages/components/ds_button.dart';
@@ -24,7 +25,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -43,7 +43,6 @@ class _PageMapState extends State<PageMap> {
   List<Marker> _markers = [];
   List<Marker> _temporaryMaker = [];
   Completer<GoogleMapController> _controller = Completer();
-  Location location = Location();
 
   BitmapDescriptor? customIcon;
   Timer? _timer;
@@ -140,33 +139,33 @@ class _PageMapState extends State<PageMap> {
       return;
     }
 
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
+    // bool _serviceEnabled;
+    // PermissionStatus _permissionGranted;
 
-    _serviceEnabled = await location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
-      if (!_serviceEnabled) {
-        return Future.error('Location services are disabled.');
-      }
-    }
+    // _serviceEnabled = await location.serviceEnabled();
+    // if (!_serviceEnabled) {
+    //   _serviceEnabled = await location.requestService();
+    //   if (!_serviceEnabled) {
+    //     return Future.error('Location services are disabled.');
+    //   }
+    // }
 
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await location.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
-        return Future.error('Location services are disabled.');
-      }
-    }
+    // _permissionGranted = await location.hasPermission();
+    // if (_permissionGranted == PermissionStatus.denied) {
+    //   _permissionGranted = await location.requestPermission();
+    //   if (_permissionGranted != PermissionStatus.granted) {
+    //     return Future.error('Location services are disabled.');
+    //   }
+    // }
 
-    LocationData locationData = await location.getLocation();
-    print(locationData.latitude!);
-    print(locationData.longitude!);
-    LatLng latlng = LatLng(locationData.latitude!, locationData.longitude!);
+    // LocationData locationData = await location.getLocation();
+    // print(locationData.latitude!);
+    // print(locationData.longitude!);
+    // LatLng latlng = LatLng(locationData.latitude!, locationData.longitude!);
 
-    context.read<LocationProvider>().setMyLocation(latlng);
-    context.read<LocationProvider>().setLastLocation(latlng);
-    moveCameraToMyLocation();
+    // context.read<LocationProvider>().setMyLocation(latlng);
+    // context.read<LocationProvider>().setLastLocation(latlng);
+    // moveCameraToMyLocation();
   }
 
   void moveCameraToMyLocation() {
@@ -382,16 +381,18 @@ class _PageMapState extends State<PageMap> {
                     target: _lastLocation,
                     zoom: 15,
                   ),
+
                   markers: [..._markers, ..._temporaryMaker].toSet(),
                   rotateGesturesEnabled: false,
-                  myLocationEnabled: true,
-                  myLocationButtonEnabled: false,
+                  // myLocationEnabled: false,
+                  // myLocationButtonEnabled: false,
 
                   padding: EdgeInsets.only(bottom: 130, right: 0),
                   // mapToolbarEnabled: false,
                   zoomControlsEnabled: false,
                   onCameraMove: _onCameraMove,
                   onCameraIdle: _onCameraIdle,
+
                   onTap: (point) {
                     _handleTap(point);
                   },
@@ -485,27 +486,43 @@ class _PageMapState extends State<PageMap> {
         // panelController.close();
       },
       child: ListTile(
-        leading: responseGetPinData[index].pin!.images == null ||
-                responseGetPinData[index].pin!.images!.isEmpty
-            ? SvgPicture.asset(
-                'assets/images/void.svg',
-                height: 40,
-                width: 40,
-              )
-            : CachedNetworkImage(
-                imageUrl: responseGetPinData[index].pin!.images!.first,
-                width: 40,
-                height: 40,
-                errorWidget: (_, __, ___) {
-                  return SvgPicture.asset(
+        leading: Container(
+          height: 60,
+          width: 60,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: responseGetPinData[index].pin!.images == null ||
+                    responseGetPinData[index].pin!.images!.isEmpty
+                ? SvgPicture.asset(
                     'assets/images/void.svg',
-                    height: 40,
-                    width: 40,
-                  );
-                },
-              ),
-        title: Text(responseGetPinData[index].pin!.title!),
-        subtitle: Text(responseGetPinData[index].pin!.body!),
+                    height: 60,
+                    width: 60,
+                    fit: BoxFit.cover,
+                  )
+                : CachedNetworkImage(
+                    imageUrl: responseGetPinData[index].pin!.images!.first,
+                    width: 60,
+                    height: 60,
+                    fit: BoxFit.cover,
+                    errorWidget: (_, __, ___) {
+                      return SvgPicture.asset(
+                        'assets/images/void.svg',
+                        height: 60,
+                        width: 60,
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  ),
+          ),
+        ),
+
+        title: Text(responseGetPinData[index].pin!.title!,
+            overflow: TextOverflow.ellipsis),
+        subtitle: Text(
+          responseGetPinData[index].pin!.body!,
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+        ),
 
         // trailing: IconButton(
         //   onPressed: () {
@@ -607,11 +624,21 @@ class _PageMapState extends State<PageMap> {
     if (provider.selectedPinData == null) {
       return;
     }
-    LatLng selectedLocation = LatLng(provider.selectedPinData!.pin!.lat!,
-        provider.selectedPinData!.pin!.lng!);
-    if (selectedLocation != provider.lastLocation) {
+    double lat =
+        DataConvert.roundDouble(provider.selectedPinData!.pin!.lat!, 6);
+    double lng =
+        DataConvert.roundDouble(provider.selectedPinData!.pin!.lng!, 6);
+    LatLng selectedLocation = LatLng(lat, lng);
+    double lastLat =
+        DataConvert.roundDouble(provider.lastLocation!.latitude, 6);
+    double lastLng =
+        DataConvert.roundDouble(provider.lastLocation!.longitude, 6);
+    LatLng lastLocation = LatLng(lastLat, lastLng);
+    if (selectedLocation != lastLocation) {
       provider.selectedPinData = null;
     }
+    print(selectedLocation);
+    print(lastLocation);
 
     print("Idle");
   }
@@ -638,10 +665,12 @@ class _PageMapState extends State<PageMap> {
             .where((element) {
           return element.pin!.id == id;
         }).toList();
+
         context.read<LocationProvider>().selectedPinData =
             responseGetPinDatas.first;
         context.read<LocationProvider>().getPinReply(id);
         panelController.open();
+        print('marker onTaped()');
       },
     );
     _markers.add(marker);
@@ -675,13 +704,16 @@ class _PageMapState extends State<PageMap> {
 
   _handleTap(LatLng point) {
     var provider = context.read<LocationProvider>();
+    double lat = DataConvert.roundDouble(point.latitude, 6);
+    double lng = DataConvert.roundDouble(point.longitude, 6);
+    LatLng location = LatLng(lat, lng);
 
     print('handelTap');
-    provider.setMyPostLocation(point);
-    provider.getAddress(point);
+    provider.setMyPostLocation(location);
+    provider.getAddress(location);
 
     _temporaryMaker.clear();
-    addTemporaryMarker(0, point);
+    addTemporaryMarker(0, location);
 
     showModalBottomSheet(
       context: context,
@@ -708,6 +740,7 @@ class _PageMapState extends State<PageMap> {
         provider.placemarks[0].thoroughfare! +
         " " +
         provider.placemarks[0].subThoroughfare!;
+
     return Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.only(
@@ -794,7 +827,7 @@ class _PageMapState extends State<PageMap> {
                       ],
                     ),
                   ),
-                  SizedBox(height: 4),
+                  SizedBox(height: 8),
                   getAnimatedTitle(provider),
                 ],
               ),
@@ -849,20 +882,21 @@ class _PageMapState extends State<PageMap> {
                   ),
                 ),
                 SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(data.selectedPinData!.pin!.title!,
-                        style: DSTextStyles.bold18Black),
-                    SizedBox(height: 10),
-                    Text(
-                      data.selectedPinData!.pin!.body!,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
-                    ),
-                  ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(data.selectedPinData!.pin!.title!,
+                          style: DSTextStyles.bold18Black),
+                      SizedBox(height: 10),
+                      Text(
+                        data.selectedPinData!.pin!.body!,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -932,13 +966,16 @@ class _PageMapState extends State<PageMap> {
                               SizedBox(height: 10),
                               Row(
                                 children: [
-                                  data.selectedPinData!.like ?? false == false
+                                  data.selectedPinData!.liked == false
                                       ? InkWell(
                                           onTap: () {
                                             context
                                                 .read<LocationProvider>()
                                                 .pinLikeToId(data
-                                                    .selectedPinData!.pin!.id!);
+                                                    .selectedPinData!.pin!.id!)
+                                                .then((value) {
+                                              //TODO 해당 핀에대한 정보 갱신 필요.
+                                            });
                                           },
                                           child: Icon(
                                             Icons.favorite_border_outlined,
@@ -996,27 +1033,49 @@ class _PageMapState extends State<PageMap> {
   }
 
   getAnimatedTitle(LocationProvider provider) {
-    return Row(
-      children: [
-        const SizedBox(width: 0.0, height: 50.0),
-        DefaultTextStyle(
-          style: DSTextStyles.regular12Black,
-          overflow: TextOverflow.ellipsis,
-          child: AnimatedTextKit(
-            repeatForever: true,
-            isRepeatingAnimation: true,
-            animatedTexts: [
-              for (ResponseGetPinData data in provider.responseGetPinDatas!)
-                buildText(data),
-            ],
-          ),
+    return SizedBox(
+      // width: 250.0,
+      child: DefaultTextStyle(
+        style: DSTextStyles.regular12Black,
+        overflow: TextOverflow.ellipsis,
+        child: AnimatedTextKit(
+          repeatForever: true,
+          isRepeatingAnimation: true,
+          animatedTexts: [
+            for (ResponseGetPinData data in provider.responseGetPinDatas!)
+              buildText(data),
+          ],
+          onTap: () {
+            print("Tap Event");
+          },
         ),
-      ],
+      ),
     );
+    // return Row(
+    //   children: [
+    //     const SizedBox(width: 0.0, height: 50.0),
+    //     DefaultTextStyle(
+    //       style: DSTextStyles.regular12Black,
+    //       overflow: TextOverflow.ellipsis,
+    //       child: AnimatedTextKit(
+    //         repeatForever: true,
+    //         isRepeatingAnimation: true,
+    //         animatedTexts: [
+    //           for (ResponseGetPinData data in provider.responseGetPinDatas!)
+    //             buildText(data),
+    //         ],
+    //       ),
+    //     ),
+    //   ],
+    // );
   }
 
   buildText(ResponseGetPinData data) {
-    return RotateAnimatedText(data.pin!.title!);
+    return FadeAnimatedText(
+      data.pin!.title!,
+      duration: Duration(seconds: 3),
+    );
+    // return RotateAnimatedText(data.pin!.title!);
   }
 
   Widget _buildMessageComposer(LocationProvider data) {
@@ -1090,7 +1149,6 @@ class _PageMapState extends State<PageMap> {
         ModelRequestCreatePinReply(
       pinId: provider.selectedPinData!.pin!.id,
       body: _tecMessage.text,
-      password: '0000',
     );
     _tecMessage.text = '';
     provider.createReply(modelRequestCreatePinReply).then((value) {

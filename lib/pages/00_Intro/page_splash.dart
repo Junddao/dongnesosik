@@ -1,9 +1,12 @@
 import 'package:dongnesosik/global/model/model_shared_preferences.dart';
+import 'package:dongnesosik/global/model/singleton_user.dart';
 import 'package:dongnesosik/global/model/user/model_request_guest_info.dart';
+import 'package:dongnesosik/global/provider/location_provider.dart';
 import 'package:dongnesosik/global/provider/user_provider.dart';
 import 'package:dongnesosik/global/service/api_service.dart';
 import 'package:dongnesosik/global/style/dstextstyles.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:provider/provider.dart';
 
@@ -18,6 +21,8 @@ class _PageSplashState extends State<PageSplash> {
     await Future.delayed(Duration(milliseconds: 2000));
 
     String? myToken = await ModelSharedPreferences.readToken();
+    double? myLat = await ModelSharedPreferences.readMyLat();
+    double? myLng = await ModelSharedPreferences.readMyLng();
     ModelRequestGuestInfo modelRequestUserGuestInfo = ModelRequestGuestInfo(
       uid: ApiService.deviceIdentifier,
       osType: ApiService.osType,
@@ -35,8 +40,20 @@ class _PageSplashState extends State<PageSplash> {
         Navigator.of(context)
             .pushNamedAndRemoveUntil('PageLogin', (route) => false);
       });
-      Navigator.of(context)
-          .pushNamedAndRemoveUntil('PageMap', (route) => false);
+      if (myLat != 0 && myLng != 0) {
+        LatLng myLocation = LatLng(myLat!, myLng!);
+        context.read<LocationProvider>().myLocation = myLocation;
+        context.read<LocationProvider>().lastLocation = myLocation;
+
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('PageMap', (route) => false);
+      } else {
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('PageSetLocation', (route) => false);
+      }
+
+      // Navigator.of(context)
+      //     .pushNamedAndRemoveUntil('PageMap', (route) => false);
       // shared에 있는걸로 가져다 쓰기
     }
 

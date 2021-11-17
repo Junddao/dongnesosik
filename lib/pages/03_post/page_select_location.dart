@@ -7,7 +7,6 @@ import 'package:dongnesosik/global/style/dstextstyles.dart';
 import 'package:dongnesosik/pages/components/ds_button.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 
 class PageSelectLocation extends StatefulWidget {
@@ -20,7 +19,7 @@ class PageSelectLocation extends StatefulWidget {
 class _PageSelectLocationState extends State<PageSelectLocation> {
   List<Marker> _markers = [];
   Completer<GoogleMapController> _controller = Completer();
-  Location location = Location();
+
   TextEditingController _tecAddress = TextEditingController();
 
   @override

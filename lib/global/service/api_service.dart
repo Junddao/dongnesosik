@@ -5,6 +5,7 @@ import 'package:device_info/device_info.dart';
 import 'package:dio/dio.dart';
 import 'package:dongnesosik/global/model/model_config.dart';
 import 'package:dongnesosik/global/model/model_shared_preferences.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:package_info/package_info.dart';
 
 class ApiService {
@@ -174,8 +175,10 @@ class ApiService {
     return response?.data;
   }
 
-  Future<dynamic> getGoogleGeoApi(String _path) async {
-    print('Api get : url $_path start.');
+  Future<dynamic> getGoogleGeoApi(String location) async {
+    print('Api get : url $location start.');
+    String _path =
+        'https://maps.googleapis.com/maps/api/geocode/json?$location&language=ko&key=AIzaSyAoeKpyN_EODABnnIV_Wdx7Tu8Y1QECowY';
     var response;
     try {
       response = await Dio()

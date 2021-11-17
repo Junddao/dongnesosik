@@ -36,12 +36,12 @@ class ModelResponseGetPin {
 class ResponseGetPinData {
   ResponsePin? pin;
   String? name;
-  bool? like;
+  bool? liked;
   String? createAt;
   ResponseGetPinData({
     this.pin,
     this.name,
-    this.like = false,
+    this.liked = false,
     this.createAt,
   });
 
@@ -49,7 +49,7 @@ class ResponseGetPinData {
     return {
       'pin': pin?.toMap(),
       'name': name,
-      'like': like,
+      'liked': liked,
       'createAt': createAt,
     };
   }
@@ -58,7 +58,7 @@ class ResponseGetPinData {
     return ResponseGetPinData(
       pin: map['pin'] != null ? ResponsePin.fromMap(map['pin']) : null,
       name: map['name'] != null ? map['name'] : null,
-      like: map['like'] != null ? map['like'] : null,
+      liked: map['liked'] != null ? map['liked'] : null,
       createAt: map['createAt'] != null ? map['createAt'] : null,
     );
   }

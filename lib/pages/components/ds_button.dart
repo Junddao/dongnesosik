@@ -71,17 +71,22 @@ class DSButton extends StatelessWidget {
   final double height;
   final double radius;
   final ButtonType type;
-  DSButton({
-    // required this.size,
-    Key? key,
-    required this.text,
-    required this.press,
-    this.margin,
-    this.width,
-    this.height = 50,
-    this.radius = 14,
-    this.type = ButtonType.normal,
-  }) : super(key: key);
+  final double fontSize;
+  final FontWeight fontWeight;
+  DSButton(
+      {
+      // required this.size,
+      Key? key,
+      required this.text,
+      required this.press,
+      this.margin,
+      this.width,
+      this.height = 50,
+      this.radius = 14,
+      this.type = ButtonType.normal,
+      this.fontSize = 14,
+      this.fontWeight = FontWeight.normal})
+      : super(key: key);
 
   Color? color = DSColors.tomato;
   Color? textColor = Colors.white;
@@ -97,14 +102,16 @@ class DSButton extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(radius),
         child: FlatButton(
-            padding: EdgeInsets.symmetric(horizontal: 0),
-            color: color,
-            onPressed: press as void Function()?,
-            child: Text(
-              text,
-              style:
-                  DSTextStyles.button.copyWith(color: textColor, fontSize: 14),
-            )),
+          padding: EdgeInsets.symmetric(horizontal: 0),
+          color: color,
+          onPressed: press as void Function()?,
+          child: Text(
+            text,
+            style: DSTextStyles.button.copyWith(
+                color: textColor, fontSize: fontSize, fontWeight: fontWeight),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
       ),
     );
   }
