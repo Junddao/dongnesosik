@@ -210,7 +210,7 @@ class _PageUserSettingState extends State<PageUserSetting> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(address!),
+                  Text(address ?? ''),
                   DSButton(
                       text: '변경하기',
                       press: getAddressWidget,

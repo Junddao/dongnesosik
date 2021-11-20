@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:dongnesosik/global/model/model_shared_preferences.dart';
 import 'package:dongnesosik/global/model/singleton_user.dart';
 import 'package:dongnesosik/global/model/user/model_request_user_connect.dart';
 import 'package:dongnesosik/global/model/user/model_request_user_set.dart';
@@ -100,8 +101,16 @@ class _PageLoginState extends State<PageLogin> {
 
                     await context.read<UserProvider>().getUser();
 
-                    Navigator.of(context)
-                        .pushNamedAndRemoveUntil('PageMap', (route) => false);
+                    double? myLat = await ModelSharedPreferences.readMyLat();
+                    double? myLng = await ModelSharedPreferences.readMyLng();
+
+                    if (myLat == 0 && myLng == 0) {
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                          'PageSetLocation', (route) => false);
+                    } else {
+                      Navigator.of(context)
+                          .pushNamedAndRemoveUntil('PageMap', (route) => false);
+                    }
                   },
                   child: Stack(
                     children: [
@@ -159,8 +168,18 @@ class _PageLoginState extends State<PageLogin> {
 
                           await context.read<UserProvider>().getUser();
 
-                          Navigator.of(context).pushNamedAndRemoveUntil(
-                              'PageMap', (route) => false);
+                          double? myLat =
+                              await ModelSharedPreferences.readMyLat();
+                          double? myLng =
+                              await ModelSharedPreferences.readMyLng();
+
+                          if (myLat == 0 && myLng == 0) {
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                                'PageSetLocation', (route) => false);
+                          } else {
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                                'PageMap', (route) => false);
+                          }
                         },
                         child: Stack(
                           children: [
@@ -190,8 +209,16 @@ class _PageLoginState extends State<PageLogin> {
                 SizedBox(height: 40.0),
                 InkWell(
                   onTap: () async {
-                    Navigator.of(context)
-                        .pushNamedAndRemoveUntil('PageMap', (route) => false);
+                    double? myLat = await ModelSharedPreferences.readMyLat();
+                    double? myLng = await ModelSharedPreferences.readMyLng();
+
+                    if (myLat == 0 && myLng == 0) {
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                          'PageSetLocation', (route) => false);
+                    } else {
+                      Navigator.of(context)
+                          .pushNamedAndRemoveUntil('PageMap', (route) => false);
+                    }
                   },
                   child: Stack(
                     children: [

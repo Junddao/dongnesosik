@@ -38,10 +38,12 @@ class ModelResponseGetPinReply {
 class ModelResponseGetPinReplyData {
   String? name;
   String? createAt;
+  int? userId;
   ModelPinReply? reply;
   ModelResponseGetPinReplyData({
     this.name,
     this.createAt,
+    this.userId,
     this.reply,
   });
 
@@ -49,6 +51,7 @@ class ModelResponseGetPinReplyData {
     return {
       'name': name,
       'createAt': createAt,
+      'userId': userId,
       'reply': reply?.toMap(),
     };
   }
@@ -57,6 +60,7 @@ class ModelResponseGetPinReplyData {
     return ModelResponseGetPinReplyData(
       name: map['name'] != null ? map['name'] : null,
       createAt: map['createAt'] != null ? map['createAt'] : null,
+      userId: map['userId'] != null ? map['userId'] : null,
       reply: map['reply'] != null ? ModelPinReply.fromMap(map['reply']) : null,
     );
   }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:dongnesosik/global/provider/location_provider.dart';
 import 'package:dongnesosik/global/style/constants.dart';
@@ -146,13 +147,19 @@ class _PageSelectLocationState extends State<PageSelectLocation> {
   Widget buildBottomSheet(BuildContext context) {
     var provider = context.watch<LocationProvider>();
     // String? address = provider.placemarks[0].name!;
-    String? address = provider.placemarks[0].locality! +
-        " " +
-        provider.placemarks[0].subLocality! +
-        " " +
-        provider.placemarks[0].thoroughfare! +
-        " " +
-        provider.placemarks[0].subThoroughfare!;
+    String? address = '';
+    if (Platform.isAndroid) {
+      address = provider.placemarks[0].street;
+    } else {
+      // address = provider.placemarks[0].locality! +
+      //     " " +
+      //     provider.placemarks[0].subLocality! +
+      //     " " +
+      //     provider.placemarks[0].thoroughfare! +
+      //     " " +
+      //     provider.placemarks[0].subThoroughfare!;
+      address = provider.placemarks[0].name!;
+    }
     return Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.only(
@@ -164,7 +171,7 @@ class _PageSelectLocationState extends State<PageSelectLocation> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(address, style: DSTextStyles.bold14Black),
+            Text(address!, style: DSTextStyles.bold14Black),
             SizedBox(
               height: 10,
             ),

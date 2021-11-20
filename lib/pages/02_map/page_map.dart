@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 
@@ -8,6 +9,7 @@ import 'package:dongnesosik/global/enums/view_state.dart';
 import 'package:dongnesosik/global/model/model_shared_preferences.dart';
 import 'package:dongnesosik/global/model/pin/model_request_create_pin_reply.dart';
 import 'package:dongnesosik/global/model/pin/model_response_get_pin.dart';
+import 'package:dongnesosik/global/model/pin/model_response_get_pin_reply.dart';
 import 'package:dongnesosik/global/model/singleton_user.dart';
 import 'package:dongnesosik/global/model/user/model_user_info.dart';
 import 'package:dongnesosik/global/provider/location_provider.dart';
@@ -19,9 +21,11 @@ import 'package:dongnesosik/global/util/range_by_zoom.dart';
 import 'package:dongnesosik/pages/03_post/page_post.dart';
 import 'package:dongnesosik/pages/components/ds_button.dart';
 import 'package:dongnesosik/pages/components/ds_photo_view.dart';
+import 'package:dongnesosik/pages/components/ds_two_button_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ionicons/ionicons.dart';
@@ -99,10 +103,11 @@ class _PageMapState extends State<PageMap> {
     );
     tp.text = TextSpan(
         text: title.length < 10 ? title : title.substring(0, 10) + '..',
-        style: DSTextStyles.bold32white);
+        style: DSTextStyles.bold36white);
 
     var myPaint = Paint();
-    myPaint.color = DSColors.gray6;
+    myPaint.color = DSColors.gray5;
+    // myPaint.color = DSColors.white;
     PictureRecorder recorder = new PictureRecorder();
     Canvas c = new Canvas(recorder);
     tp.layout();
@@ -324,24 +329,24 @@ class _PageMapState extends State<PageMap> {
                   },
                 )
               : SizedBox.shrink(),
-          SingletonUser.singletonUser.userData.email == null ||
-                  SingletonUser.singletonUser.userData.email!.isEmpty
-              ? SizedBox.shrink()
-              : ListTile(
-                  leading: Icon(Ionicons.log_out_outline),
-                  title: Text(
-                    '로그아웃',
-                    style: DSTextStyles.bold14Black,
-                  ),
-                  onTap: () {
-                    FirebaseAuth.instance.signOut();
-                    SingletonUser.singletonUser.userData = ModelUserInfo();
-                    ModelSharedPreferences.removeToken();
+          // SingletonUser.singletonUser.userData.email == null ||
+          //         SingletonUser.singletonUser.userData.email!.isEmpty
+          //     ? SizedBox.shrink()
+          //     : ListTile(
+          //         leading: Icon(Ionicons.log_out_outline),
+          //         title: Text(
+          //           '로그아웃',
+          //           style: DSTextStyles.bold14Black,
+          //         ),
+          //         onTap: () {
+          //           FirebaseAuth.instance.signOut();
+          //           SingletonUser.singletonUser.userData = ModelUserInfo();
+          //           ModelSharedPreferences.removeToken();
 
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                        'PageSplash', (route) => false);
-                  },
-                ),
+          //           Navigator.of(context).pushNamedAndRemoveUntil(
+          //               'PageSplash', (route) => false);
+          //         },
+          //       ),
         ],
       ),
     );
@@ -384,8 +389,8 @@ class _PageMapState extends State<PageMap> {
 
                   markers: [..._markers, ..._temporaryMaker].toSet(),
                   rotateGesturesEnabled: false,
-                  // myLocationEnabled: false,
-                  // myLocationButtonEnabled: false,
+                  myLocationEnabled: false,
+                  myLocationButtonEnabled: false,
 
                   padding: EdgeInsets.only(bottom: 130, right: 0),
                   // mapToolbarEnabled: false,
@@ -397,17 +402,6 @@ class _PageMapState extends State<PageMap> {
                     _handleTap(point);
                   },
                 ),
-                // Positioned(
-                //   bottom: 30,
-                //   left: 24,
-                //   child: InkWell(
-                //       onTap: () {
-                //         Navigator.of(context).pushNamed('PagePost').then((value) {
-                //           setState(() {});
-                //         });
-                //       },
-                //       child: _newsInfoWidget()),
-                // ),
               ],
             ),
           ),
@@ -674,7 +668,7 @@ class _PageMapState extends State<PageMap> {
       },
     );
     _markers.add(marker);
-    setState(() {});
+    context.read<LocationProvider>().setStateIdle();
   }
 
   void addMarker(int id, LatLng latLng) async {
@@ -733,13 +727,19 @@ class _PageMapState extends State<PageMap> {
   Widget buildSelectLocationBottomSheet(BuildContext context) {
     var provider = context.watch<LocationProvider>();
     // String? address = provider.placemarks[0].name!;
-    String? address = provider.placemarks[0].locality! +
-        " " +
-        provider.placemarks[0].subLocality! +
-        " " +
-        provider.placemarks[0].thoroughfare! +
-        " " +
-        provider.placemarks[0].subThoroughfare!;
+    String? address = '';
+    if (Platform.isAndroid) {
+      address = provider.placemarks[0].street;
+    } else {
+      // address = provider.placemarks[0].locality! +
+      //     " " +
+      //     provider.placemarks[0].subLocality! +
+      //     " " +
+      //     provider.placemarks[0].thoroughfare! +
+      //     " " +
+      //     provider.placemarks[0].subThoroughfare!;
+      address = provider.placemarks[0].name!;
+    }
 
     return Container(
       decoration: BoxDecoration(
@@ -752,7 +752,7 @@ class _PageMapState extends State<PageMap> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(address, style: DSTextStyles.bold14Black),
+            Text(address!, style: DSTextStyles.bold14Black),
             SizedBox(
               height: 10,
             ),
@@ -1169,34 +1169,9 @@ class _PageMapState extends State<PageMap> {
             itemBuilder: (context, index) {
               var data = provider.responseGetPinReplyData![index];
 
-              return InkWell(
-                onTap: () {
-                  context.read<LocationProvider>().setReplyTarget(data);
-                  _tecMessage.text = '@${data.name} ';
-                },
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(data.name!, style: DSTextStyles.bold12Black),
-                        SizedBox(width: 16),
-                        Text(data.createAt ?? '20000',
-                            style: DSTextStyles.regular10WarmGrey),
-                      ],
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      data.reply!.body!,
-                      style: DSTextStyles.regular12Black,
-                    ),
-                    SizedBox(height: 8),
-                  ],
-                ),
-              );
+              return data.userId != SingletonUser.singletonUser.userData.id
+                  ? getOhterUserReply(data)
+                  : getMyReply(provider.responseGetPinReplyData!, index);
             },
             separatorBuilder: (context, index) => Divider(),
           );
@@ -1212,5 +1187,107 @@ class _PageMapState extends State<PageMap> {
         ],
       ),
     );
+  }
+
+  Widget getOhterUserReply(ModelResponseGetPinReplyData data) {
+    return InkWell(
+      onTap: () {
+        context.read<LocationProvider>().setReplyTarget(data);
+        _tecMessage.text = '@${data.name} ';
+      },
+      child: Container(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(data.name!, style: DSTextStyles.bold12Black),
+                SizedBox(width: 16),
+                Text(data.createAt ?? '20000',
+                    style: DSTextStyles.regular10WarmGrey),
+              ],
+            ),
+            SizedBox(height: 8),
+            Text(
+              data.reply!.body!,
+              style: DSTextStyles.regular12Black,
+            ),
+            SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget getMyReply(List<ModelResponseGetPinReplyData> datas, int index) {
+    ModelResponseGetPinReplyData data = datas[index];
+    return Slidable(
+      key: const ValueKey(0),
+      endActionPane: ActionPane(
+        motion: ScrollMotion(),
+        children: [
+          SlidableAction(
+            // An action can be bigger than the others.
+            onPressed: (slidableContext) {
+              deleteReply(slidableContext, datas[index]);
+            },
+            flex: 2,
+            backgroundColor: Color(0xFFFE4A49),
+            foregroundColor: Colors.white,
+            icon: Icons.delete,
+            label: 'Delete',
+          ),
+        ],
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: DSColors.tomato_10,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text(data.name!, style: DSTextStyles.bold12Black),
+                SizedBox(width: 16),
+                Text(data.createAt ?? '20000',
+                    style: DSTextStyles.regular10WarmGrey),
+              ],
+            ),
+            SizedBox(height: 8),
+            Text(
+              data.reply!.body!,
+              style: DSTextStyles.regular12Black,
+            ),
+            SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void deleteReply(
+      BuildContext slidableContext, ModelResponseGetPinReplyData reply) async {
+    var result = await DSTwoButtonDialog.showCancelDialog(
+        context: context,
+        title: '댓글 삭제',
+        subTitle: '정말 삭제하시겠습니까?',
+        btn1Text: '아니요,',
+        btn2Text: '네,');
+    if (result == true) {
+      context
+          .read<LocationProvider>()
+          .deleteReply(reply.reply!.id!)
+          .then((value) {
+        context.read<LocationProvider>().getPinReply(
+            context.read<LocationProvider>().selectedPinData!.pin!.id!);
+      });
+    }
   }
 }

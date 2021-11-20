@@ -145,6 +145,18 @@ class LocationProvider extends ParentProvider {
     }
   }
 
+  Future<void> deleteReply(int id) async {
+    try {
+      setStateBusy();
+      var api = ApiService();
+      var response = await api.get('/pin/delete/reply/$id');
+
+      setStateIdle();
+    } catch (error) {
+      setStateError();
+    }
+  }
+
   Future<void> getPinReply(int id) async {
     try {
       var api = ApiService();

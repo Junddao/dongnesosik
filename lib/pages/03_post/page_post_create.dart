@@ -193,13 +193,19 @@ class _PagePostCreateState extends State<PagePostCreate> {
   postLocation() {
     var provider = context.watch<LocationProvider>();
     // String? address = provider.placemarks[0].name!;
-    String? address = provider.placemarks[0].locality! +
-        " " +
-        provider.placemarks[0].subLocality! +
-        " " +
-        provider.placemarks[0].thoroughfare! +
-        " " +
-        provider.placemarks[0].subThoroughfare!;
+    String? address = '';
+    if (Platform.isAndroid) {
+      address = provider.placemarks[0].street;
+    } else {
+      // address = provider.placemarks[0].locality! +
+      //     " " +
+      //     provider.placemarks[0].subLocality! +
+      //     " " +
+      //     provider.placemarks[0].thoroughfare! +
+      //     " " +
+      //     provider.placemarks[0].subThoroughfare!;
+      address = provider.placemarks[0].name!;
+    }
     return Column(children: [
       Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -232,7 +238,7 @@ class _PagePostCreateState extends State<PagePostCreate> {
             SizedBox(width: 10),
             provider.myPostLocation == null
                 ? Text('위치 선택', style: DSTextStyles.regular14PinkishGrey)
-                : Text(address, style: DSTextStyles.regular12Black),
+                : Text(address!, style: DSTextStyles.regular12Black),
           ],
         ),
       ),

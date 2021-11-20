@@ -692,6 +692,24 @@ class DSTextStyles {
     // height: 1.5,
   );
 
+  static const bold36black = const TextStyle(
+    color: Colors.black,
+    fontWeight: FontWeight.w700,
+    fontFamily: 'NotoSansKR',
+    fontSize: 36.0,
+    fontStyle: FontStyle.normal,
+    // height: 1.5,
+  );
+
+  static const bold36white = const TextStyle(
+    color: Colors.white,
+    fontWeight: FontWeight.w700,
+    fontFamily: 'NotoSansKR',
+    fontSize: 36.0,
+    fontStyle: FontStyle.normal,
+    // height: 1.5,
+  );
+
   static const bold40white = const TextStyle(
     color: Colors.white,
     fontWeight: FontWeight.w700,
