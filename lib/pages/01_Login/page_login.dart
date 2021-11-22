@@ -88,7 +88,11 @@ class _PageLoginState extends State<PageLogin> {
                         .userConnect(modelReqeustUserConnect);
 
                     ModelRequestUserSet modelRequestUserSet =
-                        ModelRequestUserSet(
+                        ModelRequestUserSet.fromMap(SingletonUser
+                            .singletonUser.userData
+                            .toUserSetMap());
+
+                    modelRequestUserSet = ModelRequestUserSet(
                       email: user.email ?? '',
                       name: user.displayName ?? '이름없음',
                       phoneNumber: user.phoneNumber ?? '',
@@ -155,13 +159,16 @@ class _PageLoginState extends State<PageLogin> {
                               .userConnect(modelReqeustUserConnect);
 
                           ModelRequestUserSet modelRequestUserSet =
-                              ModelRequestUserSet(
+                              ModelRequestUserSet.fromMap(SingletonUser
+                                  .singletonUser.userData
+                                  .toUserSetMap());
+
+                          modelRequestUserSet = ModelRequestUserSet(
                             email: user.email ?? '',
                             name: user.displayName ?? '이름없음',
                             phoneNumber: user.phoneNumber ?? '',
                             profileImage: user.photoURL ?? '',
                           );
-
                           await context
                               .read<UserProvider>()
                               .setUser(modelRequestUserSet);

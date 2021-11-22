@@ -1,5 +1,8 @@
 import 'package:dongnesosik/global/model/model_shared_preferences.dart';
+import 'package:dongnesosik/global/model/singleton_user.dart';
+import 'package:dongnesosik/global/model/user/model_request_user_set.dart';
 import 'package:dongnesosik/global/provider/location_provider.dart';
+import 'package:dongnesosik/global/provider/user_provider.dart';
 import 'package:dongnesosik/global/style/constants.dart';
 import 'package:dongnesosik/global/style/dscolors.dart';
 import 'package:dongnesosik/global/style/dstextstyles.dart';
@@ -102,6 +105,12 @@ class _PageSetLocationState extends State<PageSetLocation> {
       print(context.read<LocationProvider>().myLocation);
       ModelSharedPreferences.writeMyLat(myLocation.latitude);
       ModelSharedPreferences.writeMyLng(myLocation.longitude);
+
+      // user set 할것.
+      SingletonUser.singletonUser.userData.address = result.address;
+      ModelRequestUserSet modelRequestUserSet = ModelRequestUserSet.fromMap(
+          SingletonUser.singletonUser.userData.toUserSetMap());
+      context.read<UserProvider>().setUser(modelRequestUserSet);
       Navigator.of(context)
           .pushNamedAndRemoveUntil('PageMap', (route) => false);
     }

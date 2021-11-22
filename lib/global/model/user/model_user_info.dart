@@ -87,4 +87,22 @@ class ModelUserInfo {
       profileImage: profileImage ?? this.profileImage,
     );
   }
+
+  Map<String, dynamic> toUserSetMap() {
+    return {
+      // 'id': id,
+      'name': name,
+      'phoneNumber': phoneNumber,
+      'email': email,
+      'profileImage': profileImage,
+      'address': address,
+      'region1': region1,
+      'region2': region2,
+      'region3': region3,
+      'loadName': loadName,
+      'mainBuildingNo': mainBuildingNo,
+      'subBuildingNo': subBuildingNo,
+      'buildingName': buildingName,
+    };
+  }
 }

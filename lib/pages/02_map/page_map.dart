@@ -731,13 +731,6 @@ class _PageMapState extends State<PageMap> {
     if (Platform.isAndroid) {
       address = provider.placemarks[0].street;
     } else {
-      // address = provider.placemarks[0].locality! +
-      //     " " +
-      //     provider.placemarks[0].subLocality! +
-      //     " " +
-      //     provider.placemarks[0].thoroughfare! +
-      //     " " +
-      //     provider.placemarks[0].subThoroughfare!;
       address = provider.placemarks[0].name!;
     }
 
@@ -974,7 +967,12 @@ class _PageMapState extends State<PageMap> {
                                                 .pinLikeToId(data
                                                     .selectedPinData!.pin!.id!)
                                                 .then((value) {
-                                              //TODO 해당 핀에대한 정보 갱신 필요.
+                                              context
+                                                  .read<LocationProvider>()
+                                                  .getPinById(data
+                                                      .selectedPinData!
+                                                      .pin!
+                                                      .id!);
                                             });
                                           },
                                           child: Icon(

@@ -131,6 +131,18 @@ class LocationProvider extends ParentProvider {
     }
   }
 
+  Future<void> getPinById(int id) async {
+    try {
+      var api = ApiService();
+      var response = await api.get('/pin/get/$id');
+      selectedPinData = ModelResponseGetPin.fromMap(response).data![0];
+
+      notifyListeners();
+    } catch (error) {
+      setStateError();
+    }
+  }
+
   Future<void> createReply(
       ModelRequestCreatePinReply modelRequestCreatePinReply) async {
     try {
