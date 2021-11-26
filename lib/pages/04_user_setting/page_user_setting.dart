@@ -239,6 +239,7 @@ class _PageUserSettingState extends State<PageUserSetting> {
         context,
         MaterialPageRoute(
           builder: (_) => KpostalView(
+            kakaoKey: 'b5e7efc8dd3cfea64f13554d4fb85553',
             useLocalServer: true,
             callback: (Kpostal result) {
               print(result.address);
@@ -247,19 +248,21 @@ class _PageUserSettingState extends State<PageUserSetting> {
         ));
     setState(() {});
     if (result != null) {
-      googleMap.LatLng? myLocation;
-      if (result.latitude == null) {
-        Location? location = await result.latLng;
-        myLocation = googleMap.LatLng(location!.latitude, location.longitude);
-      } else {
-        myLocation = googleMap.LatLng(result.latitude!, result.longitude!);
-      }
+      googleMap.LatLng? myLocation =
+          googleMap.LatLng(result.kakaoLatitude!, result.kakaoLongitude!);
+      // if (result.latitude == null) {
+      //   Location? location = await result.latLng;
+      //   myLocation = googleMap.LatLng(location!.latitude, location.longitude);
+      // } else {
+      //   myLocation = googleMap.LatLng(result.latitude!, result.longitude!);
+      // }
 
       context.read<LocationProvider>().myLocation =
           googleMap.LatLng(myLocation.latitude, myLocation.longitude);
       context.read<LocationProvider>().lastLocation =
           googleMap.LatLng(myLocation.latitude, myLocation.longitude);
       address = result.address;
+      context.read<LocationProvider>().setMyAddress(result.address);
       print(context.read<LocationProvider>().myLocation);
       ModelSharedPreferences.writeMyLat(myLocation.latitude);
       ModelSharedPreferences.writeMyLng(myLocation.longitude);

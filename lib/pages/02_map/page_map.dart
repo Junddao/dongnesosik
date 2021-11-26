@@ -67,6 +67,7 @@ class _PageMapState extends State<PageMap> {
       await getLocation();
       Future.delayed(Duration(milliseconds: 500), () {
         if (widget.pinId != null) {
+          panelController.open();
           // showModalBottomSheet(
           //   context: context,
           //   isScrollControlled: true,

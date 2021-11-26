@@ -92,10 +92,10 @@ class ApiService {
     } on DioError catch (e) {
       print(e.error.toString());
       DioExceptions.fromDioError(e).toString();
+      throw Exception();
     } on SocketException {
       print('No network');
-    } catch (e) {
-      print(e);
+      throw Exception();
     }
     return response?.data;
   }

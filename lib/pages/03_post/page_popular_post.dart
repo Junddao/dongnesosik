@@ -1,7 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dongnesosik/global/enums/view_state.dart';
 import 'package:dongnesosik/global/model/pin/model_response_get_pin.dart';
+import 'package:dongnesosik/global/model/singleton_user.dart';
 import 'package:dongnesosik/global/provider/location_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -47,7 +50,7 @@ class _PagePopularPostState extends State<PagePopularPost> {
               separatorBuilder: (context, index) {
                 return Divider();
               },
-              itemCount: value.myPinDatas!.length),
+              itemCount: value.top50PinDatas!.length),
         );
       }
     });
@@ -55,7 +58,26 @@ class _PagePopularPostState extends State<PagePopularPost> {
 
   Widget _listItem(int index, List<ResponseGetPinData> top50PinDatas) {
     return ListTile(
-      leading: Icon(Icons.person),
+      leading: ClipRRect(
+        borderRadius: BorderRadius.all(Radius.circular(12.0)),
+        child: Container(
+          height: 50,
+          width: 50,
+          child: top50PinDatas[index].pin!.images!.isEmpty
+              ? SvgPicture.asset(
+                  'assets/images/empty.svg',
+                  fit: BoxFit.cover,
+                  // height: 50,
+                  // width: 50,
+                )
+              : CachedNetworkImage(
+                  imageUrl: top50PinDatas[index].pin!.images!.first,
+                  fit: BoxFit.cover,
+                  // height: 50,
+                  // width: 50,
+                ),
+        ),
+      ),
       title: Text(
         top50PinDatas[index].pin!.title!,
         overflow: TextOverflow.ellipsis,

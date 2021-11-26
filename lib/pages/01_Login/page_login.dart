@@ -85,20 +85,27 @@ class _PageLoginState extends State<PageLogin> {
                     );
                     await context
                         .read<UserProvider>()
-                        .userConnect(modelReqeustUserConnect);
-
+                        .userConnect(modelReqeustUserConnect)
+                        .catchError((onError) async {
+                      await context
+                          .read<UserProvider>()
+                          .userSignIn(modelReqeustUserConnect);
+                    });
                     ModelRequestUserSet modelRequestUserSet =
                         ModelRequestUserSet.fromMap(SingletonUser
                             .singletonUser.userData
                             .toUserSetMap());
 
-                    modelRequestUserSet = ModelRequestUserSet(
-                      email: user.email ?? '',
-                      name: user.displayName ?? '이름없음',
-                      phoneNumber: user.phoneNumber ?? '',
-                      profileImage: user.photoURL ?? '',
-                    );
-
+                    modelRequestUserSet.email = user.email ?? '';
+                    modelRequestUserSet.name = user.displayName ?? '이름없음';
+                    modelRequestUserSet.phoneNumber = user.phoneNumber ?? '';
+                    modelRequestUserSet.profileImage = user.photoURL ?? '';
+                    // modelRequestUserSet.copyWith(
+                    //   email: user.email ?? '',
+                    //   name: user.displayName ?? '이름없음',
+                    //   phoneNumber: user.phoneNumber ?? '',
+                    //   profileImage: user.photoURL ?? '',
+                    // );
                     await context
                         .read<UserProvider>()
                         .setUser(modelRequestUserSet);
@@ -156,19 +163,24 @@ class _PageLoginState extends State<PageLogin> {
                           );
                           await context
                               .read<UserProvider>()
-                              .userConnect(modelReqeustUserConnect);
+                              .userConnect(modelReqeustUserConnect)
+                              .catchError((onError) {
+                            context
+                                .read<UserProvider>()
+                                .userSignIn(modelReqeustUserConnect);
+                          });
 
                           ModelRequestUserSet modelRequestUserSet =
                               ModelRequestUserSet.fromMap(SingletonUser
                                   .singletonUser.userData
                                   .toUserSetMap());
 
-                          modelRequestUserSet = ModelRequestUserSet(
-                            email: user.email ?? '',
-                            name: user.displayName ?? '이름없음',
-                            phoneNumber: user.phoneNumber ?? '',
-                            profileImage: user.photoURL ?? '',
-                          );
+                          modelRequestUserSet.email = user.email ?? '';
+                          modelRequestUserSet.name = user.displayName ?? '이름없음';
+                          modelRequestUserSet.phoneNumber =
+                              user.phoneNumber ?? '';
+                          modelRequestUserSet.profileImage =
+                              user.photoURL ?? '';
                           await context
                               .read<UserProvider>()
                               .setUser(modelRequestUserSet);

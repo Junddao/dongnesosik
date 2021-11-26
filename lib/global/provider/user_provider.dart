@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:dongnesosik/global/model/model_shared_preferences.dart';
 import 'package:dongnesosik/global/model/singleton_user.dart';
 import 'package:dongnesosik/global/model/user/model_request_guest_info.dart';
 import 'package:dongnesosik/global/model/user/model_request_user_connect.dart';
 import 'package:dongnesosik/global/model/user/model_request_user_set.dart';
 import 'package:dongnesosik/global/model/user/model_response_guest_info.dart';
+import 'package:dongnesosik/global/model/user/model_response_sigin.dart';
 import 'package:dongnesosik/global/model/user/model_response_user_get.dart';
 import 'package:dongnesosik/global/model/user/model_user_info.dart';
 
@@ -88,6 +91,31 @@ class UserProvider extends ParentProvider {
           await api.post('/user/connect', modelReqeustUserConnect.toMap());
 
       setStateIdle();
+    } catch (error) {
+      setStateError();
+      throw Exception();
+    }
+  }
+
+  Future<void> userSignIn(
+      ModelReqeustUserConnect modelReqeustUserConnect) async {
+    try {
+      setStateBusy();
+      var api = ApiService();
+
+      var response =
+          await api.post('/user/signin', modelReqeustUserConnect.toMap());
+
+      // print(response.data);
+      print(response['data']);
+      var data = response['data'];
+
+      ModelResponseSignIn modelResponseSignIn =
+          ModelResponseSignIn.fromMap(data);
+      print(modelResponseSignIn.accessToken!);
+      ModelSharedPreferences.writeToken(modelResponseSignIn.accessToken!);
+      setStateIdle();
+      // return modelResponseSignIn;
     } catch (error) {
       setStateError();
       throw Exception();

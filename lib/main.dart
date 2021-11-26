@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dongnesosik/global/model/model_config.dart';
 import 'package:dongnesosik/global/provider/file_provider.dart';
@@ -18,6 +19,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 
 void main() {
+  HttpOverrides.global = new MyHttpOverrides();
   runServer();
 }
 
@@ -88,5 +90,14 @@ class _MyAppState extends State<MyApp> {
             ),
           );
         });
+  }
+}
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }

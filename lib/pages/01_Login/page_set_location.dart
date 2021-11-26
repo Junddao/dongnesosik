@@ -82,6 +82,7 @@ class _PageSetLocationState extends State<PageSetLocation> {
         context,
         MaterialPageRoute(
           builder: (_) => KpostalView(
+            kakaoKey: 'b5e7efc8dd3cfea64f13554d4fb85553',
             useLocalServer: true,
             callback: (Kpostal result) {
               print(result.address);
@@ -89,13 +90,14 @@ class _PageSetLocationState extends State<PageSetLocation> {
           ),
         ));
     if (result != null) {
-      LatLng? myLocation;
-      if (result.latitude == null) {
-        Location? location = await result.latLng;
-        myLocation = LatLng(location!.latitude, location.longitude);
-      } else {
-        myLocation = LatLng(result.latitude!, result.longitude!);
-      }
+      LatLng? myLocation =
+          LatLng(result.kakaoLatitude!, result.kakaoLongitude!);
+      // if (result.latitude == null) {
+      //   Location? location = await result.latLng;
+      //   myLocation = LatLng(location!.latitude, location.longitude);
+      // } else {
+      //   myLocation = LatLng(result.latitude!, result.longitude!);
+      // }
 
       context.read<LocationProvider>().myLocation =
           LatLng(myLocation.latitude, myLocation.longitude);
