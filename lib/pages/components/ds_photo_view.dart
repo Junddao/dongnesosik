@@ -8,12 +8,11 @@ class DSPhotoView extends StatefulWidget {
   const DSPhotoView({
     Key? key,
     required this.iamgeUrls,
-    this.press,
     this.screenHeight = 200,
   }) : super(key: key);
 
   final List<String> iamgeUrls;
-  final Function? press;
+
   final double? screenHeight;
 
   @override
@@ -44,7 +43,8 @@ class _DSPhotoViewState extends State<DSPhotoView> {
                     itemBuilder: (context, index) {
                       return InkWell(
                         onTap: () {
-                          widget.press;
+                          Navigator.of(context).pushNamed('PhotoViewer',
+                              arguments: widget.iamgeUrls[index]);
                         },
                         child: CachedNetworkImage(
                           imageUrl: widget.iamgeUrls[index],

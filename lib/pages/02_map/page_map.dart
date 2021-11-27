@@ -314,6 +314,16 @@ class _PageMapState extends State<PageMap> {
               Navigator.of(context).pushNamed('PagePopularPost');
             },
           ),
+          ListTile(
+            leading: Icon(Ionicons.help),
+            title: Text(
+              '사용법보기',
+              style: DSTextStyles.bold14Black,
+            ),
+            onTap: () {
+              Navigator.of(context).pushNamed('PageIntroSlider');
+            },
+          ),
           SingletonUser.singletonUser.userData.email == null ||
                   SingletonUser.singletonUser.userData.email!.isEmpty
               ? ListTile(
@@ -942,8 +952,9 @@ class _PageMapState extends State<PageMap> {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(12),
                             child: DSPhotoView(
-                                iamgeUrls:
-                                    data.selectedPinData!.pin!.images ?? []),
+                              iamgeUrls:
+                                  data.selectedPinData!.pin!.images ?? [],
+                            ),
                           ),
                         ),
 

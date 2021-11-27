@@ -3,6 +3,7 @@ import 'package:dongnesosik/pages/00_Intro/page_root.dart';
 import 'package:dongnesosik/pages/00_Intro/page_splash.dart';
 import 'package:dongnesosik/pages/01_Login/page_login.dart';
 import 'package:dongnesosik/pages/01_Login/page_set_location.dart';
+import 'package:dongnesosik/pages/02_map/components/page_intro_slider.dart';
 import 'package:dongnesosik/pages/02_map/page_map.dart';
 import 'package:dongnesosik/pages/03_post/page_my_post.dart';
 import 'package:dongnesosik/pages/03_post/page_popular_post.dart';
@@ -12,6 +13,7 @@ import 'package:dongnesosik/pages/03_post/page_post_detail.dart';
 import 'package:dongnesosik/pages/03_post/page_post_create.dart';
 import 'package:dongnesosik/pages/03_post/page_select_location.dart';
 import 'package:dongnesosik/pages/04_user_setting/page_user_setting.dart';
+import 'package:dongnesosik/pages/components/ds_photo_viewer.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -32,12 +34,6 @@ class Routers {
           builder: (_) => PageLogin(),
           settings: settings,
         );
-
-      // case 'PageRoot':
-      //   return CupertinoPageRoute(
-      //     builder: (_) => PageRoot(),
-      //     settings: settings,
-      //   );
 
       case 'PageSplash':
         return CupertinoPageRoute(
@@ -103,6 +99,20 @@ class Routers {
       case 'PageUserSetting':
         return CupertinoPageRoute(
           builder: (_) => PageUserSetting(),
+          settings: settings,
+        );
+
+      case 'DSPhotoViewer':
+        return CupertinoPageRoute(
+          builder: (_) => DSPhotoViewer(
+            filePath: arguments,
+          ),
+          settings: settings,
+        );
+
+      case 'PageIntroSlider':
+        return CupertinoPageRoute(
+          builder: (_) => PageIntroSlider(),
           settings: settings,
         );
 

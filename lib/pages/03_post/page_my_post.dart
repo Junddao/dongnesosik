@@ -111,6 +111,7 @@ class _PageMyPostState extends State<PageMyPost> {
         ),
         onTap: () {
           context.read<LocationProvider>().selectedPinData = myPinDatas[index];
+          context.read<LocationProvider>().getPinReply(myPinDatas[index].pin!.id!);
           LatLng location =
               LatLng(myPinDatas[index].pin!.lat!, myPinDatas[index].pin!.lng!);
           context.read<LocationProvider>().setLastLocation(location);

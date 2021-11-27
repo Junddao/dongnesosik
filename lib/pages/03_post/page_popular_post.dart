@@ -90,6 +90,9 @@ class _PagePopularPostState extends State<PagePopularPost> {
       ),
       onTap: () {
         context.read<LocationProvider>().selectedPinData = top50PinDatas[index];
+        context
+            .read<LocationProvider>()
+            .getPinReply(top50PinDatas[index].pin!.id!);
         LatLng location = LatLng(
             top50PinDatas[index].pin!.lat!, top50PinDatas[index].pin!.lng!);
         context.read<LocationProvider>().setLastLocation(location);
