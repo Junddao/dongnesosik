@@ -85,6 +85,7 @@ class _MyAppState extends State<MyApp> {
                   ),
                   scaffoldBackgroundColor: Colors.white),
               onGenerateRoute: Routers.generateRoute,
+              debugShowCheckedModeBanner: false,
               home: PageSplash(),
               builder: EasyLoading.init(),
             ),
