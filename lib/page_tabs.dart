@@ -1,4 +1,4 @@
-import 'package:dongnesosik/global/style/jcolors.dart';
+import 'package:dongnesosik/global/style/dscolors.dart';
 import 'package:dongnesosik/pages/02_map/page_map.dart';
 import 'package:dongnesosik/pages/03_post/page_post.dart';
 import 'package:dongnesosik/pages/04_user_setting/page_user_setting.dart';
@@ -14,14 +14,14 @@ class _PageTabsState extends State<PageTabs> {
 
   List _pages = [
     PageMap(),
-    PagePost(),
+    // PagePost(),
     PageUserSetting(),
   ];
 
   List<BottomNavigationBarItem> _items = [
     BottomNavigationBarItem(icon: Icon(Icons.map_outlined), label: "지도"),
-    BottomNavigationBarItem(
-        icon: Icon(Icons.sticky_note_2_outlined), label: "동내 게시판"),
+    // BottomNavigationBarItem(
+    //     icon: Icon(Icons.sticky_note_2_outlined), label: "동내 게시판"),
     BottomNavigationBarItem(
         icon: Icon(Icons.admin_panel_settings), label: "내정보"),
   ];
@@ -47,27 +47,38 @@ class _PageTabsState extends State<PageTabs> {
       },
       child: Scaffold(
         body: _body(),
-        bottomNavigationBar: Theme(
+        bottomNavigationBar: new Theme(
           data: Theme.of(context).copyWith(
               canvasColor: Colors.white,
-              primaryColor: JColors.tomato,
+              primaryColor: Colors.red,
               textTheme: Theme.of(context).textTheme.copyWith(
-                  caption: new TextStyle(color: Colors.grey))), // sets the
+                  caption: new TextStyle(
+                      color: Colors
+                          .grey))), // sets the inactive color of the `BottomNavigationBar`
+
           child: BottomNavigationBar(
             currentIndex: _selectedIndex,
             onTap: _onItemTapped,
             items: _items,
             selectedFontSize: 10,
             unselectedFontSize: 10,
-            selectedItemColor: JColors.tomato,
-            unselectedItemColor: JColors.gray3,
+            selectedItemColor: DSColors.tomato,
+            unselectedItemColor: DSColors.gray3,
             showUnselectedLabels: true,
-            type: BottomNavigationBarType.fixed,
+            // type: BottomNavigationBarType.fixed,
             // unselectedLabelColor: CDColors.gray6,
             // labelColor: CDColors.primary,
             // indicatorColor: CDColors.primary,
           ),
         ),
+        // Theme(
+        //   data: Theme.of(context).copyWith(
+        //       canvasColor: Colors.white,
+        //       primaryColor: JColors.tomato,
+        //       textTheme: Theme.of(context).textTheme.copyWith(
+        //           caption: new TextStyle(color: Colors.grey))), // sets the
+        //   child:
+        // ),
         // ),
       ),
     );

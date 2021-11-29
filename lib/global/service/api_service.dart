@@ -1,41 +1,66 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:device_info/device_info.dart';
 import 'package:dio/dio.dart';
-import 'package:dongnesosik/global/model/config_model.dart';
+import 'package:dongnesosik/global/model/model_config.dart';
+import 'package:dongnesosik/global/model/model_shared_preferences.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:package_info/package_info.dart';
 
 class ApiService {
   static String deviceIdentifier = 'unknown';
-  static String appVersion = '';
+  static String osType = '';
+  static String osVersion = '';
+  static String deviceModel = '';
   final Map<String, String> _headers = {
     'Content-Type': 'application/json',
   };
 
   final Map<String, String> _multiPartHeaders = {
     'Content-Type': 'multipart/form-data',
-    'utoken': deviceIdentifier,
+    // 'utoken': deviceIdentifier,
   };
+
+  Future<void> getDeviceUniqueId() async {
+    var deviceInfo = DeviceInfoPlugin();
+    var packageInfo = await PackageInfo.fromPlatform();
+    osVersion = packageInfo.version;
+    if (Platform.isAndroid) {
+      var androidInfo = await deviceInfo.androidInfo;
+      deviceIdentifier = androidInfo.androidId;
+      deviceModel = androidInfo.model;
+      osType = 'Android';
+    } else if (Platform.isIOS) {
+      var iosInfo = await deviceInfo.iosInfo;
+      deviceIdentifier = iosInfo.identifierForVendor;
+      deviceModel = iosInfo.model;
+      osType = 'IOS';
+    }
+  }
 
   Future<dynamic> get(String _path) async {
     print('Api get : url $_path start.');
     var response;
     try {
-      // final token = await _getAuthorizationToken();
-      // print(token);
-      // _headers['Credi-Token'] = '$token';
-      print('${ConfigModel().serverBaseUrl}');
+      final token = await _getAuthorizationToken();
+      print(token);
+      _headers['dnss-token'] = '$token';
+      print('${ModelConfig().serverBaseUrl}');
       response = await Dio()
-          .get('${ConfigModel().serverBaseUrl}$_path',
+          .get('${ModelConfig().serverBaseUrl}$_path',
               options: Options(
                 headers: _headers,
               ))
           .timeout(Duration(seconds: 10));
-      print('Api get : url $_path  done.');
+      print('Api get : url ${ModelConfig().serverBaseUrl}$_path  done.');
       print('dio response = ${response.toString()}');
     } on DioError catch (e) {
       DioExceptions.fromDioError(e).toString();
+      throw Exception();
     } on SocketException {
       print('No network');
+      throw Exception();
     }
     return response?.data;
   }
@@ -43,18 +68,18 @@ class ApiService {
   Future<dynamic> post(String _path, Map map) async {
     print('Api get : url $_path start.');
 
-    // final token = await _getAuthorizationToken();
-    // print(token);
     var response;
     try {
-      // _headers['Credi-Token'] = '$token';
+      final token = await _getAuthorizationToken();
+      print(token);
+      _headers['dnss-token'] = '$token';
 
       var _data = jsonEncode(map);
 
-      print('${ConfigModel().serverBaseUrl}');
+      print('${ModelConfig().serverBaseUrl}');
       response = await Dio()
           .post(
-            '${ConfigModel().serverBaseUrl}$_path',
+            '${ModelConfig().serverBaseUrl}$_path',
             data: _data,
             options: Options(
               headers: _headers,
@@ -62,7 +87,38 @@ class ApiService {
           )
           .timeout(Duration(seconds: 10));
 
-      print('Api get : url $_path  done.');
+      print('Api get : url ${ModelConfig().serverBaseUrl}$_path  done.');
+      print('dio response = ${response.toString()}');
+    } on DioError catch (e) {
+      print(e.error.toString());
+      DioExceptions.fromDioError(e).toString();
+      throw Exception();
+    } on SocketException {
+      print('No network');
+      throw Exception();
+    }
+    return response?.data;
+  }
+
+  Future<dynamic> postWithOutToken(String _path, Map map) async {
+    print('Api get : url $_path start.');
+
+    var response;
+    try {
+      var _data = jsonEncode(map);
+
+      print('${ModelConfig().serverBaseUrl}');
+      response = await Dio()
+          .post(
+            '${ModelConfig().serverBaseUrl}$_path',
+            data: _data,
+            options: Options(
+              headers: _headers,
+            ),
+          )
+          .timeout(Duration(seconds: 10));
+
+      print('Api get : url ${ModelConfig().serverBaseUrl}$_path  done.');
       print('dio response = ${response.toString()}');
     } on DioError catch (e) {
       DioExceptions.fromDioError(e).toString();
@@ -83,7 +139,7 @@ class ApiService {
     // print('${ConfigModel().serverBaseUrl}');
     var response;
     try {
-      // _multiPartHeaders['Credi-Token'] = '$token';
+      // _multiPartHeaders['dnss-token'] = '$token';
       var _formData = FormData();
       for (int i = 0; i < _files.length; i++) {
         _formData.files.add(
@@ -94,10 +150,10 @@ class ApiService {
         );
       }
 
-      print('path = ${ConfigModel().serverBaseUrl}$_path');
+      print('path = ${ModelConfig().serverBaseUrl}$_path');
 
       response = await Dio()
-          .post('${ConfigModel().serverBaseUrl}$_path',
+          .post('${ModelConfig().serverBaseUrl}$_path',
               data: _formData,
               options: Options(
                 headers: _multiPartHeaders,
@@ -109,7 +165,7 @@ class ApiService {
               ))
           .timeout(Duration(seconds: 30));
 
-      print('Api get : url $_path  done.');
+      print('Api get : url ${ModelConfig().serverBaseUrl}$_path  done.');
       print('dio response = ${response.toString()}');
     } on DioError catch (e) {
       DioExceptions.fromDioError(e).toString();
@@ -119,8 +175,10 @@ class ApiService {
     return response?.data;
   }
 
-  Future<dynamic> getGoogleGeoApi(String _path) async {
-    print('Api get : url $_path start.');
+  Future<dynamic> getGoogleGeoApi(String location) async {
+    print('Api get : url $location start.');
+    String _path =
+        'https://maps.googleapis.com/maps/api/geocode/json?$location&language=ko&key=AIzaSyAoeKpyN_EODABnnIV_Wdx7Tu8Y1QECowY';
     var response;
     try {
       response = await Dio()
@@ -138,6 +196,11 @@ class ApiService {
     }
     return response?.data;
   }
+}
+
+Future<String?> _getAuthorizationToken() async {
+  var token = await ModelSharedPreferences.readToken();
+  return token;
 }
 
 class DioExceptions implements Exception {
