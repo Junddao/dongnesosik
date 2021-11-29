@@ -3,6 +3,8 @@ import 'package:dongnesosik/global/enums/view_state.dart';
 import 'package:dongnesosik/global/model/pin/model_response_get_pin.dart';
 import 'package:dongnesosik/global/model/singleton_user.dart';
 import 'package:dongnesosik/global/provider/location_provider.dart';
+import 'package:dongnesosik/global/style/dstextstyles.dart';
+import 'package:dongnesosik/global/util/point_to_point_distance.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -57,6 +59,9 @@ class _PagePopularPostState extends State<PagePopularPost> {
   }
 
   Widget _listItem(int index, List<ResponseGetPinData> top50PinDatas) {
+    LatLng p1 = context.read<LocationProvider>().lastLocation!;
+    LatLng p2 =
+        LatLng(top50PinDatas[index].pin!.lat!, top50PinDatas[index].pin!.lng!);
     return ListTile(
       leading: ClipRRect(
         borderRadius: BorderRadius.all(Radius.circular(12.0)),
@@ -85,6 +90,12 @@ class _PagePopularPostState extends State<PagePopularPost> {
       ),
       subtitle: Text(
         top50PinDatas[index].pin!.body!,
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
+      ),
+      trailing: Text(
+        '${PointToPointDistance.ptopDistnace(p1, p2)} km',
+        style: DSTextStyles.regular12Greyish,
         overflow: TextOverflow.ellipsis,
         maxLines: 1,
       ),

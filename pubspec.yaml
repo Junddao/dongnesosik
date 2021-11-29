@@ -46,6 +46,7 @@ dependencies:
   image_picker: ^0.8.4+4
   ionicons: ^0.1.2
   kpostal: ^0.3.2
+  latlong2: ^0.8.1
   modal_bottom_sheet: ^2.0.0
   package_info: ^2.0.2
   photo_view: ^0.13.0
