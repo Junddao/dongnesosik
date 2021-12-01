@@ -482,6 +482,10 @@ class _PageMapState extends State<PageMap> {
       onTap: () {
         context.read<LocationProvider>().selectedPinData =
             responseGetPinData[index];
+
+        context
+            .read<LocationProvider>()
+            .getPinReply(responseGetPinData[index].pin!.id!);
         LatLng location = LatLng(responseGetPinData[index].pin!.lat!,
             responseGetPinData[index].pin!.lng!);
         context.read<LocationProvider>().setLastLocation(location);
