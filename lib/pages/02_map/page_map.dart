@@ -459,7 +459,7 @@ class _PageMapState extends State<PageMap> {
               height: 90,
               padding: EdgeInsets.all(kDefaultPadding),
               child: Center(
-                  child: Text('동내 게시글', style: DSTextStyles.bold18Black))),
+                  child: Text('동네 게시글', style: DSTextStyles.bold18Black))),
           Divider(),
           ListView.separated(
               padding: EdgeInsets.only(top: 0),

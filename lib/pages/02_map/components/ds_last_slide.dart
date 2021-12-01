@@ -30,7 +30,7 @@ class DSLastSlide extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 12),
               child: Center(
                 child: Text(
-                  "동내소식은\n동내소식으로. 😃\n\n",
+                  "동네소식은\n동네소식으로. 😃\n\n",
                   style: DSTextStyles.bold20Black36,
                 ),
               ),

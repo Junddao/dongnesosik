@@ -78,7 +78,7 @@ class _PageSplashState extends State<PageSplash> {
         alignment: Alignment.center,
         children: [
           Text(
-            '동내소식!',
+            '동네소식!',
             style: DSTextStyles.bold26black,
           ),
         ],

@@ -41,17 +41,17 @@ class _PageIntroSliderState extends State<PageIntroSlider> {
             children: [
               DSIntroSlide(
                 title: '홍보하세요.',
-                description: '동내 사람들에게 가게를 홍보하세요.',
+                description: '동네 사람들에게 가게를 홍보하세요.',
                 pathImage: "assets/images/intro1.svg",
               ),
               DSIntroSlide(
                 title: '대화하세요.',
-                description: '동내 사람들과 대화하세요.',
+                description: '동네 사람들과 대화하세요.',
                 pathImage: "assets/images/intro2.svg",
               ),
               DSIntroSlide(
                 title: '공유하세요.',
-                description: '동내 소식을 주변사람들에게 공유하세요.',
+                description: '동네 소식을 주변사람들에게 공유하세요.',
                 pathImage: "assets/images/intro3.svg",
               ),
               DSLastSlide(),

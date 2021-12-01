@@ -51,14 +51,14 @@ class _PageLoginState extends State<PageLogin> {
               //     animatedTexts: [
               //       WavyAnimatedText('DongNe'),
               //       WavyAnimatedText('SoSik'),
-              //       WavyAnimatedText('동내소식'),
+              //       WavyAnimatedText('동네소식'),
               //     ],
               //     isRepeatingAnimation: true,
               //   ),
               // ),
 
               child: TextLiquidFill(
-                text: '동내소식',
+                text: '동네소식',
                 waveColor: DSColors.black,
                 boxBackgroundColor: DSColors.white,
                 textStyle: DSTextStyles.bold40white,
