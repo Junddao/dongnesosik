@@ -43,7 +43,7 @@ class _DSPhotoViewState extends State<DSPhotoView> {
                     itemBuilder: (context, index) {
                       return InkWell(
                         onTap: () {
-                          Navigator.of(context).pushNamed('PhotoViewer',
+                          Navigator.of(context).pushNamed('DSPhotoViewer',
                               arguments: widget.iamgeUrls[index]);
                         },
                         child: CachedNetworkImage(

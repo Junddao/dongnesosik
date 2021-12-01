@@ -892,12 +892,17 @@ class _PageMapState extends State<PageMap> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(data.selectedPinData!.pin!.title!,
-                          style: DSTextStyles.bold18Black),
+                      Text(
+                        data.selectedPinData!.pin!.title!,
+                        style: DSTextStyles.bold18Black,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                       SizedBox(height: 10),
                       Text(
                         data.selectedPinData!.pin!.body!,
                         overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
                     ],
                   ),
