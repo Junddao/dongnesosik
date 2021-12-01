@@ -19,6 +19,7 @@ class _DSPhotoViewerState extends State<DSPhotoViewer> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
       ),
       body: Container(
         child: PhotoView(
