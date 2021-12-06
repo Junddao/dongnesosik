@@ -12,6 +12,7 @@ import 'package:dongnesosik/pages/03_post/page_post_community.dart';
 import 'package:dongnesosik/pages/03_post/page_post_detail.dart';
 import 'package:dongnesosik/pages/03_post/page_post_create.dart';
 import 'package:dongnesosik/pages/03_post/page_select_location.dart';
+import 'package:dongnesosik/pages/04_user/page_other_user.dart';
 import 'package:dongnesosik/pages/04_user_setting/page_user_setting.dart';
 import 'package:dongnesosik/pages/components/ds_photo_viewer.dart';
 
@@ -93,6 +94,12 @@ class Routers {
       case 'PagePostCommunity':
         return CupertinoPageRoute(
           builder: (_) => PagePostCommunity(),
+          settings: settings,
+        );
+
+      case 'PageOtherUser':
+        return CupertinoPageRoute(
+          builder: (_) => PageOtherUser(),
           settings: settings,
         );
 

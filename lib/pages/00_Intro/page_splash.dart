@@ -35,7 +35,7 @@ class _PageSplashState extends State<PageSplash> {
       Navigator.of(context)
           .pushNamedAndRemoveUntil('PageLogin', (route) => false);
     } else {
-      await context.read<UserProvider>().getUser().catchError((onError) async {
+      await context.read<UserProvider>().getMe().catchError((onError) async {
         await getTokenAndUserInfo(modelRequestUserGuestInfo);
         Navigator.of(context)
             .pushNamedAndRemoveUntil('PageLogin', (route) => false);
@@ -89,6 +89,6 @@ class _PageSplashState extends State<PageSplash> {
   Future<void> getTokenAndUserInfo(
       ModelRequestGuestInfo modelRequestUserGuestInfo) async {
     await context.read<UserProvider>().createGuest(modelRequestUserGuestInfo);
-    await context.read<UserProvider>().getUser();
+    await context.read<UserProvider>().getMe();
   }
 }

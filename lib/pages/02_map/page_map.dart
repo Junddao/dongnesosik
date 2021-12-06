@@ -13,6 +13,7 @@ import 'package:dongnesosik/global/model/pin/model_response_get_pin_reply.dart';
 import 'package:dongnesosik/global/model/singleton_user.dart';
 import 'package:dongnesosik/global/model/user/model_user_info.dart';
 import 'package:dongnesosik/global/provider/location_provider.dart';
+import 'package:dongnesosik/global/provider/user_provider.dart';
 import 'package:dongnesosik/global/style/constants.dart';
 import 'package:dongnesosik/global/style/dscolors.dart';
 import 'package:dongnesosik/global/style/dstextstyles.dart';
@@ -68,17 +69,6 @@ class _PageMapState extends State<PageMap> {
       Future.delayed(Duration(milliseconds: 500), () {
         if (widget.pinId != null) {
           panelController.open();
-          // showModalBottomSheet(
-          //   context: context,
-          //   isScrollControlled: true,
-          //   builder: (context) {
-          //     return Padding(
-          //       padding: EdgeInsets.only(
-          //           bottom: MediaQuery.of(context).viewInsets.bottom),
-          //       child: buildBottomSheet(context, widget.pinId!),
-          //     );
-          //   },
-          // );
         }
       });
     });
@@ -103,11 +93,12 @@ class _PageMapState extends State<PageMap> {
       textDirection: TextDirection.ltr,
     );
     tp.text = TextSpan(
-        text: title.length < 10 ? title : title.substring(0, 10) + '..',
-        style: DSTextStyles.bold36white);
+        text: title.length < 18 ? title : title.substring(0, 16) + '..',
+        style: DSTextStyles.regular32white);
 
     var myPaint = Paint();
-    myPaint.color = DSColors.gray5;
+    // myPaint.color = DSColors.tomato;
+    myPaint.color = DSColors.gray4;
     // myPaint.color = DSColors.white;
     PictureRecorder recorder = new PictureRecorder();
     Canvas c = new Canvas(recorder);
@@ -678,6 +669,7 @@ class _PageMapState extends State<PageMap> {
         context.read<LocationProvider>().selectedPinData =
             responseGetPinDatas.first;
         context.read<LocationProvider>().getPinReply(id);
+
         panelController.open();
         print('marker onTaped()');
       },
@@ -944,18 +936,46 @@ class _PageMapState extends State<PageMap> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        RichText(
-                          text: TextSpan(
+                        InkWell(
+                          onTap: () {
+                            Navigator.of(context).pushNamed('PageOtherUser');
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              TextSpan(
-                                  text: '${data.selectedPinData!.name!}',
-                                  style: DSTextStyles.bold18Black),
-                              TextSpan(
-                                  text: ' 님의 글',
-                                  style: DSTextStyles.bold12Black),
+                              data.selectedPinData!.profileImage == null ||
+                                      data.selectedPinData!.profileImage!
+                                          .isEmpty
+                                  ? SvgPicture.asset(
+                                      'assets/images/person.svg',
+                                      fit: BoxFit.cover,
+                                      height: 40,
+                                      width: 40,
+                                    )
+                                  : CircleAvatar(
+                                      radius: 20.0,
+                                      backgroundImage:
+                                          CachedNetworkImageProvider(
+                                        data.selectedPinData!.profileImage!,
+                                      ),
+                                    ),
+                              SizedBox(width: 4),
+                              RichText(
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                        text: '${data.selectedPinData!.name!}',
+                                        style: DSTextStyles.bold18Black),
+                                    TextSpan(
+                                        text: ' 님의 글',
+                                        style: DSTextStyles.bold12Black),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
                         ),
+                        SizedBox(height: 10),
                         RichText(
                           text: TextSpan(
                             children: [
@@ -1413,7 +1433,7 @@ class _PageMapState extends State<PageMap> {
 
   void deleteReply(
       BuildContext slidableContext, ModelResponseGetPinReplyData reply) async {
-    var result = await DSTwoButtonDialog.showCancelDialog(
+    var result = await DSDialog.showTwoButtonDialog(
         context: context,
         title: '댓글 삭제',
         subTitle: '정말 삭제하시겠습니까?',

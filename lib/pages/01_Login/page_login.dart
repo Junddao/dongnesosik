@@ -110,7 +110,7 @@ class _PageLoginState extends State<PageLogin> {
                         .read<UserProvider>()
                         .setUser(modelRequestUserSet);
 
-                    await context.read<UserProvider>().getUser();
+                    await context.read<UserProvider>().getMe();
 
                     double? myLat = await ModelSharedPreferences.readMyLat();
                     double? myLng = await ModelSharedPreferences.readMyLng();
@@ -185,7 +185,7 @@ class _PageLoginState extends State<PageLogin> {
                               .read<UserProvider>()
                               .setUser(modelRequestUserSet);
 
-                          await context.read<UserProvider>().getUser();
+                          await context.read<UserProvider>().getMe();
 
                           double? myLat =
                               await ModelSharedPreferences.readMyLat();

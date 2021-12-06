@@ -35,13 +35,17 @@ class ModelResponseGetPin {
 
 class ResponseGetPinData {
   ResponsePin? pin;
+  int? userId;
   String? name;
+  String? profileImage;
   bool? liked;
   bool? hated;
   String? createAt;
   ResponseGetPinData({
     this.pin,
+    this.userId,
     this.name,
+    this.profileImage,
     this.liked = false,
     this.hated,
     this.createAt,
@@ -50,7 +54,9 @@ class ResponseGetPinData {
   Map<String, dynamic> toMap() {
     return {
       'pin': pin?.toMap(),
+      'userId': userId,
       'name': name,
+      'profileImage': profileImage,
       'liked': liked,
       'hated': hated,
       'createAt': createAt,
@@ -60,7 +66,9 @@ class ResponseGetPinData {
   factory ResponseGetPinData.fromMap(Map<String, dynamic> map) {
     return ResponseGetPinData(
       pin: map['pin'] != null ? ResponsePin.fromMap(map['pin']) : null,
+      userId: map['userId'] != null ? map['userId'] : null,
       name: map['name'] != null ? map['name'] : null,
+      profileImage: map['profileImage'] != null ? map['profileImage'] : null,
       liked: map['liked'] != null ? map['liked'] : null,
       hated: map['hated'] != null ? map['hated'] : null,
       createAt: map['createAt'] != null ? map['createAt'] : null,

@@ -755,6 +755,15 @@ class DSTextStyles {
     // height: 1.2,
   );
 
+  static const regular32white = const TextStyle(
+    color: Colors.white,
+    fontWeight: FontWeight.w400,
+    fontFamily: 'NotoSansKR',
+    fontSize: 32.0,
+    fontStyle: FontStyle.normal,
+    // height: 1.2,
+  );
+
   static const regular18black = const TextStyle(
     color: Colors.black,
     fontWeight: FontWeight.w400,
