@@ -219,6 +219,18 @@ class LocationProvider extends ParentProvider {
     }
   }
 
+  Future<void> pinHateToId(int id) async {
+    try {
+      var api = ApiService();
+      var response = await api.get('/pin/hate/$id');
+
+      notifyListeners();
+    } catch (error) {
+      // setStateError();
+      throw Exception();
+    }
+  }
+
   Future<void> pinDelete(int id) async {
     try {
       setStateBusy();

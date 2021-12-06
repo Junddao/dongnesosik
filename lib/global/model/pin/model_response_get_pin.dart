@@ -37,11 +37,13 @@ class ResponseGetPinData {
   ResponsePin? pin;
   String? name;
   bool? liked;
+  bool? hated;
   String? createAt;
   ResponseGetPinData({
     this.pin,
     this.name,
     this.liked = false,
+    this.hated,
     this.createAt,
   });
 
@@ -50,6 +52,7 @@ class ResponseGetPinData {
       'pin': pin?.toMap(),
       'name': name,
       'liked': liked,
+      'hated': hated,
       'createAt': createAt,
     };
   }
@@ -59,6 +62,7 @@ class ResponseGetPinData {
       pin: map['pin'] != null ? ResponsePin.fromMap(map['pin']) : null,
       name: map['name'] != null ? map['name'] : null,
       liked: map['liked'] != null ? map['liked'] : null,
+      hated: map['hated'] != null ? map['hated'] : null,
       createAt: map['createAt'] != null ? map['createAt'] : null,
     );
   }
@@ -77,6 +81,7 @@ class ResponsePin {
   String? body;
   List<String>? images;
   int? likeCount;
+  int? hateCount;
   ResponsePin({
     this.id,
     this.lat,
@@ -85,6 +90,7 @@ class ResponsePin {
     this.body,
     this.images,
     this.likeCount,
+    this.hateCount,
   });
 
   Map<String, dynamic> toMap() {
@@ -96,6 +102,7 @@ class ResponsePin {
       'body': body,
       'images': images,
       'likeCount': likeCount,
+      'hateCount': hateCount,
     };
   }
 
@@ -108,6 +115,7 @@ class ResponsePin {
       body: map['body'] != null ? map['body'] : null,
       images: map['images'] != null ? List<String>.from(map['images']) : null,
       likeCount: map['likeCount'] != null ? map['likeCount'] : null,
+      hateCount: map['hateCount'] != null ? map['hateCount'] : null,
     );
   }
 

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 class ModelUserInfo {
   int? id;
+  bool? isAdmin;
   String? name;
   String? phoneNumber;
   String? email;
@@ -16,6 +17,7 @@ class ModelUserInfo {
   String? buildingName;
   ModelUserInfo({
     this.id,
+    this.isAdmin,
     this.name,
     this.phoneNumber,
     this.email,
@@ -33,6 +35,7 @@ class ModelUserInfo {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'isAdmin': isAdmin,
       'name': name,
       'phoneNumber': phoneNumber,
       'email': email,
@@ -51,6 +54,7 @@ class ModelUserInfo {
   factory ModelUserInfo.fromMap(Map<String, dynamic> map) {
     return ModelUserInfo(
       id: map['id'] != null ? map['id'] : null,
+      isAdmin: map['isAdmin'] != null ? map['isAdmin'] : null,
       name: map['name'] != null ? map['name'] : null,
       phoneNumber: map['phoneNumber'] != null ? map['phoneNumber'] : null,
       email: map['email'] != null ? map['email'] : null,

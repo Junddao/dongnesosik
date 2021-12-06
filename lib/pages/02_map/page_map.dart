@@ -941,8 +941,37 @@ class _PageMapState extends State<PageMap> {
                 Container(
                   height: 90,
                   child: Center(
-                    child: Text('${data.selectedPinData!.name!}님의 글',
-                        style: DSTextStyles.bold18Black),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                  text: '${data.selectedPinData!.name!}',
+                                  style: DSTextStyles.bold18Black),
+                              TextSpan(
+                                  text: ' 님의 글',
+                                  style: DSTextStyles.bold12Black),
+                            ],
+                          ),
+                        ),
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                  text: DataConvert.toGapTimewithNow(
+                                      data.selectedPinData!.createAt!),
+                                  style: DSTextStyles.regular14WarmGrey),
+                              TextSpan(
+                                  text:
+                                      '  (${DataConvert.toLocalDateWithMinute(data.selectedPinData!.createAt!)})',
+                                  style: DSTextStyles.regular10WarmGrey),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 Expanded(
@@ -975,17 +1004,54 @@ class _PageMapState extends State<PageMap> {
                             children: [
                               Text(data.selectedPinData!.pin!.title!,
                                   style: DSTextStyles.bold16Black),
-                              SizedBox(height: 10),
+                              SizedBox(height: 20),
                               Text(data.selectedPinData!.pin!.body!),
-                              SizedBox(height: 10),
+                              SizedBox(height: 20),
                               Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  data.selectedPinData!.liked == false
+                                  Row(
+                                    children: [
+                                      data.selectedPinData!.liked == false
+                                          ? InkWell(
+                                              onTap: () {
+                                                context
+                                                    .read<LocationProvider>()
+                                                    .pinLikeToId(data
+                                                        .selectedPinData!
+                                                        .pin!
+                                                        .id!)
+                                                    .then((value) {
+                                                  context
+                                                      .read<LocationProvider>()
+                                                      .getPinById(data
+                                                          .selectedPinData!
+                                                          .pin!
+                                                          .id!);
+                                                });
+                                              },
+                                              child: Icon(
+                                                Icons.favorite_border_outlined,
+                                              ),
+                                            )
+                                          : Icon(
+                                              Icons.favorite,
+                                              color: DSColors.tomato,
+                                            ),
+                                      SizedBox(width: 8),
+                                      Text(
+                                          '${data.selectedPinData!.pin!.likeCount ?? 0}',
+                                          style: DSTextStyles.regular10Grey06),
+                                      SizedBox(width: 18),
+                                    ],
+                                  ),
+                                  data.selectedPinData!.hated == false
                                       ? InkWell(
                                           onTap: () {
                                             context
                                                 .read<LocationProvider>()
-                                                .pinLikeToId(data
+                                                .pinHateToId(data
                                                     .selectedPinData!.pin!.id!)
                                                 .then((value) {
                                               context
@@ -996,20 +1062,63 @@ class _PageMapState extends State<PageMap> {
                                                       .id!);
                                             });
                                           },
-                                          child: Icon(
-                                            Icons.favorite_border_outlined,
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 12, vertical: 8),
+                                            decoration: BoxDecoration(
+                                              color: DSColors.tomato,
+                                            ),
+                                            child: Center(
+                                                child: Row(
+                                              children: [
+                                                Text('신고하기',
+                                                    style: DSTextStyles
+                                                        .regular12White),
+                                              ],
+                                            )),
                                           ),
                                         )
-                                      : Icon(
-                                          Icons.favorite,
-                                          color: DSColors.tomato,
+                                      : Container(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 12, vertical: 8),
+                                          decoration: BoxDecoration(
+                                            color: DSColors.tomato_10,
+                                          ),
+                                          child: Center(
+                                              child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.check,
+                                                color: Colors.black,
+                                              ),
+                                              SizedBox(width: 4),
+                                              Text('신고완료',
+                                                  style: DSTextStyles
+                                                      .regular12Black),
+                                            ],
+                                          )),
                                         ),
-                                  SizedBox(width: 8),
-                                  Text(
-                                      '${data.selectedPinData!.pin!.likeCount ?? 0}',
-                                      style: DSTextStyles.regular10Grey06),
+                                  // SingletonUser
+                                  //             .singletonUser.userData.isAdmin ==
+                                  //         true
+                                  //     ? IconButton(
+                                  //         onPressed: () {
+                                  //           context
+                                  //               .read<LocationProvider>()
+                                  //               .pinDelete(data
+                                  //                   .selectedPinData!.pin!.id!);
+                                  //           setState(() {});
+                                  //         },
+                                  //         icon: Icon(Icons.delete),
+                                  //       )
+                                  //     : SizedBox.shrink(),
                                 ],
                               ),
+                              SizedBox(height: 10),
+                              data.selectedPinData!.hated == true
+                                  ? Text('2시간 내 운영자 검토 후 필요시 삭제 예정입니다.',
+                                      style: DSTextStyles.regular10PinkishGrey)
+                                  : SizedBox.shrink(),
                               SizedBox(height: 10),
                               Divider(),
                               _buildReviewList(data),
@@ -1103,11 +1212,6 @@ class _PageMapState extends State<PageMap> {
       padding: EdgeInsets.symmetric(horizontal: 15, vertical: 12),
       child: Row(
         children: [
-          InkWell(
-            onTap: () {},
-            child: Icon(Icons.add_a_photo),
-          ),
-          SizedBox(width: 10),
           Expanded(
             child: Container(
               height: 42,
@@ -1215,26 +1319,42 @@ class _PageMapState extends State<PageMap> {
         _tecMessage.text = '@${data.name} ';
       },
       child: Container(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
+            Column(
+              mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(data.name!, style: DSTextStyles.bold12Black),
-                SizedBox(width: 16),
-                Text(data.createAt ?? '20000',
-                    style: DSTextStyles.regular10WarmGrey),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(data.name!, style: DSTextStyles.bold12Black),
+                    SizedBox(width: 16),
+                    Text(DataConvert.toLocalDateWithSeconds(data.createAt!),
+                        style: DSTextStyles.regular10WarmGrey),
+                  ],
+                ),
+                SizedBox(height: 8),
+                Text(
+                  data.reply!.body!,
+                  style: DSTextStyles.regular12Black,
+                ),
+                SizedBox(height: 8),
               ],
             ),
-            SizedBox(height: 8),
-            Text(
-              data.reply!.body!,
-              style: DSTextStyles.regular12Black,
-            ),
-            SizedBox(height: 8),
+            SingletonUser.singletonUser.userData.isAdmin == true
+                ? IconButton(
+                    onPressed: () {
+                      context
+                          .read<LocationProvider>()
+                          .deleteReply(data.reply!.id!);
+                      setState(() {});
+                    },
+                    icon: Icon(Icons.delete),
+                  )
+                : SizedBox.shrink(),
           ],
         ),
       ),
@@ -1275,7 +1395,7 @@ class _PageMapState extends State<PageMap> {
               children: [
                 Text(data.name!, style: DSTextStyles.bold12Black),
                 SizedBox(width: 16),
-                Text(data.createAt ?? '20000',
+                Text(DataConvert.toLocalDateWithSeconds(data.createAt!),
                     style: DSTextStyles.regular10WarmGrey),
               ],
             ),
