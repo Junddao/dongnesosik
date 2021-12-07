@@ -26,6 +26,7 @@ class LocationProvider extends ParentProvider {
   List<ResponseGetPinData>? responseGetPinDatas = [];
   List<ResponseGetPinData>? myPinDatas = [];
   List<ResponseGetPinData>? top50PinDatas = [];
+  List<ResponseGetPinData>? userPinDatas = [];
   ResponseGetPinData? selectedPinData;
   int? selectedId;
 
@@ -187,6 +188,19 @@ class LocationProvider extends ParentProvider {
       var api = ApiService();
       var response = await api.get('/pin/get/me');
       myPinDatas = ModelResponseGetPin.fromMap(response).data;
+      setStateIdle();
+      // notifyListeners();
+    } catch (error) {
+      setStateError();
+    }
+  }
+
+  Future<void> getUserPin(int userId) async {
+    try {
+      setStateBusy();
+      var api = ApiService();
+      var response = await api.get('/pin/get/user/$userId');
+      userPinDatas = ModelResponseGetPin.fromMap(response).data;
       setStateIdle();
       // notifyListeners();
     } catch (error) {

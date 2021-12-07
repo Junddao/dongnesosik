@@ -44,14 +44,16 @@ class _PageOtherUserState extends State<PageOtherUser> {
     );
   }
 
-  AppBar _appBar() {
+  _appBar() {
     var userProvider = context.read<UserProvider>();
     return AppBar(
-      title: Text('Xxxx 님의 페이지'),
+      title: Consumer<UserProvider>(builder: (_, data, __) {
+        return Text(data.selectedUser!.name ?? '');
+      }),
       actions: [
         TextButton(
           onPressed: () async {
-            var result = DSDialog.showTwoButtonDialog(
+            var result = await DSDialog.showTwoButtonDialog(
                 context: context,
                 title: '비매너 신고',
                 subTitle: '정말 신고하시겠습니까?',

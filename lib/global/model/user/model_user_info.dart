@@ -7,6 +7,7 @@ class ModelUserInfo {
   String? phoneNumber;
   String? email;
   String? profileImage;
+  String? state;
   String? address;
   String? region1;
   String? region2;
@@ -22,6 +23,7 @@ class ModelUserInfo {
     this.phoneNumber,
     this.email,
     this.profileImage,
+    this.state = "active",
     this.address,
     this.region1,
     this.region2,
@@ -40,6 +42,7 @@ class ModelUserInfo {
       'phoneNumber': phoneNumber,
       'email': email,
       'profileImage': profileImage,
+      'state': state,
       'address': address,
       'region1': region1,
       'region2': region2,
@@ -59,6 +62,7 @@ class ModelUserInfo {
       phoneNumber: map['phoneNumber'] != null ? map['phoneNumber'] : null,
       email: map['email'] != null ? map['email'] : null,
       profileImage: map['profileImage'] != null ? map['profileImage'] : null,
+      state: map['state'] != null ? map['state'] : null,
       address: map['address'] != null ? map['address'] : null,
       region1: map['region1'] != null ? map['region1'] : null,
       region2: map['region2'] != null ? map['region2'] : null,

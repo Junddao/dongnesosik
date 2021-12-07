@@ -116,7 +116,7 @@ class DSDialog {
                       fontStyle: FontStyle.normal,
                       fontSize: 17.0),
                 ),
-                SizedBox(height: 2),
+                SizedBox(height: 20),
                 Text(
                   subTitle ?? '등록을 취소하시겠습니까?',
                   style: TextStyle(

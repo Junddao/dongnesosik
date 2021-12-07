@@ -1,6 +1,8 @@
 import 'package:dongnesosik/page_tabs.dart';
-import 'package:dongnesosik/pages/00_Intro/page_root.dart';
+import 'package:dongnesosik/pages/00_Intro/page_agreement.dart';
+
 import 'package:dongnesosik/pages/00_Intro/page_splash.dart';
+import 'package:dongnesosik/pages/00_etc/page_block.dart';
 import 'package:dongnesosik/pages/01_Login/page_login.dart';
 import 'package:dongnesosik/pages/01_Login/page_set_location.dart';
 import 'package:dongnesosik/pages/02_map/components/page_intro_slider.dart';
@@ -39,6 +41,12 @@ class Routers {
       case 'PageSplash':
         return CupertinoPageRoute(
           builder: (_) => PageSplash(),
+          settings: settings,
+        );
+
+      case 'PageAgreement':
+        return CupertinoPageRoute(
+          builder: (_) => PageAgreement(),
           settings: settings,
         );
 
@@ -120,6 +128,12 @@ class Routers {
       case 'PageIntroSlider':
         return CupertinoPageRoute(
           builder: (_) => PageIntroSlider(),
+          settings: settings,
+        );
+
+      case 'PageBlock':
+        return CupertinoPageRoute(
+          builder: (_) => PageBlock(),
           settings: settings,
         );
 
