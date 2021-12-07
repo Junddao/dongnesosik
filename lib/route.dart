@@ -107,7 +107,9 @@ class Routers {
 
       case 'PageOtherUser':
         return CupertinoPageRoute(
-          builder: (_) => PageOtherUser(),
+          builder: (_) => PageOtherUser(
+            userId: arguments,
+          ),
           settings: settings,
         );
 

@@ -15,7 +15,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 class PageOtherUser extends StatefulWidget {
-  const PageOtherUser({Key? key}) : super(key: key);
+  final int? userId;
+  const PageOtherUser({Key? key, this.userId}) : super(key: key);
 
   @override
   _PageOtherUserState createState() => _PageOtherUserState();
@@ -25,8 +26,8 @@ class _PageOtherUserState extends State<PageOtherUser> {
   @override
   void initState() {
     Future.microtask(() {
-      int pinId = context.read<LocationProvider>().selectedPinData!.pin!.id!;
-      context.read<UserProvider>().getUser(pinId);
+      // int pinId = context.read<LocationProvider>().selectedPinData!.pin!.id!;
+      context.read<UserProvider>().getUser(widget.userId!);
     });
     super.initState();
   }

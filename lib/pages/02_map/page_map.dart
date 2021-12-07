@@ -938,7 +938,13 @@ class _PageMapState extends State<PageMap> {
                       children: [
                         InkWell(
                           onTap: () {
-                            Navigator.of(context).pushNamed('PageOtherUser');
+                            int userId = context
+                                .read<LocationProvider>()
+                                .selectedPinData!
+                                .userId!;
+                            context.read<UserProvider>().getUser(userId);
+                            Navigator.of(context)
+                                .pushNamed('PageOtherUser', arguments: userId);
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -1091,7 +1097,7 @@ class _PageMapState extends State<PageMap> {
                                             child: Center(
                                                 child: Row(
                                               children: [
-                                                Text('신고하기',
+                                                Text('게시물 신고하기',
                                                     style: DSTextStyles
                                                         .regular12White),
                                               ],
@@ -1335,8 +1341,12 @@ class _PageMapState extends State<PageMap> {
   Widget getOhterUserReply(ModelResponseGetPinReplyData data) {
     return InkWell(
       onTap: () {
-        context.read<LocationProvider>().setReplyTarget(data);
-        _tecMessage.text = '@${data.name} ';
+        // context.read<LocationProvider>().setReplyTarget(data);
+        // _tecMessage.text = '@${data.name} ';
+
+        int userId = data.userId!;
+        context.read<UserProvider>().getUser(userId);
+        Navigator.of(context).pushNamed('PageOtherUser', arguments: userId);
       },
       child: Container(
         child: Row(
