@@ -65,18 +65,13 @@ class _PageOtherUserState extends State<PageOtherUser> {
               // 비매너 신고 api  호출
               userProvider
                   .setUserReport(userProvider.selectedUser!.id!)
-                  .then((value) {
-                DSDialog.showOneButtonDialog(
-                    context: context,
-                    title: '신고 완료',
-                    subTitle: '신고해 주셔서 감사합니다.',
-                    btnText: '확인');
-              }).catchError((onError) {
-                DSDialog.showOneButtonDialog(
-                    context: context,
-                    title: '실패',
-                    subTitle: '네트워크 상의 문제로 신고가 실패했습니다.',
-                    btnText: '확인');
+                  .then((value) async {
+                var provider = context.read<LocationProvider>();
+                provider.selectedPinData = null;
+                await provider.getPinInRagne(provider.lastLocation!.latitude,
+                    provider.lastLocation!.longitude, 1000);
+
+                Navigator.of(context).pushNamed('PageConfirm');
               });
             }
           },

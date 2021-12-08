@@ -641,6 +641,9 @@ class _PageMapState extends State<PageMap> {
     print(lastLocation);
 
     print("Idle");
+    // var provider = context.read<LocationProvider>();
+    // await provider.getPinInRagne(provider.lastLocation!.latitude,
+    //     provider.lastLocation!.longitude, 1000);
   }
 
   void _onCameraMove(CameraPosition position) {
@@ -1074,19 +1077,26 @@ class _PageMapState extends State<PageMap> {
                                   ),
                                   data.selectedPinData!.hated == false
                                       ? InkWell(
-                                          onTap: () {
-                                            context
-                                                .read<LocationProvider>()
+                                          onTap: () async {
+                                            var provider = context
+                                                .read<LocationProvider>();
+                                            await provider
                                                 .pinHateToId(data
                                                     .selectedPinData!.pin!.id!)
                                                 .then((value) {
-                                              context
-                                                  .read<LocationProvider>()
-                                                  .getPinById(data
-                                                      .selectedPinData!
-                                                      .pin!
-                                                      .id!);
+                                              // provider.getPinById(data
+                                              //     .selectedPinData!.pin!.id!);
+                                              provider.selectedPinData = null;
                                             });
+
+                                            await provider.getPinInRagne(
+                                                provider.lastLocation!.latitude,
+                                                provider
+                                                    .lastLocation!.longitude,
+                                                range);
+
+                                            Navigator.of(context)
+                                                .pushNamed('PageConfirm');
                                           },
                                           child: Container(
                                             padding: EdgeInsets.symmetric(
