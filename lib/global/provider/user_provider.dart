@@ -6,7 +6,7 @@ import 'package:dongnesosik/global/model/user/model_request_guest_info.dart';
 import 'package:dongnesosik/global/model/user/model_request_user_connect.dart';
 import 'package:dongnesosik/global/model/user/model_request_user_set.dart';
 import 'package:dongnesosik/global/model/user/model_response_guest_info.dart';
-import 'package:dongnesosik/global/model/user/model_response_sigin.dart';
+import 'package:dongnesosik/global/model/user/model_response_sign_in.dart';
 import 'package:dongnesosik/global/model/user/model_response_user_get.dart';
 import 'package:dongnesosik/global/model/user/model_response_user_set_report.dart';
 import 'package:dongnesosik/global/model/user/model_user_info.dart';

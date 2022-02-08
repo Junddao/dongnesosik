@@ -34,6 +34,8 @@ class LocationProvider extends ParentProvider {
 
   ModelResponseGetPinReplyData? selectedReplyData;
 
+
+
   setMyAddress(String? address) {
     myAddress = address;
     notifyListeners();

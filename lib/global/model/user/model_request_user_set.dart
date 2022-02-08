@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 class ModelRequestUserSet {
-  bool? isAdmin;
   String? name;
   String? phoneNumber;
   String? email;
@@ -16,7 +15,6 @@ class ModelRequestUserSet {
   String? subBuildingNo;
   String? buildingName;
   ModelRequestUserSet({
-    this.isAdmin,
     this.name,
     this.phoneNumber,
     this.email,
@@ -34,7 +32,6 @@ class ModelRequestUserSet {
 
   Map<String, dynamic> toMap() {
     return {
-      'isAdmin': isAdmin,
       'name': name,
       'phoneNumber': phoneNumber,
       'email': email,
@@ -53,7 +50,6 @@ class ModelRequestUserSet {
 
   factory ModelRequestUserSet.fromMap(Map<String, dynamic> map) {
     return ModelRequestUserSet(
-      isAdmin: map['isAdmin'] != null ? map['isAdmin'] : null,
       name: map['name'] != null ? map['name'] : null,
       phoneNumber: map['phoneNumber'] != null ? map['phoneNumber'] : null,
       email: map['email'] != null ? map['email'] : null,

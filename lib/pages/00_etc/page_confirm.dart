@@ -4,7 +4,11 @@ import 'package:dongnesosik/pages/components/ds_button.dart';
 import 'package:flutter/material.dart';
 
 class PageConfirm extends StatefulWidget {
-  const PageConfirm({Key? key}) : super(key: key);
+  final title;
+  final contents1;
+  final contents2;
+  const PageConfirm({Key? key, this.title, this.contents1, this.contents2})
+      : super(key: key);
 
   @override
   _PageConfirmState createState() => _PageConfirmState();
@@ -19,7 +23,7 @@ class _PageConfirmState extends State<PageConfirm> {
         child: DSButton(
           width: MediaQuery.of(context).size.width - 48,
           text: '확인',
-          type: ButtonType.dark,
+          type: ButtonType.normal,
           press: () {
             Navigator.of(context)
                 .pushNamedAndRemoveUntil('PageMap', (route) => false);
@@ -35,10 +39,16 @@ class _PageConfirmState extends State<PageConfirm> {
             SizedBox(
               height: 24,
             ),
-            Text('신고 완료', style: DSTextStyles.bold20Black36),
+            Text(widget.title, style: DSTextStyles.bold20Black36),
             SizedBox(height: 24),
             Text(
-              '신고가 정상 접수 되었습니다.',
+              widget.contents1,
+              style: DSTextStyles.regular14Black,
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 24),
+            Text(
+              widget.contents2,
               style: DSTextStyles.regular14Black,
               textAlign: TextAlign.center,
             ),

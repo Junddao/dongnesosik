@@ -9,6 +9,7 @@ import 'package:dongnesosik/global/style/constants.dart';
 import 'package:dongnesosik/global/style/dscolors.dart';
 import 'package:dongnesosik/global/style/dstextstyles.dart';
 import 'package:dongnesosik/pages/components/ds_two_button_dialog.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -52,30 +53,86 @@ class _PageOtherUserState extends State<PageOtherUser> {
         return Text(data.selectedUser!.name ?? '');
       }),
       actions: [
-        TextButton(
+        IconButton(
+          icon: Icon(Icons.more_vert),
           onPressed: () async {
-            var result = await DSDialog.showTwoButtonDialog(
-                context: context,
-                title: '비매너 신고',
-                subTitle: '정말 신고하시겠습니까?',
-                btn1Text: '아니요',
-                btn2Text: '예');
+            showCupertinoModalPopup<void>(
+              context: context,
+              builder: (BuildContext context) => CupertinoActionSheet(
+                  title: const Text('신고 / 차단'),
+                  message: const Text('신고, 차단한 사용자의 글은\n 지도상에 표시되지 않습니다.'),
+                  actions: <CupertinoActionSheetAction>[
+                    CupertinoActionSheetAction(
+                      child: const Text('신고하기'),
+                      onPressed: () async {
+                        await userProvider
+                            .setUserReport(userProvider.selectedUser!.id!)
+                            .then((value) async {
+                          var provider = context.read<LocationProvider>();
+                          provider.selectedPinData = null;
+                          await provider.getPinInRagne(
+                              provider.lastLocation!.latitude,
+                              provider.lastLocation!.longitude,
+                              1000);
+                        });
+                        Navigator.of(context).pushNamed('PageConfirm',
+                            arguments: [
+                              '신고하기',
+                              '신고가 정상적으로 접수되었습니다.',
+                              '해당 사용자의 글은 숨김처리 됩니다.'
+                            ]);
+                      },
+                    ),
+                    CupertinoActionSheetAction(
+                      child: const Text('차단하기'),
+                      onPressed: () async {
+                        await userProvider
+                            .setUserReport(userProvider.selectedUser!.id!)
+                            .then((value) async {
+                          var provider = context.read<LocationProvider>();
+                          provider.selectedPinData = null;
+                          await provider.getPinInRagne(
+                              provider.lastLocation!.latitude,
+                              provider.lastLocation!.longitude,
+                              1000);
+                        });
+                        Navigator.of(context).pushNamed('PageConfirm',
+                            arguments: [
+                              '차단하기',
+                              '해당 사용자를 차단하였습니다.',
+                              '해당 사용자의 글은 숨김처리 됩니다.'
+                            ]);
+                      },
+                    ),
+                  ],
+                  cancelButton: CupertinoActionSheetAction(
+                    child: const Text('취소'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  )),
+            );
+            // var result = await DSDialog.showTwoButtonDialog(
+            //     context: context,
+            //     title: '비매너 신고',
+            //     subTitle: '정말 신고하시겠습니까?',
+            //     btn1Text: '아니요',
+            //     btn2Text: '예');
 
-            if (result == true) {
-              // 비매너 신고 api  호출
-              userProvider
-                  .setUserReport(userProvider.selectedUser!.id!)
-                  .then((value) async {
-                var provider = context.read<LocationProvider>();
-                provider.selectedPinData = null;
-                await provider.getPinInRagne(provider.lastLocation!.latitude,
-                    provider.lastLocation!.longitude, 1000);
+            // if (result == true) {
+            //   // 비매너 신고 api  호출
+            //   userProvider
+            //       .setUserReport(userProvider.selectedUser!.id!)
+            //       .then((value) async {
+            //     var provider = context.read<LocationProvider>();
+            //     provider.selectedPinData = null;
+            //     await provider.getPinInRagne(provider.lastLocation!.latitude,
+            //         provider.lastLocation!.longitude, 1000);
 
-                Navigator.of(context).pushNamed('PageConfirm');
-              });
-            }
+            //     Navigator.of(context).pushNamed('PageConfirm');
+            //   });
+            // }
           },
-          child: Text('비매너신고', style: DSTextStyles.bold12Tomato),
         ),
       ],
     );
@@ -163,8 +220,13 @@ class _PageOtherUserState extends State<PageOtherUser> {
               Divider(),
               SizedBox(height: 10),
               ListTile(
-                title: Text('ㅌㅌㅌ 님이 쓴 글', style: DSTextStyles.bold18Black),
+                title: Text('${data.selectedUser!.name} 님이 쓴 글',
+                    style: DSTextStyles.bold18Black),
                 trailing: Icon(Icons.arrow_forward_ios),
+                onTap: () {
+                  Navigator.of(context).pushNamed('PageUserPost');
+                  // context.read<LocationProvider>().getUserPin(data.selectedUser!.id!);
+                },
               )
             ],
           ),

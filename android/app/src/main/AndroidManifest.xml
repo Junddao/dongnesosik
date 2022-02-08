@@ -20,6 +20,14 @@
                android:value="AIzaSyAoeKpyN_EODABnnIV_Wdx7Tu8Y1QECowY"/>
         
           <!-- android:value="AIzaSyCuuGFepkNdTLU-kbwG7T-UGl9yNI9nKUg"/> -->
+        <activity android:name="com.kakao.sdk.flutter.AuthCodeCustomTabsActivity">
+          <intent-filter android:label="flutter_web_auth">
+              <action android:name="android.intent.action.VIEW" />
+              <category android:name="android.intent.category.DEFAULT" />
+              <category android:name="android.intent.category.BROWSABLE" />
+              <data android:scheme="kakao8548a68be13838496d1f23538f9f8ce7" android:host="oauth"/>
+          </intent-filter>
+        </activity>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

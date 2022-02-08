@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
-import 'dart:ui';
+import 'dart:ui' as ui;
 
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -14,6 +14,7 @@ import 'package:dongnesosik/global/model/singleton_user.dart';
 import 'package:dongnesosik/global/model/user/model_user_info.dart';
 import 'package:dongnesosik/global/provider/location_provider.dart';
 import 'package:dongnesosik/global/provider/user_provider.dart';
+import 'package:dongnesosik/global/service/login_service.dart';
 import 'package:dongnesosik/global/style/constants.dart';
 import 'package:dongnesosik/global/style/dscolors.dart';
 import 'package:dongnesosik/global/style/dstextstyles.dart';
@@ -24,8 +25,10 @@ import 'package:dongnesosik/pages/components/ds_button.dart';
 import 'package:dongnesosik/pages/components/ds_photo_view.dart';
 import 'package:dongnesosik/pages/components/ds_two_button_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -66,7 +69,11 @@ class _PageMapState extends State<PageMap> {
     // setCustomMarker();
     Future.microtask(() async {
       await getLocation();
+
       Future.delayed(Duration(milliseconds: 500), () {
+        if (panelController.isPanelOpen) {
+          panelController.close();
+        }
         if (widget.pinId != null) {
           panelController.open();
         }
@@ -78,52 +85,80 @@ class _PageMapState extends State<PageMap> {
   void dispose() {
     _timer?.cancel();
 
+    _scrollController.dispose();
     super.dispose();
   }
 
-  Future<BitmapDescriptor> createCustomMarkerBitmap(String title) async {
-    // TextSpan span = new TextSpan(
-    //   // style: DSTextStyles.bold16Black,
-    //   text: title,
-    // );
+  Future<BitmapDescriptor> createCustomMarkerBitmap(
+      String? profileImage, String title) async {
+    // final Size size = Size(150, 150);
+    final ui.PictureRecorder pictureRecorder = ui.PictureRecorder();
+    final Canvas canvas = Canvas(pictureRecorder);
 
-    TextPainter tp = new TextPainter(
-      // text: span,
-      textAlign: TextAlign.center,
-      textDirection: TextDirection.ltr,
-    );
-    tp.text = TextSpan(
+    final Radius radius = Radius.circular(70);
+
+    final Paint tagPaint = Paint()..color = Color(0xFF5963d9);
+
+    // Add tag text
+    TextPainter textPainter = TextPainter(textDirection: TextDirection.ltr);
+    textPainter.text = TextSpan(
         text: title.length < 18 ? title : title.substring(0, 16) + '..',
-        style: DSTextStyles.regular32white);
+        style: DSTextStyles.mediaum32White);
 
-    var myPaint = Paint();
-    // myPaint.color = DSColors.tomato;
-    myPaint.color = DSColors.gray4;
-    // myPaint.color = DSColors.white;
-    PictureRecorder recorder = new PictureRecorder();
-    Canvas c = new Canvas(recorder);
-    tp.layout();
-    // double rectWidth = tp != null ? tp.width : 0.0;
-    // double rectHeight = tp != null ? tp.height : 0.0;
-    c.drawRRect(
-        RRect.fromRectAndRadius(
-            const Offset(0.0, 0.0) & Size(tp.width + 40, tp.height + 20),
-            Radius.circular(12)),
-        myPaint);
+    textPainter.layout();
 
-    // tp.layout();
-    tp.paint(c, new Offset(20.0, 10.0));
+    // Add tag circle
+    canvas.drawRRect(
+        RRect.fromRectAndCorners(
+          Rect.fromLTWH(
+              0.0, 0.0, textPainter.width + 40, textPainter.height + 20),
+          topLeft: radius,
+          topRight: radius,
+          bottomLeft: radius,
+          bottomRight: radius,
+        ),
+        tagPaint);
 
-    /* Do your painting of the custom icon here, including drawing text, shapes, etc. */
+    textPainter.paint(canvas, Offset(20, 10));
 
-    Picture p = recorder.endRecording();
-    ByteData? pngBytes =
-        await (await p.toImage(tp.width.toInt() + 40, tp.height.toInt() + 20))
-            .toByteData(format: ImageByteFormat.png);
+    // Convert canvas to image
+    final ui.Image markerAsImage = await pictureRecorder.endRecording().toImage(
+        textPainter.width.toInt() + 80, textPainter.height.toInt() + 40);
 
-    Uint8List data = Uint8List.view(pngBytes!.buffer);
+    // Convert image to bytes
+    final ByteData? byteData =
+        await markerAsImage.toByteData(format: ui.ImageByteFormat.png);
+    final Uint8List uint8List = byteData!.buffer.asUint8List();
 
-    return BitmapDescriptor.fromBytes(data);
+    return BitmapDescriptor.fromBytes(uint8List);
+  }
+
+  Future<ui.Image> getImageFromAsset(String imagePath) async {
+    final byteData = await rootBundle.load(imagePath);
+
+    Uint8List imageBytes = Uint8List.view(byteData.buffer);
+    final Completer<ui.Image> completer = new Completer();
+
+    ui.decodeImageFromList(imageBytes, (ui.Image img) {
+      return completer.complete(img);
+    });
+
+    return completer.future;
+  }
+
+  Future<ui.Image> getImageFromNetwork(String url) async {
+    Uint8List imageBytes = (await NetworkAssetBundle(Uri.parse(url)).load(url))
+        .buffer
+        .asUint8List();
+
+    // Uint8List imageBytes = Uint8List.view(byteData.buffer);
+    final Completer<ui.Image> completer = new Completer();
+
+    ui.decodeImageFromList(imageBytes, (ui.Image img) {
+      return completer.complete(img);
+    });
+
+    return completer.future;
   }
 
   Future<void> getLocation() async {
@@ -277,78 +312,86 @@ class _PageMapState extends State<PageMap> {
 
   Widget _drawer() {
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.only(left: 10),
-        children: <Widget>[
-          // drawer header
-          _drawerHeader(),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          ListView(
+            shrinkWrap: true,
+            padding: EdgeInsets.only(left: 10),
+            children: <Widget>[
+              // drawer header
+              _drawerHeader(),
 
-          // my history
+              // my history
 
-          ListTile(
-            leading: Icon(Ionicons.document_text_outline),
-            title: Text(
-              '내글보기',
-              style: DSTextStyles.bold14Black,
-            ),
-            onTap: () {
-              Navigator.of(context).pushNamed('PageMyPost');
-            },
+              ListTile(
+                leading: Icon(Ionicons.document_text_outline),
+                title: Text(
+                  '내글보기',
+                  style: DSTextStyles.bold14Black,
+                ),
+                onTap: () {
+                  Navigator.of(context).pushNamed('PageMyPost');
+                },
+              ),
+              ListTile(
+                leading: Icon(Ionicons.documents_outline),
+                title: Text(
+                  '인기글보기',
+                  style: DSTextStyles.bold14Black,
+                ),
+                onTap: () {
+                  Navigator.of(context).pushNamed('PagePopularPost');
+                },
+              ),
+              ListTile(
+                leading: Icon(Ionicons.help),
+                title: Text(
+                  '사용법보기',
+                  style: DSTextStyles.bold14Black,
+                ),
+                onTap: () {
+                  Navigator.of(context).pushNamed('PageIntroSlider');
+                },
+              ),
+            ],
           ),
-          ListTile(
-            leading: Icon(Ionicons.documents_outline),
-            title: Text(
-              '인기글보기',
-              style: DSTextStyles.bold14Black,
-            ),
-            onTap: () {
-              Navigator.of(context).pushNamed('PagePopularPost');
-            },
+          ListView(
+            shrinkWrap: true,
+            padding: EdgeInsets.only(left: 10),
+            children: [
+              SingletonUser.singletonUser.userData.email == null ||
+                      SingletonUser.singletonUser.userData.email!.isEmpty
+                  ? ListTile(
+                      leading: Icon(Ionicons.share_social_outline),
+                      title: Text(
+                        '계정 연결',
+                        style: DSTextStyles.bold14Black,
+                      ),
+                      onTap: () {
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                            'PageLogin', (route) => false);
+                        // Navigator.of(context)
+                        //     .pushNamedAndRemoveUntil('PageRoot', (route) => false);
+                      },
+                    )
+                  : SizedBox.shrink(),
+              SingletonUser.singletonUser.userData.email == null ||
+                      SingletonUser.singletonUser.userData.email!.isEmpty
+                  ? SizedBox.shrink()
+                  : ListTile(
+                      leading: Icon(Ionicons.log_out_outline),
+                      title: Text(
+                        '로그아웃',
+                        style: DSTextStyles.bold14Black,
+                      ),
+                      onTap: () {
+                        logout();
+                      },
+                    ),
+              SizedBox(height: 50),
+            ],
           ),
-          ListTile(
-            leading: Icon(Ionicons.help),
-            title: Text(
-              '사용법보기',
-              style: DSTextStyles.bold14Black,
-            ),
-            onTap: () {
-              Navigator.of(context).pushNamed('PageIntroSlider');
-            },
-          ),
-          SingletonUser.singletonUser.userData.email == null ||
-                  SingletonUser.singletonUser.userData.email!.isEmpty
-              ? ListTile(
-                  leading: Icon(Ionicons.share_social_outline),
-                  title: Text(
-                    '계정 연결',
-                    style: DSTextStyles.bold14Black,
-                  ),
-                  onTap: () {
-                    Navigator.of(context)
-                        .pushNamedAndRemoveUntil('PageLogin', (route) => false);
-                    // Navigator.of(context)
-                    //     .pushNamedAndRemoveUntil('PageRoot', (route) => false);
-                  },
-                )
-              : SizedBox.shrink(),
-          // SingletonUser.singletonUser.userData.email == null ||
-          //         SingletonUser.singletonUser.userData.email!.isEmpty
-          //     ? SizedBox.shrink()
-          //     : ListTile(
-          //         leading: Icon(Ionicons.log_out_outline),
-          //         title: Text(
-          //           '로그아웃',
-          //           style: DSTextStyles.bold14Black,
-          //         ),
-          //         onTap: () {
-          //           FirebaseAuth.instance.signOut();
-          //           SingletonUser.singletonUser.userData = ModelUserInfo();
-          //           ModelSharedPreferences.removeToken();
-
-          //           Navigator.of(context).pushNamedAndRemoveUntil(
-          //               'PageSplash', (route) => false);
-          //         },
-          //       ),
         ],
       ),
     );
@@ -515,7 +558,6 @@ class _PageMapState extends State<PageMap> {
                   ),
           ),
         ),
-
         title: Text(responseGetPinData[index].pin!.title!,
             overflow: TextOverflow.ellipsis),
         subtitle: Text(
@@ -523,18 +565,6 @@ class _PageMapState extends State<PageMap> {
           overflow: TextOverflow.ellipsis,
           maxLines: 1,
         ),
-
-        // trailing: IconButton(
-        //   onPressed: () {
-        //     LatLng location = LatLng(responseGetPinData[index].pin!.lat!,
-        //         responseGetPinData[index].pin!.lng!);
-        //     context.read<LocationProvider>().setLastLocation(location);
-        //     Navigator.of(context).pushNamedAndRemoveUntil(
-        //         'PageMap', (route) => false,
-        //         arguments: responseGetPinData[index].pin!.id!);
-        //   },
-        //   icon: Icon(Ionicons.map_outline),
-        // ),
       ),
     );
   }
@@ -610,14 +640,16 @@ class _PageMapState extends State<PageMap> {
   }
 
   void _onCameraIdle() async {
-    _markers.clear();
+    // _markers.clear();
 
     var provider = context.read<LocationProvider>();
+    var userProvider = context.read<UserProvider>();
 
     await provider.getPinInRagne(provider.lastLocation!.latitude,
         provider.lastLocation!.longitude, range);
     provider.responseGetPinDatas!.forEach((element) async {
-      customIcon = await createCustomMarkerBitmap(element.pin!.title!);
+      customIcon = await createCustomMarkerBitmap(
+          element.profileImage, element.pin!.title!);
       addCustomMarker(element.pin!.id!,
           LatLng(element.pin!.lat!, element.pin!.lng!), element);
     });
@@ -1075,79 +1107,104 @@ class _PageMapState extends State<PageMap> {
                                       SizedBox(width: 18),
                                     ],
                                   ),
-                                  data.selectedPinData!.hated == false
-                                      ? InkWell(
-                                          onTap: () async {
-                                            var provider = context
-                                                .read<LocationProvider>();
-                                            await provider
-                                                .pinHateToId(data
-                                                    .selectedPinData!.pin!.id!)
-                                                .then((value) {
-                                              // provider.getPinById(data
-                                              //     .selectedPinData!.pin!.id!);
-                                              provider.selectedPinData = null;
-                                            });
+                                  InkWell(
+                                    onTap: () async {
+                                      showCupertinoModalPopup<void>(
+                                        context: context,
+                                        builder: (BuildContext context) =>
+                                            CupertinoActionSheet(
+                                                title: const Text('신고 / 차단'),
+                                                message: const Text(
+                                                    '신고, 차단한 글은\n 지도상에 표시되지 않습니다.'),
+                                                actions: <
+                                                    CupertinoActionSheetAction>[
+                                                  CupertinoActionSheetAction(
+                                                    child: const Text(
+                                                        '불건전 컨텐츠 신고하기'),
+                                                    onPressed: () async {
+                                                      var provider = context.read<
+                                                          LocationProvider>();
+                                                      await provider
+                                                          .pinHateToId(data
+                                                              .selectedPinData!
+                                                              .pin!
+                                                              .id!)
+                                                          .then((value) {
+                                                        // provider.getPinById(data
+                                                        //     .selectedPinData!.pin!.id!);
+                                                        provider.selectedPinData =
+                                                            null;
+                                                      });
 
-                                            await provider.getPinInRagne(
-                                                provider.lastLocation!.latitude,
-                                                provider
-                                                    .lastLocation!.longitude,
-                                                range);
+                                                      await provider
+                                                          .getPinInRagne(
+                                                              provider
+                                                                  .lastLocation!
+                                                                  .latitude,
+                                                              provider
+                                                                  .lastLocation!
+                                                                  .longitude,
+                                                              range);
+                                                      Navigator.of(context)
+                                                          .pushNamed(
+                                                              'PageConfirm',
+                                                              arguments: [
+                                                            '불건전 컨텐츠 신고하기',
+                                                            '신고가 정상적으로 접수되었습니다.',
+                                                            '해당 글은 더이상 노출되지 않습니다.'
+                                                          ]);
+                                                    },
+                                                  ),
+                                                  CupertinoActionSheetAction(
+                                                    child:
+                                                        const Text('글쓴이 차단하기'),
+                                                    onPressed: () async {
+                                                      var provider = context.read<
+                                                          LocationProvider>();
+                                                      await provider
+                                                          .pinHateToId(data
+                                                              .selectedPinData!
+                                                              .pin!
+                                                              .id!)
+                                                          .then((value) {
+                                                        // provider.getPinById(data
+                                                        //     .selectedPinData!.pin!.id!);
+                                                        provider.selectedPinData =
+                                                            null;
+                                                      });
 
-                                            Navigator.of(context)
-                                                .pushNamed('PageConfirm');
-                                          },
-                                          child: Container(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 12, vertical: 8),
-                                            decoration: BoxDecoration(
-                                              color: DSColors.tomato,
-                                            ),
-                                            child: Center(
-                                                child: Row(
-                                              children: [
-                                                Text('게시물 신고하기',
-                                                    style: DSTextStyles
-                                                        .regular12White),
-                                              ],
-                                            )),
-                                          ),
-                                        )
-                                      : Container(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 12, vertical: 8),
-                                          decoration: BoxDecoration(
-                                            color: DSColors.tomato_10,
-                                          ),
-                                          child: Center(
-                                              child: Row(
-                                            children: [
-                                              Icon(
-                                                Icons.check,
-                                                color: Colors.black,
-                                              ),
-                                              SizedBox(width: 4),
-                                              Text('신고완료',
-                                                  style: DSTextStyles
-                                                      .regular12Black),
-                                            ],
-                                          )),
-                                        ),
-                                  // SingletonUser
-                                  //             .singletonUser.userData.isAdmin ==
-                                  //         true
-                                  //     ? IconButton(
-                                  //         onPressed: () {
-                                  //           context
-                                  //               .read<LocationProvider>()
-                                  //               .pinDelete(data
-                                  //                   .selectedPinData!.pin!.id!);
-                                  //           setState(() {});
-                                  //         },
-                                  //         icon: Icon(Icons.delete),
-                                  //       )
-                                  //     : SizedBox.shrink(),
+                                                      await provider
+                                                          .getPinInRagne(
+                                                              provider
+                                                                  .lastLocation!
+                                                                  .latitude,
+                                                              provider
+                                                                  .lastLocation!
+                                                                  .longitude,
+                                                              range);
+                                                      Navigator.of(context)
+                                                          .pushNamed(
+                                                              'PageConfirm',
+                                                              arguments: [
+                                                            '차단하기',
+                                                            '불건전 컨테츠 작성자로 판단되어 해당 사용자를 차단하였습니다.',
+                                                            '해당 사용자의 글은 숨김처리 됩니다.'
+                                                          ]);
+                                                    },
+                                                  ),
+                                                ],
+                                                cancelButton:
+                                                    CupertinoActionSheetAction(
+                                                  child: const Text('취소'),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                )),
+                                      );
+                                    },
+                                    child: Icon(Icons.more_horiz,
+                                        color: DSColors.tomato),
+                                  )
                                 ],
                               ),
                               SizedBox(height: 10),
@@ -1468,5 +1525,25 @@ class _PageMapState extends State<PageMap> {
             context.read<LocationProvider>().selectedPinData!.pin!.id!);
       });
     }
+  }
+
+  void logout() {
+    LoginService().signOut().then((value) {
+      if (value is String) {
+        // fail
+        print(value);
+        Scaffold.of(context).showSnackBar(SnackBar(content: Text(value)));
+      } else {
+        // success
+
+        // ModelSharedPreferences.removeToken();
+        ModelSharedPreferences.removeAll();
+
+        SingletonUser.singletonUser.userData = ModelUserInfo();
+
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('PageLogin', (route) => false);
+      }
+    });
   }
 }

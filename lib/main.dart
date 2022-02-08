@@ -17,9 +17,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
+import 'package:kakao_flutter_sdk/all.dart';
 
 void main() {
   HttpOverrides.global = new MyHttpOverrides();
+  KakaoContext.clientId = "8548a68be13838496d1f23538f9f8ce7";
   runServer();
 }
 

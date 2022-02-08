@@ -59,6 +59,13 @@ class DSTextStyles {
       fontStyle: FontStyle.normal,
       fontSize: 50.0);
 
+  static const mediaum32White = const TextStyle(
+      color: DSColors.white,
+      fontWeight: FontWeight.w500,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 32.0);
+
   static const bold24Grey06 = const TextStyle(
       color: DSColors.grey_06,
       fontWeight: FontWeight.w700,
@@ -425,6 +432,14 @@ class DSTextStyles {
       fontStyle: FontStyle.normal,
       fontSize: 12.0);
 
+  static const regular12BlackUnderLine = const TextStyle(
+      color: DSColors.blackColor,
+      fontWeight: FontWeight.w400,
+      decoration: TextDecoration.underline,
+      fontFamily: "NotoSansKR",
+      fontStyle: FontStyle.normal,
+      fontSize: 12.0);
+
   static const bold12Tomato = const TextStyle(
       color: DSColors.tomato,
       fontWeight: FontWeight.w700,
@@ -674,9 +689,9 @@ class DSTextStyles {
     // height: 1.5,
   );
 
-  static const bold32black = const TextStyle(
+  static const medium32black = const TextStyle(
     color: Colors.black,
-    fontWeight: FontWeight.w700,
+    fontWeight: FontWeight.w500,
     fontFamily: 'NotoSansKR',
     fontSize: 32.0,
     fontStyle: FontStyle.normal,
@@ -757,6 +772,15 @@ class DSTextStyles {
 
   static const regular32white = const TextStyle(
     color: Colors.white,
+    fontWeight: FontWeight.w400,
+    fontFamily: 'NotoSansKR',
+    fontSize: 32.0,
+    fontStyle: FontStyle.normal,
+    // height: 1.2,
+  );
+
+  static const regular32black = const TextStyle(
+    color: Colors.black,
     fontWeight: FontWeight.w400,
     fontFamily: 'NotoSansKR',
     fontSize: 32.0,
