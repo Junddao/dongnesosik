@@ -78,6 +78,9 @@ class ModelSharedPreferences {
   static Future<void> removeAll() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
+    if (prefs.containsKey(ADDRESS)) {
+      prefs.remove(ADDRESS);
+    }
     if (prefs.containsKey(MYLNG)) {
       prefs.remove(MYLNG);
     }

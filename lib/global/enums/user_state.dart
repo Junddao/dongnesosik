@@ -1,0 +1,4 @@
+enum UserState {
+  active,
+  block,
+}

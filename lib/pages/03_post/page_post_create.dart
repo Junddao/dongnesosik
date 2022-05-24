@@ -61,7 +61,7 @@ class _PagePostCreateState extends State<PagePostCreate> {
       centerTitle: true,
       leading: TextButton(
         onPressed: () {
-          DSTwoButtonDialog.showCancelDialog(context: context).then((value) {
+          DSDialog.showTwoButtonDialog(context: context).then((value) {
             setState(() {
               if (value == true) {
                 context.read<LocationProvider>().setMyPostLocation(null);

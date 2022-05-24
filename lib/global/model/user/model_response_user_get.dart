@@ -36,10 +36,12 @@ class ModelResponseUserGet {
 
 class ModelResponseUserGetData {
   int? id;
+  bool? isAdmin;
   String? name;
   String? phoneNumber;
   String? email;
   String? profileImage;
+  String? state;
   String? address;
   String? region1;
   String? region2;
@@ -50,10 +52,12 @@ class ModelResponseUserGetData {
   String? buildingName;
   ModelResponseUserGetData({
     this.id,
+    this.isAdmin,
     this.name,
     this.phoneNumber,
     this.email,
     this.profileImage,
+    this.state = 'active',
     this.address,
     this.region1,
     this.region2,
@@ -67,10 +71,12 @@ class ModelResponseUserGetData {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'isAdmin': isAdmin,
       'name': name,
       'phoneNumber': phoneNumber,
       'email': email,
       'profileImage': profileImage,
+      'state': state,
       'address': address,
       'region1': region1,
       'region2': region2,
@@ -85,10 +91,12 @@ class ModelResponseUserGetData {
   factory ModelResponseUserGetData.fromMap(Map<String, dynamic> map) {
     return ModelResponseUserGetData(
       id: map['id'] != null ? map['id'] : null,
+      isAdmin: map['isAdmin'] != null ? map['isAdmin'] : null,
       name: map['name'] != null ? map['name'] : null,
       phoneNumber: map['phoneNumber'] != null ? map['phoneNumber'] : null,
       email: map['email'] != null ? map['email'] : null,
       profileImage: map['profileImage'] != null ? map['profileImage'] : null,
+      state: map['state'] != null ? map['state'] : null,
       address: map['address'] != null ? map['address'] : null,
       region1: map['region1'] != null ? map['region1'] : null,
       region2: map['region2'] != null ? map['region2'] : null,

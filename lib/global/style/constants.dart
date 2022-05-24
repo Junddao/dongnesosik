@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 const String test_image_url =
     'https://upload.wikimedia.org/wikipedia/commons/5/5f/%ED%95%9C%EA%B3%A0%EC%9D%80%2C_%EB%AF%B8%EC%86%8C%EA%B0%80_%EC%95%84%EB%A6%84%EB%8B%A4%EC%9B%8C~_%281%29.jpg';
 
-const String APP_NAME = "동내소식";
+const String APP_NAME = "동네소식";
 
 const kPrimaryColor = DSColors.tomato;
 const kTextColor = Color(0XFF171717);

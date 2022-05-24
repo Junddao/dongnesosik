@@ -17,7 +17,7 @@ class _PagePostState extends State<PagePost> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('동내 게시글'),
+        title: Text('동네 게시글'),
         centerTitle: true,
       ),
       body: _body(),

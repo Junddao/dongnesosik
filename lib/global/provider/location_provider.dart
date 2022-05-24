@@ -26,12 +26,15 @@ class LocationProvider extends ParentProvider {
   List<ResponseGetPinData>? responseGetPinDatas = [];
   List<ResponseGetPinData>? myPinDatas = [];
   List<ResponseGetPinData>? top50PinDatas = [];
+  List<ResponseGetPinData>? userPinDatas = [];
   ResponseGetPinData? selectedPinData;
   int? selectedId;
 
   List<ModelResponseGetPinReplyData>? responseGetPinReplyData = [];
 
   ModelResponseGetPinReplyData? selectedReplyData;
+
+
 
   setMyAddress(String? address) {
     myAddress = address;
@@ -110,8 +113,14 @@ class LocationProvider extends ParentProvider {
       var api = ApiService();
       var response =
           await api.post('/pin/get/range', requestPinGetRange.toMap());
-      responseGetPinDatas = ModelResponseGetPin.fromMap(response).data;
-
+      List<ResponseGetPinData>? _responseGetPinDatas =
+          ModelResponseGetPin.fromMap(response).data;
+      responseGetPinDatas!.clear();
+      _responseGetPinDatas!.forEach((element) {
+        if (element.hated == false) {
+          responseGetPinDatas!.add(element);
+        }
+      });
       notifyListeners();
       return responseGetPinDatas;
     } catch (error) {
@@ -123,8 +132,14 @@ class LocationProvider extends ParentProvider {
     try {
       var api = ApiService();
       var response = await api.get('/pin/all');
-      responseGetPinDatas = ModelResponseGetPin.fromMap(response).data;
-
+      List<ResponseGetPinData>? _responseGetPinDatas =
+          ModelResponseGetPin.fromMap(response).data;
+      responseGetPinDatas!.clear();
+      _responseGetPinDatas!.forEach((element) {
+        if (element.hated == false) {
+          responseGetPinDatas!.add(element);
+        }
+      });
       notifyListeners();
     } catch (error) {
       setStateError();
@@ -186,7 +201,28 @@ class LocationProvider extends ParentProvider {
       setStateBusy();
       var api = ApiService();
       var response = await api.get('/pin/get/me');
-      myPinDatas = ModelResponseGetPin.fromMap(response).data;
+      // myPinDatas = ModelResponseGetPin.fromMap(response).data;
+      List<ResponseGetPinData>? _myPinDatas =
+          ModelResponseGetPin.fromMap(response).data;
+      myPinDatas!.clear();
+      _myPinDatas!.forEach((element) {
+        if (element.hated == false) {
+          myPinDatas!.add(element);
+        }
+      });
+      setStateIdle();
+      // notifyListeners();
+    } catch (error) {
+      setStateError();
+    }
+  }
+
+  Future<void> getUserPin(int userId) async {
+    try {
+      setStateBusy();
+      var api = ApiService();
+      var response = await api.get('/pin/get/user/$userId');
+      userPinDatas = ModelResponseGetPin.fromMap(response).data;
       setStateIdle();
       // notifyListeners();
     } catch (error) {
@@ -199,7 +235,16 @@ class LocationProvider extends ParentProvider {
       setStateBusy();
       var api = ApiService();
       var response = await api.get('/pin/get/top50');
-      top50PinDatas = ModelResponseGetPin.fromMap(response).data;
+      // top50PinDatas = ModelResponseGetPin.fromMap(response).data;
+
+      List<ResponseGetPinData>? _top50PinDatas =
+          ModelResponseGetPin.fromMap(response).data;
+      top50PinDatas!.clear();
+      _top50PinDatas!.forEach((element) {
+        if (element.hated == false) {
+          top50PinDatas!.add(element);
+        }
+      });
 
       setStateIdle();
     } catch (error) {
@@ -211,6 +256,18 @@ class LocationProvider extends ParentProvider {
     try {
       var api = ApiService();
       var response = await api.get('/pin/like/$id');
+
+      notifyListeners();
+    } catch (error) {
+      // setStateError();
+      throw Exception();
+    }
+  }
+
+  Future<void> pinHateToId(int id) async {
+    try {
+      var api = ApiService();
+      var response = await api.get('/pin/hate/$id');
 
       notifyListeners();
     } catch (error) {

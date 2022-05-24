@@ -111,7 +111,9 @@ class _PageMyPostState extends State<PageMyPost> {
         ),
         onTap: () {
           context.read<LocationProvider>().selectedPinData = myPinDatas[index];
-          context.read<LocationProvider>().getPinReply(myPinDatas[index].pin!.id!);
+          context
+              .read<LocationProvider>()
+              .getPinReply(myPinDatas[index].pin!.id!);
           LatLng location =
               LatLng(myPinDatas[index].pin!.lat!, myPinDatas[index].pin!.lng!);
           context.read<LocationProvider>().setLastLocation(location);
@@ -125,7 +127,7 @@ class _PageMyPostState extends State<PageMyPost> {
 
   void deletePost(
       BuildContext slidableContext, ResponseGetPinData pinData) async {
-    var result = await DSTwoButtonDialog.showCancelDialog(
+    var result = await DSDialog.showTwoButtonDialog(
         context: context,
         title: '게시글 삭제',
         subTitle: '정말 삭제하시겠습니까?',
